@@ -52,6 +52,7 @@ ARM                 | arm-linux-gnueabihf-
 IA32                | i?86-linux-gnu-* _or_ x86_64-linux-gnu-
 IPF                 | ia64-linux-gnu
 X64                 | x86_64-linux-gnu-
+RISCV64             | riscv64-unknown-elf-
 
 \* i386, i486, i586 or i686
 
@@ -61,6 +62,12 @@ Linaro provides GCC toolchains for
 and [arm-linux-gnueabihf](https://releases.linaro.org/components/toolchain/binaries/latest/arm-linux-gnueabihf/)
 compiled to run on x86_64/i686 Linux and i686 Windows. Some Linux distributions
 provide their own packaged cross-toolchains.
+
+### GCC for RISC-V
+RISC-V open source community provides GCC toolchains for
+[riscv64-unknown-elf](https://github.com/riscv/riscv-gnu-toolchain)
+compiled to run on x86 Linux. The commit ID 64879b24 is verified to build RISC-V EDK2 platform and boot to EFI
+SHELL successfully.
 
 ### clang
 Clang does not require separate cross compilers, but it does need a
@@ -242,6 +249,10 @@ For more information, see the
 
 ## Raspberry Pi
 * [Pi 3](Platform/RaspberryPi/RPi3)
+
+## RISC-V
+### SiFive
+* [Freedom U500 VC707 FPGA](Platform/RiscV/SiFive/U500Pkg)
 
 ## Socionext
 * [SynQuacer](Platform/Socionext/DeveloperBox)
