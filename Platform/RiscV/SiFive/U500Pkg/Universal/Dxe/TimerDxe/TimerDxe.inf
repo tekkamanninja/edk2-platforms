@@ -1,0 +1,48 @@
+## @file
+# RISC-V Timer Arch protocol module for U500 platform
+#
+# Copyright (c) 2019, Hewlett Packard Enterprise Development LP. All rights reserved.<BR>
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = Timer
+  MODULE_UNI_FILE                = Timer.uni
+  FILE_GUID                      = 3F75D495-23FF-46B6-9D19-0DECC8A4EA91
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+
+  ENTRY_POINT                    = TimerDriverInitialize
+
+[Packages]
+  MdePkg/MdePkg.dec
+  RiscVPkg/RiscVPkg.dec
+
+[LibraryClasses]
+  UefiBootServicesTableLib
+  BaseLib
+  DebugLib
+  UefiDriverEntryPoint
+  IoLib
+  RiscVCpuLib
+  RiscVOpensbiLib
+
+[Sources]
+  Timer.h
+  Timer.c
+
+[Protocols]
+  gEfiCpuArchProtocolGuid       ## CONSUMES
+  gEfiTimerArchProtocolGuid     ## PRODUCES
+
+[Pcd]
+  gUefiRiscVPkgTokenSpaceGuid.PcdRiscVMachineTimerFrequencyInHerz
+
+[Depex]
+  gEfiCpuArchProtocolGuid
+
+[UserExtensions.TianoCore."ExtraFiles"]
+  TimerExtra.uni
