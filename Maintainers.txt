@@ -122,6 +122,11 @@ R: Marcin Wojtas <mw@semihalf.com>
 Platform/SolidRun/Armada80x0McBin
 R: Marcin Wojtas <mw@semihalf.com>
 
+Platform/RiscV
+Platform/RiscV/SiFive/U500Pkg
+R: Abner Chang <abner.chang@hpe.com>
+R: Gilbert Chen <gilbert.chen@hpe.com>
+
 Silicon
 M: Ard Biesheuvel <ard.biesheuvel@linaro.org>
 M: Leif Lindholm <leif.lindholm@linaro.org>
@@ -178,3 +183,7 @@ M: Liming Gao <liming.gao@intel.com>
 
 Silicon/Marvell
 R: Marcin Wojtas <mw@semihalf.com>
+
+Silicon/SiFive
+R: Abner Chang <abner.chang@hpe.com>
+R: Gilbert Chen <gilbert.chen@hpe.com>
