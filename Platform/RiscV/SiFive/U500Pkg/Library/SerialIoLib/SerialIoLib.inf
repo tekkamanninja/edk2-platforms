@@ -1,0 +1,31 @@
+## @file
+#   Library instance for SerialIo library class
+#
+#  Copyright (c) 2019, Hewlett Packard Enterprise Development LP. All rights reserved.<BR>
+#  Copyright (c) 2006 - 2014, Intel Corporation. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = U500SerialPortLib
+  MODULE_UNI_FILE                = U500SerialPortLib.uni
+  FILE_GUID                      = FCC4FD2B-2FF6-4FFA-B363-7C1111E5DCE9
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = SerialPortLib
+
+[Packages]
+  MdePkg/MdePkg.dec
+  RiscVPkg/RiscVPkg.dec
+  Platform/RiscV/RiscVPlatformPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  IoLib
+  RiscVOpensbiLib
+
+[Sources]
+  SerialPortLib.c
