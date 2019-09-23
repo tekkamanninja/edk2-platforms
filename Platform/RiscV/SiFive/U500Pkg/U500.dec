@@ -8,7 +8,7 @@
 ##
 
 [Defines]
-  DEC_SPECIFICATION              = 0x00010005
+  DEC_SPECIFICATION              = 0x0001001b
   PACKAGE_NAME                   = U500
   PACKAGE_UNI_FILE               = U500.uni
   PACKAGE_GUID                   = D11E9DB9-5940-4642-979D-2114342140D2
