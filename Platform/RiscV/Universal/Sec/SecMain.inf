@@ -56,9 +56,6 @@
   gEfiTemporaryRamSupportPpiGuid # PPI ALWAYS_PRODUCED
   gEfiTemporaryRamDonePpiGuid    # PPI ALWAYS_PRODUCED
 
-[Guids]
-  gUefiRiscVMachineContextGuid
-
 [FixedPcd]
   gUefiRiscVPlatformPkgTokenSpaceGuid.PcdRiscVPeiFvBase
   gUefiRiscVPlatformPkgTokenSpaceGuid.PcdRiscVPeiFvSize
