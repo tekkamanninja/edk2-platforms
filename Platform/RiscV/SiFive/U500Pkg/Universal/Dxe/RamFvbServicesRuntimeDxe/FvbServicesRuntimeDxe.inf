@@ -13,7 +13,7 @@
 ##
 
 [Defines]
-  INF_VERSION                    = 0x00010005
+  INF_VERSION                    = 0x0001001b
   BASE_NAME                      = FvbServicesRuntimeDxe
   FILE_GUID                      = B04036D3-4C60-43D6-9850-0FCC090FF054
   MODULE_TYPE                    = DXE_RUNTIME_DRIVER

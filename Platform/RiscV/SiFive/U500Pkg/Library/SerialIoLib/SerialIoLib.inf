@@ -9,7 +9,7 @@
 ##
 
 [Defines]
-  INF_VERSION                    = 0x00010005
+  INF_VERSION                    = 0x0001001b
   BASE_NAME                      = U500SerialPortLib
   MODULE_UNI_FILE                = U500SerialPortLib.uni
   FILE_GUID                      = FCC4FD2B-2FF6-4FFA-B363-7C1111E5DCE9
