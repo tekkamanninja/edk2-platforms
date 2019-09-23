@@ -8,7 +8,7 @@
 ##
 
 [Defines]
-  DEC_SPECIFICATION              = 0x00010005
+  DEC_SPECIFICATION              = 0x0001001b
   PACKAGE_NAME                   = SiFiveSiliconPkg
   PACKAGE_GUID                   = 576912B2-7077-4B78-A934-4C133FEB20BB
   PACKAGE_VERSION                = 1.0
