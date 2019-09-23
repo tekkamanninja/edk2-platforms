@@ -8,7 +8,7 @@
 ##
 
 [Defines]
-  DEC_SPECIFICATION              = 0x00010005
+  DEC_SPECIFICATION              = 0x0001001b
   PACKAGE_NAME                   = RiscPlatformPkg
   PACKAGE_UNI_FILE               = RiscPlatformPkg.uni
   PACKAGE_GUID                   = 6A67AF99-4592-40F8-B6BE-62BCA10DA1EC
