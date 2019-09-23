@@ -143,12 +143,12 @@ INF  MdeModulePkg/Universal/SecurityStubDxe/SecurityStubDxe.inf
 INF  UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
 INF  MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
 INF  MdeModulePkg/Universal/Metronome/Metronome.inf
+INF  EmbeddedPkg/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf
 
 # RISC-V Platform Drivers
 INF  Platform/RiscV/SiFive/U500Pkg/Universal/Dxe/RamFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
 
 # RISC-V Core Drivers
-INF  RiscVPkg/Universal/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf
 INF  Platform/RiscV/SiFive/U500Pkg/Universal/Dxe/TimerDxe/TimerDxe.inf
 INF  RiscVPkg/Universal/CpuDxe/CpuDxe.inf
 INF  RiscVPkg/Universal/SmbiosDxe/RiscVSmbiosDxe.inf
