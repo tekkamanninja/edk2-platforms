@@ -8,7 +8,7 @@
 ##
 
 [Defines]
-  INF_VERSION                    = 0x00010005
+  INF_VERSION                    = 0x0001001b
   BASE_NAME                      = SiliconSiFiveE51CoreInfoLib
   FILE_GUID                      = 80A59B85-1245-4309-AC58-2CFA4199B46C
   MODULE_TYPE                    = PEIM
