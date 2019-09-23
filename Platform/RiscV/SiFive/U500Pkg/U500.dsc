@@ -16,7 +16,7 @@
   PLATFORM_NAME                  = U500
   PLATFORM_GUID                  = 0955581C-2A6A-48F7-8690-9D275AE884F8
   PLATFORM_VERSION               = 0.1
-  DSC_SPECIFICATION              = 0x00010005
+  DSC_SPECIFICATION              = 0x0001001c
   OUTPUT_DIRECTORY               = Build/U500Pkg
   SUPPORTED_ARCHITECTURES        = RISCV64
   BUILD_TARGETS                  = DEBUG|RELEASE
@@ -94,6 +94,7 @@
   CustomizedDisplayLib|MdeModulePkg/Library/CustomizedDisplayLib/CustomizedDisplayLib.inf
   SortLib|MdeModulePkg/Library/BaseSortLib/BaseSortLib.inf
   UefiBootManagerLib|MdeModulePkg/Library/UefiBootManagerLib/UefiBootManagerLib.inf
+  FdtLib|EmbeddedPkg/Library/FdtLib/FdtLib.inf
 
 # RISC-V Platform Library
   RealTimeClockLib|Platform/RiscV/Library/RealTimeClockLibNull/RealTimeClockLibNull.inf
@@ -443,6 +444,7 @@
     <LibraryClasses>
       ResetSystemLib|MdeModulePkg/Library/BaseResetSystemLibNull/BaseResetSystemLibNull.inf
   }
+  EmbeddedPkg/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf
 
   #
   # RISC-V Platform module
@@ -454,7 +456,6 @@
   # RISC-V Core module
   #
   RiscVPkg/Universal/CpuDxe/CpuDxe.inf
-  RiscVPkg/Universal/RealTimeClockRuntimeDxe/RealTimeClockRuntimeDxe.inf
   RiscVPkg/Universal/SmbiosDxe/RiscVSmbiosDxe.inf
 
   MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
