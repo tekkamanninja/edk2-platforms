@@ -1,9 +1,6 @@
 /** @file
   UART Serial Port library functions
 
-  Copyright (c) 2019, Hewlett Packard Enterprise Development LP. All rights reserved.<BR>
-  Copyright (c) 2006 - 2016, Intel Corporation. All rights reserved.<BR>
-
   SPDX-License-Identifier: BSD-2-Clause-Patent
 
 **/
@@ -11,7 +8,7 @@
 #include <Base.h>
 #include <Library/IoLib.h>
 #include <Library/SerialPortLib.h>
-#include <sbi_utils/serial/sifive-uart.h>
+#include <include/sbi_utils/serial/sifive-uart.h> // Reference to header file in opensbi
 
 #define REG32(p, i) ((p)[(i) >> 2])
 
