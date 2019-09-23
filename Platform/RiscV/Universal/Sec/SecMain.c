@@ -11,12 +11,12 @@
 #include <Library/SerialPortLib.h>
 #include <Library/PrintLib.h>
 #include <Library/DebugPrintErrorLevelLib.h>
-#include <sbi/sbi_hart.h>
-#include <sbi/sbi_scratch.h>
-#include <sbi/sbi_platform.h>
-#include <sbi/sbi.h>
-#include <sbi/sbi_init.h>
-#include <sbi/SbiFirmwareContext.h>
+#include <sbi/sbi_hart.h>     // Reference to header file in opensbi
+#include <sbi/sbi_scratch.h>  // Reference to header file in opensbi
+#include <sbi/sbi_platform.h> // Reference to header file in opensbi
+#include <sbi/sbi.h>          // Reference to header file in Include/sbi
+#include <sbi/sbi_init.h>     // Reference to header file in opensbi
+#include <sbi/SbiFirmwareContext.h> // Reference to header file in Include/sbi
 
 int HartsIn = 0;
 
