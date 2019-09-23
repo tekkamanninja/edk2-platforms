@@ -30,16 +30,18 @@
   MdePkg/MdePkg.dec
   MdeModulePkg/MdeModulePkg.dec
   RiscVPkg/RiscVPkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
   Platform/RiscV/RiscVPlatformPkg.dec
 
 [LibraryClasses]
   BaseLib
-  DebugLib
   BaseMemoryLib
-  PcdLib
+  DebugLib
   DebugAgentLib
-  RiscVCpuLib
+  FdtLib
+  PcdLib
   PrintLib
+  RiscVCpuLib
 
 [FixedPcd]
   gUefiRiscVPlatformPkgTokenSpaceGuid.PcdHartCount
