@@ -11,7 +11,7 @@
 ##
 
 [Defines]
-  INF_VERSION                    = 0x00010005
+  INF_VERSION                    = 0x0001001b
   BASE_NAME                      = PlatformPei
   FILE_GUID                      = 222c386d-5abc-4fb4-b124-fbb82488acf4
   MODULE_TYPE                    = PEIM

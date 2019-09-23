@@ -8,7 +8,7 @@
 ##
 
 [Defines]
-  INF_VERSION                    = 0x00010005
+  INF_VERSION                    = 0x0001001b
   BASE_NAME                      = Timer
   MODULE_UNI_FILE                = Timer.uni
   FILE_GUID                      = 3F75D495-23FF-46B6-9D19-0DECC8A4EA91

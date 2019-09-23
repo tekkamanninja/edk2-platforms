@@ -10,7 +10,7 @@
 ##
 
 [Defines]
-  INF_VERSION                    = 0x00010005
+  INF_VERSION                    = 0x0001001b
   BASE_NAME                      = OpenSbiPlatformLib
   FILE_GUID                      = 9424ED54-EBDA-4FB5-8FF6-8291B07BB151
   MODULE_TYPE                    = SEC
