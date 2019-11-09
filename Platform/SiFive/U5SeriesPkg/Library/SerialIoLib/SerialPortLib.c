@@ -24,7 +24,7 @@
 //---------------------------------------------
 
 #define UART_BAUDRATE  115200
-#define SYS_CLK        100000000
+#define SYS_CLK        1000000000
 
 BOOLEAN Initiated = FALSE;
 
