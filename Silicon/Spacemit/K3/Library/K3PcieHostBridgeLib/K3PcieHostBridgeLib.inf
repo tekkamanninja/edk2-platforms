@@ -55,6 +55,7 @@
   gSpacemitTokenSpaceGuid.PcdDwPcieControllerConfigTable
   gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable
   gSpacemitK3TokenSpaceGuid.PcdPcieHostEnableMask
+  gSpacemitK3TokenSpaceGuid.PcdPcieHostPinState
 
 [Depex]
   gSpacemitSiliconPinCtrlProtocolGuid AND

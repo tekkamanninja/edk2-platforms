@@ -1,0 +1,45 @@
+## @file
+#  SpacemiT K3 eFuse DXE driver.
+#
+#  Reads eFuse bank7 shadow registers and exposes them via
+#  SPACEMIT_EFUSE_PROTOCOL.
+#
+#  Copyright (c) 2026, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = SpacemitK3EfuseDxe
+  FILE_GUID                      = 7a2c4d3e-b1f6-4a89-9c0d-5e8f12a34b67
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = EfuseDxeEntryPoint
+
+[Sources]
+  EfuseDxe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+  Silicon/Spacemit/K3/K3.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  IoLib
+  PcdLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+  MemoryManagementLib
+
+[Protocols]
+  gSpacemitEfuseProtocolGuid        ## PRODUCES
+
+[FixedPcd]
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitEfuseBankBase
+
+[Depex]
+  TRUE

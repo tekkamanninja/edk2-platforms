@@ -76,6 +76,7 @@ TlvInfoFindTlv (
  * Show TLV information
  */
 EFI_STATUS
+EFIAPI
 ShowTlvInfo (
   IN  SPACEMIT_TLV_INFO_PROTOCOL  *This
   );
@@ -84,6 +85,7 @@ ShowTlvInfo (
  * Get TLV information by type code
  */
 EFI_STATUS
+EFIAPI
 GetTlvInfo (
   IN  SPACEMIT_TLV_INFO_PROTOCOL  *This,
   IN  UINT8                       Tid,
@@ -95,6 +97,7 @@ GetTlvInfo (
  * Set TLV information by type code
  */
 EFI_STATUS
+EFIAPI
 SetTlvInfo (
   IN  SPACEMIT_TLV_INFO_PROTOCOL  *This,
   IN UINT8                        Tid,
@@ -105,6 +108,7 @@ SetTlvInfo (
  * Flush TLV information to EEPROM
  */
 EFI_STATUS
+EFIAPI
 FlushTlvInfo (
   IN  SPACEMIT_TLV_INFO_PROTOCOL  *This
   );
@@ -113,6 +117,7 @@ FlushTlvInfo (
  * Clear TLV information
  */
 EFI_STATUS
+EFIAPI
 ClearTlvInfo (
   IN  SPACEMIT_TLV_INFO_PROTOCOL  *This
   );
@@ -121,6 +126,7 @@ ClearTlvInfo (
  * Dump TLV information to buffer
  */
 EFI_STATUS
+EFIAPI
 DumpTlvInfo (
   IN  SPACEMIT_TLV_INFO_PROTOCOL  *This,
   OUT UINT8                       *Buffer,

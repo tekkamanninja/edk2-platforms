@@ -1154,6 +1154,9 @@ SocDpPhySetPixelClk (
   INTN                  Ret;
 
   DEBUG ((DEBUG_INFO, "Setting Pixel PLL to %d kHz\n", PixelClkKhz));
+  // fix the issue of 371370KHz which is a pixel clock for 2880x1920@60FPS eDP, Rounding it to 372000KHz works.
+  if (PixelClkKhz == 371370)
+    PixelClkKhz = 372000;
 
   SocDpRegWriteRange (Phy, SOC_DPTX_ANA_PREPLL_DP_EN, 1);
   SocDpRegWriteRange (Phy, SOC_DPTX_ANA_PREPLL_HDMI_EN, 0);

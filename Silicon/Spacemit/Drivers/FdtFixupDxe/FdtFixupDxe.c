@@ -31,7 +31,7 @@
 //
 // Handle for the fdt fixup Protocol
 //
-STATIC EFI_HANDLE               mHandle               = NULL;
+STATIC EFI_HANDLE              mHandle                = NULL;
 STATIC PLATFORM_INFO_PROTOCOL  *mPlatformInfoProtocol = NULL;
 
 STATIC
@@ -130,13 +130,13 @@ UpdateSerialNumber (
 
   SetMem (Serial, sizeof (Serial), 0);
   if (EFI_ERROR (
-                 mPlatformInfoProtocol->GetPlatformInfo (
-                                                         mPlatformInfoProtocol,
-                                                         "serial#",
-                                                         Serial,
-                                                         sizeof (Serial)
-                                                         )
-                 ))
+        mPlatformInfoProtocol->GetPlatformInfo (
+                                 mPlatformInfoProtocol,
+                                 "serial#",
+                                 Serial,
+                                 sizeof (Serial)
+                                 )
+        ))
   {
     P = (CHAR8 *)PcdGetPtr (PcdDefaultSerialNumber);
   }
@@ -158,13 +158,13 @@ UpdatePartNumber (
 
   SetMem (Part, sizeof (Part), 0);
   if (EFI_ERROR (
-                 mPlatformInfoProtocol->GetPlatformInfo (
-                                                         mPlatformInfoProtocol,
-                                                         "part#",
-                                                         Part,
-                                                         sizeof (Part)
-                                                         )
-                 ))
+        mPlatformInfoProtocol->GetPlatformInfo (
+                                 mPlatformInfoProtocol,
+                                 "part#",
+                                 Part,
+                                 sizeof (Part)
+                                 )
+        ))
   {
     P = (CHAR8 *)PcdGetPtr (PcdDefaultPartNumber);
   }
@@ -181,66 +181,69 @@ UpdateMacAddr (
   IN VOID  *Fdt
   )
 {
-  INT32        I, J, Prop, Offset, NodeOff;
+  INT32        I, N, Offset, NodeOff, AliasesOff;
   UINT8        Mac[6], MacTemp[6];
-  CONST CHAR8  *Name, *Path;
+  CONST CHAR8  *Name, *Path, *Status;
   BOOLEAN      MacValid = FALSE;
+  CHAR8        EtherPaths[8][128];
+  INT32        PathCount = 0;
 
   if (!EFI_ERROR (
-                  mPlatformInfoProtocol->GetPlatformInfo (
-                                                          mPlatformInfoProtocol,
-                                                          "ethaddr",
-                                                          Mac,
-                                                          sizeof (Mac)
-                                                          )
-                  ))
+         mPlatformInfoProtocol->GetPlatformInfo (
+                                  mPlatformInfoProtocol,
+                                  "ethaddr",
+                                  Mac,
+                                  sizeof (Mac)
+                                  )
+         ))
   {
     MacValid = TRUE;
   }
 
-  // enumerate all aliases
-  for (Prop = 0; ; Prop++) {
-    // refresh the offset while dtb may have been modified
-    Offset = fdt_first_property_offset (Fdt, fdt_path_offset (Fdt, "/aliases"));
-    // select the correct property
-    for (I = 0; I < Prop; I++) {
-      Offset = fdt_next_property_offset (Fdt, Offset);
+  //
+  // First pass: collect ethernet alias paths without modifying the DTB so
+  // that property offsets remain valid throughout the walk (O(n) instead of
+  // the previous O(n²) restart-from-head approach).
+  //
+  AliasesOff = fdt_path_offset (Fdt, "/aliases");
+  if (AliasesOff >= 0) {
+    for (Offset = fdt_first_property_offset (Fdt, AliasesOff);
+         Offset >= 0 && PathCount < (INT32)ARRAY_SIZE (EtherPaths);
+         Offset = fdt_next_property_offset (Fdt, Offset))
+    {
+      Path = fdt_getprop_by_offset (Fdt, Offset, &Name, NULL);
+      if (AsciiStrnCmp (Name, "ethernet", 8) == 0) {
+        AsciiStrCpyS (EtherPaths[PathCount], sizeof (EtherPaths[PathCount]), Path);
+        PathCount++;
+      }
+    }
+  }
+
+  //
+  // Second pass: assign MACs.  fdt_path_offset() re-resolves each path after
+  // any DTB modifications made by fdt_setprop(), so saved string paths remain
+  // valid even as the blob shifts.
+  //
+  for (I = 0, N = 0; I < PathCount; I++) {
+    NodeOff = fdt_path_offset (Fdt, EtherPaths[I]);
+    if (NodeOff < 0) {
+      continue;
     }
 
-    if (Offset < 0) {
-      break;
+    Status = fdt_getprop (Fdt, NodeOff, "status", NULL);
+    if (Status && !AsciiStrCmp (Status, "disabled")) {
+      continue;
     }
 
-    Path = fdt_getprop_by_offset (Fdt, Offset, &Name, NULL);
-    if (0 == AsciiStrnCmp (Name, "ethernet", 8)) {
-      I = -1;
-      if (0 == AsciiStrCmp (Name, "ethernet")) {
-        I = 0;
-      } else {
-        J = AsciiStrLen (Name) - 1;
-        if ((J > 0) && IS_DIGIT (Name[J])) {
-          I = Name[J] - '0';
-        }
-      }
-
-      if ((I < 0) || (I > 8)) {
-        continue;
-      }
-
-      if (MacValid) {
-        IncreaseEthaddr (Mac, MacTemp, I);
-      } else {
-        GenerateRandomEthaddr (MacTemp);
-      }
-
-      NodeOff = fdt_path_offset (Fdt, Path);
-      if (NodeOff < 0) {
-        continue;
-      }
-
-      fdt_setprop (Fdt, NodeOff, "mac-address", MacTemp, 6);
-      fdt_setprop (Fdt, NodeOff, "local-mac-address", MacTemp, 6);
+    if (MacValid) {
+      IncreaseEthaddr (Mac, MacTemp, N);
+      N++;
+    } else {
+      GenerateRandomEthaddr (MacTemp);
     }
+
+    fdt_setprop (Fdt, NodeOff, "mac-address", MacTemp, 6);
+    fdt_setprop (Fdt, NodeOff, "local-mac-address", MacTemp, 6);
   }
 }
 
@@ -305,6 +308,54 @@ UpdatePlatformInfo (
   IN VOID  *Fdt
   )
 {
+  EFI_STATUS  Status;
+  UINT32      Value;
+  INT32       NodeOff, Ret;
+
+  Value  = 0;
+  Status = mPlatformInfoProtocol->GetPlatformInfo (
+                                    mPlatformInfoProtocol,
+                                    "wafer_id",
+                                    &Value,
+                                    sizeof (Value)
+                                    );
+  if (!EFI_ERROR (Status)) {
+    Ret = fdt_setprop_u32 (Fdt, 0, "wafer-id", Value);
+    if (Ret < 0) {
+      DEBUG ((DEBUG_WARN, "Set wafer-id fail(%a).\n", fdt_strerror (Ret)));
+    }
+  }
+
+  Value  = 0;
+  Status = mPlatformInfoProtocol->GetPlatformInfo (
+                                    mPlatformInfoProtocol,
+                                    "product_id",
+                                    &Value,
+                                    sizeof (Value)
+                                    );
+  if (!EFI_ERROR (Status)) {
+    Ret = fdt_setprop_u32 (Fdt, 0, "product-id", Value);
+    if (Ret < 0) {
+      DEBUG ((DEBUG_WARN, "Set product-id fail(%a).\n", fdt_strerror (Ret)));
+    }
+  }
+
+  Value  = 0;
+  Status = mPlatformInfoProtocol->GetPlatformInfo (
+                                    mPlatformInfoProtocol,
+                                    "svt_dro",
+                                    &Value,
+                                    sizeof (Value)
+                                    );
+  if (!EFI_ERROR (Status)) {
+    NodeOff = fdt_path_offset (Fdt, "/cpus");
+    if (NodeOff >= 0) {
+      Ret = fdt_setprop_u32 (Fdt, NodeOff, "svt-dro", Value);
+      if (Ret < 0) {
+        DEBUG ((DEBUG_WARN, "Set svt-dro fail(%a).\n", fdt_strerror (Ret)));
+      }
+    }
+  }
 }
 
 STATIC
@@ -335,7 +386,8 @@ EFIFdtUpdate (
 }
 
 STATIC
-EFI_STATUS EFIAPI
+EFI_STATUS
+EFIAPI
 EfiDeviceTreeFixup (
   IN EFI_DT_FIXUP_PROTOCOL  *This,
   IN OUT VOID               *Dtb,
@@ -403,19 +455,19 @@ FdtFixupInitialize (
 
   ASSERT_PROTOCOL_ALREADY_INSTALLED (NULL, &gEfiFdtFixupProtocolGuid);
   Status = gBS->InstallMultipleProtocolInterfaces (
-                                                   &mHandle,
-                                                   &gEfiFdtFixupProtocolGuid,
-                                                   &mFdtFixup,
-                                                   NULL
-                                                   );
+                  &mHandle,
+                  &gEfiFdtFixupProtocolGuid,
+                  &mFdtFixup,
+                  NULL
+                  );
   ASSERT_EFI_ERROR (Status);
 
   // Locate the PlatformInfo protocol
   Status = gBS->LocateProtocol (
-                                &gSpacemitPlatformInfoProtocolGuid,
-                                NULL,
-                                (void **)&mPlatformInfoProtocol
-                                );
+                  &gSpacemitPlatformInfoProtocolGuid,
+                  NULL,
+                  (void **)&mPlatformInfoProtocol
+                  );
   ASSERT_EFI_ERROR (Status);
 
   return Status;

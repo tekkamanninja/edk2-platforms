@@ -33,7 +33,6 @@
 
 **/
 EFI_STATUS
-EFIAPI
 SdhciHcRwMmio (
   IN     EFI_PCI_IO_PROTOCOL   *PciIo,
   IN     UINT8                 BarIndex,
@@ -65,7 +64,6 @@ SdhciHcRwMmio (
 
 **/
 EFI_STATUS
-EFIAPI
 SdhciHcOrMmio (
   IN  EFI_PCI_IO_PROTOCOL      *PciIo,
   IN  UINT8                    BarIndex,
@@ -96,7 +94,6 @@ SdhciHcOrMmio (
 
 **/
 EFI_STATUS
-EFIAPI
 SdhciHcAndMmio (
   IN  EFI_PCI_IO_PROTOCOL      *PciIo,
   IN  UINT8                    BarIndex,
@@ -131,7 +128,6 @@ SdhciHcAndMmio (
 
 **/
 EFI_STATUS
-EFIAPI
 SdhciHcAndOrMmio (
   IN  EFI_PCI_IO_PROTOCOL      *PciIo,
   IN  UINT8                    BarIndex,
@@ -164,7 +160,6 @@ SdhciHcAndOrMmio (
 
 **/
 EFI_STATUS
-EFIAPI
 SdhciHcWaitMmioSet (
   IN  EFI_PCI_IO_PROTOCOL       *PciIo,
   IN  UINT8                     BarIndex,

@@ -59,7 +59,6 @@ STATIC CHAR16 *mPciHostBridgeLibAcpiAddressSpaceTypeStr[] = {
 **/
 STATIC
 VOID
-EFIAPI
 PrintRootBridgeResources (
   IN PCI_ROOT_BRIDGE_RESOURCE_CONFIG_ARRAY  *RootBridges
   )

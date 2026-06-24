@@ -32,31 +32,41 @@ typedef struct {
   UINT8    Pull;
 } PIN_CONFIG;
 
-typedef EFI_STATUS (EFIAPI *PINCTRL_SET_PIN_CONFIG)(
+typedef
+EFI_STATUS
+(EFIAPI *PINCTRL_SET_PIN_CONFIG) (
   IN SILICON_PINCTRL_PROTOCOL  *This,
   IN UINT32                    PinId,
   IN CONST PIN_CONFIG          *PinConfig
   );
 
-typedef EFI_STATUS (EFIAPI *PINCTRL_SET_PIN_GROUP_BY_NAME)(
+typedef
+EFI_STATUS
+(EFIAPI *PINCTRL_SET_PIN_GROUP_BY_NAME) (
   IN SILICON_PINCTRL_PROTOCOL  *This,
   IN CONST CHAR8               *GroupName
   );
 
-typedef EFI_STATUS (EFIAPI *PINCTRL_REGISTER_CONTROLLER)(
+typedef
+EFI_STATUS
+(EFIAPI *PINCTRL_REGISTER_CONTROLLER) (
   IN SILICON_PINCTRL_PROTOCOL  *This,
   IN EFI_HANDLE                ControllerHandle,
   IN CONST CHAR8               *ControllerType,
   IN UINT32                    ControllerId
   );
 
-typedef EFI_STATUS (EFIAPI *PINCTRL_APPLY_STATE)(
+typedef
+EFI_STATUS
+(EFIAPI *PINCTRL_APPLY_STATE) (
   IN SILICON_PINCTRL_PROTOCOL         *This,
   IN CONST SILICON_PINCTRL_DEVICE_KEY *DeviceKey,
   IN CONST CHAR8                      *StateName OPTIONAL
   );
 
-typedef EFI_STATUS (EFIAPI *PINCTRL_APPLY_STATE_BY_ID)(
+typedef
+EFI_STATUS
+(EFIAPI *PINCTRL_APPLY_STATE_BY_ID) (
   IN SILICON_PINCTRL_PROTOCOL  *This,
   IN CONST CHAR8               *ControllerType,
   IN UINT32                    ControllerId,
@@ -64,7 +74,9 @@ typedef EFI_STATUS (EFIAPI *PINCTRL_APPLY_STATE_BY_ID)(
   IN CONST CHAR8               *StateName OPTIONAL
   );
 
-typedef EFI_STATUS (EFIAPI *PINCTRL_GET_ACTIVE_STATE)(
+typedef
+EFI_STATUS
+(EFIAPI *PINCTRL_GET_ACTIVE_STATE) (
   IN SILICON_PINCTRL_PROTOCOL         *This,
   IN CONST SILICON_PINCTRL_DEVICE_KEY *DeviceKey,
   OUT CONST CHAR8                     **StateName

@@ -52,7 +52,6 @@ MONTH_DESCRIPTION  mMonthDescription[] = {
 
 **/
 UINT8
-EFIAPI
 Base2ToByteWith64KUnit (
   IN  UINTN  Value
   )
@@ -70,7 +69,6 @@ Base2ToByteWith64KUnit (
   @param[out] *Time Pointer to the EFI_TIME structure to fill in.
 **/
 VOID
-EFIAPI
 GetReleaseTime (
   OUT EFI_TIME  *Time
   )
@@ -100,7 +98,6 @@ GetReleaseTime (
   @return The release date as a UTF-16 string
 **/
 CHAR16 *
-EFIAPI
 GetBiosReleaseDate (
   VOID
   )

@@ -28,7 +28,6 @@
 **/
 STATIC
 EFI_STATUS
-EFIAPI
 MapRegAlignmentInternal (
   IN EFI_PHYSICAL_ADDRESS   Base,
   IN UINT64                 Size,
@@ -77,7 +76,6 @@ MapRegAlignmentInternal (
 **/
 STATIC
 EFI_STATUS
-EFIAPI
 MapRegToGcdMmioSpaceInternal (
   IN EFI_PHYSICAL_ADDRESS   Base,
   IN UINT64                 Size,

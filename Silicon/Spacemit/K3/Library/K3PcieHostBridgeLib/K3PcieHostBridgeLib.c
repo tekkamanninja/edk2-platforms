@@ -157,7 +157,7 @@ STATIC
 VOID
 PcieApplyDefaultPinctrlState (
   IN UINT32        PortId,
-  IN CONST CHAR8   *FunctionName
+  IN CONST CHAR8   *StateName
   )
 {
   EFI_STATUS                Status;
@@ -183,8 +183,8 @@ PcieApplyDefaultPinctrlState (
                      PinCtrl,
                      "pcie",
                      PortId,
-                     FunctionName,
-                     PINCTRL_STATE_DEFAULT
+                     NULL,
+                     StateName
                      );
   if (EFI_ERROR (Status)) {
     if (Status == EFI_NOT_FOUND) {
@@ -719,7 +719,7 @@ PcieHwInit (
   }
 
   /* Configure PCIe pins using board map (controller="pcie", id=PortId, state="default"). */
-  PcieApplyDefaultPinctrlState (PortId, "default");
+  PcieApplyDefaultPinctrlState (PortId, PcdGetPtr (PcdPcieHostPinState));
 
   PcieEnableClock (Port, PortId);
 

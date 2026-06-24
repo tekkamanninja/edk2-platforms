@@ -31,7 +31,6 @@
 **/
 STATIC
 VOID
-EFIAPI
 EliminateExtraSpacesInternal (
   IN CHAR16   *String
   )
@@ -63,7 +62,6 @@ EliminateExtraSpacesInternal (
 **/
 STATIC
 VOID
-EFIAPI
 AppendContextInternal (
   IN OUT UINTN              *DiskCount,
   IN OUT DISK_INFO_CONTEXT  **DiskInfo,
@@ -141,7 +139,6 @@ SortContextInternal (
 **/
 STATIC
 EFI_STATUS
-EFIAPI
 AhciGetContextInternal (
   IN  EFI_HANDLE          Handle,
   OUT DISK_INFO_CONTEXT   **Context
@@ -257,7 +254,6 @@ FreeExit:
 **/
 STATIC
 EFI_STATUS
-EFIAPI
 NvmeGetContextInternal (
   IN  EFI_HANDLE          Handle,
   OUT DISK_INFO_CONTEXT   **Context

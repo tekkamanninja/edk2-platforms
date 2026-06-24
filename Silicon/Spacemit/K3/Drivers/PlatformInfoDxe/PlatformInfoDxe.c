@@ -15,6 +15,7 @@
 #include <Library/HobLib.h>
 #include <Library/BaseMemoryLib.h>
 #include <Library/MemoryManagementLib.h>
+#include <Protocol/SpacemitEfuse.h>
 
 #include "PlatformInfoDxe.h"
 
@@ -124,20 +125,48 @@ GetMemLayoutInfo (
   return Status;
 }
 
+STATIC
+EFI_STATUS
+ReadInfoFromEfuse (
+  IN PLATFORM_INFO_PROTOCOL  *This,
+  IN CHAR8                   *Name,
+  OUT VOID                   *Info,
+  IN UINTN                   MaxSize
+  )
+{
+  EFI_STATUS               Status;
+  SPACEMIT_EFUSE_PROTOCOL  *Efuse;
+
+  Status = gBS->LocateProtocol (
+                  &gSpacemitEfuseProtocolGuid,
+                  NULL,
+                  (VOID **)&Efuse
+                  );
+  if (EFI_ERROR (Status)) {
+    DEBUG ((DEBUG_ERROR, "%a: Failed to locate eFuse protocol: %r\n", __func__, Status));
+    return Status;
+  }
+
+  return Efuse->Read (Efuse, Name, Info, (UINT32)MaxSize);
+}
+
 STATIC CONST SPACEMIT_PLATFROM_INFO  PlatformInfo[] = {
-  { "product_name",     ReadInfoFromTLV,  NULL },
-  { "serial#",          ReadInfoFromTLV,  NULL },
-  { "part#",            ReadInfoFromTLV,  NULL },
-  { "manufacture_date", ReadInfoFromTLV,  NULL },
-  { "manufacturer",     ReadInfoFromTLV,  NULL },
-  { "ddr_type",         ReadInfoFromTLV,  NULL },
-  { "ddr_cs_num",       ReadInfoFromTLV,  NULL },
-  { "ddr_datarate",     ReadInfoFromTLV,  NULL },
-  { "ddr_tx_odt",       ReadInfoFromTLV,  NULL },
-  { "ethaddr",          ReadInfoFromTLV,  NULL },
-  { "wifi_addr",        ReadInfoFromTLV,  NULL },
-  { "bt_addr",          ReadInfoFromTLV,  NULL },
-  { "mem_layout",       GetMemLayoutInfo, NULL }
+  { "product_name",     ReadInfoFromTLV,   NULL },
+  { "serial#",          ReadInfoFromTLV,   NULL },
+  { "part#",            ReadInfoFromTLV,   NULL },
+  { "manufacture_date", ReadInfoFromTLV,   NULL },
+  { "manufacturer",     ReadInfoFromTLV,   NULL },
+  { "ddr_type",         ReadInfoFromTLV,   NULL },
+  { "ddr_cs_num",       ReadInfoFromTLV,   NULL },
+  { "ddr_datarate",     ReadInfoFromTLV,   NULL },
+  { "ddr_tx_odt",       ReadInfoFromTLV,   NULL },
+  { "ethaddr",          ReadInfoFromTLV,   NULL },
+  { "wifi_addr",        ReadInfoFromTLV,   NULL },
+  { "bt_addr",          ReadInfoFromTLV,   NULL },
+  { "mem_layout",       GetMemLayoutInfo,  NULL },
+  { "wafer_id",         ReadInfoFromEfuse, NULL },
+  { "product_id",       ReadInfoFromEfuse, NULL },
+  { "svt_dro",          ReadInfoFromEfuse, NULL }
 };
 
 STATIC

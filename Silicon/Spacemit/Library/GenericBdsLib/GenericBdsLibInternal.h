@@ -37,7 +37,6 @@
 
 **/
 UINT16
-EFIAPI
 InternalGetBBSTypeFromFileSysPath (
   IN CHAR16                   *UsbPathTxt,
   IN CHAR16                   *FileSysPathTxt,
@@ -53,7 +52,6 @@ InternalGetBBSTypeFromFileSysPath (
 
 **/
 UINT16
-EFIAPI
 InternalGetBBSTypeFromUsbPath (
   IN CONST EFI_DEVICE_PATH_PROTOCOL   *UsbPath
   );
@@ -68,7 +66,6 @@ InternalGetBBSTypeFromUsbPath (
 
 **/
 UINT16
-EFIAPI
 InternalGetBBSTypeFromMessagingDevicePath (
   IN EFI_DEVICE_PATH_PROTOCOL *DevicePath,
   IN EFI_DEVICE_PATH_PROTOCOL *Node
@@ -83,27 +80,8 @@ InternalGetBBSTypeFromMessagingDevicePath (
 
 **/
 UINT16
-EFIAPI
 InternalGetBBSTypeByDevicePath (
   IN EFI_DEVICE_PATH_PROTOCOL *DevicePath
-  );
-
-/**
-  Check whether there is a instance in BlockIoDevicePath, which contain multi device path
-  instances, has the same partition node with HardDriveDevicePath device path
-
-  @param  BlockIoDevicePath      Multi device path instances which need to check
-  @param  HardDriveDevicePath    A device path which starts with a hard drive media
-                                 device path.
-
-  @retval TRUE                   There is a matched device path instance.
-  @retval FALSE                  There is no matched device path instance.
-
-**/
-BOOLEAN
-BmMatchPartitionDevicePathNode (
-  IN  EFI_DEVICE_PATH_PROTOCOL  *BlockIoDevicePath,
-  IN  HARDDRIVE_DEVICE_PATH     *HardDriveDevicePath
   );
 
 #endif // __GENERIC_BDS_LIB_INTERNAL_H__

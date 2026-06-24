@@ -45,8 +45,11 @@
   gSpacemitSpiFlashProtocolGuid
   gSpacemitSpiMasterProtocolGuid
 
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdSpiFlashSoftReset
+
 [Depex]
   gSpacemitSpiMasterProtocolGuid
 
-[Pcd]
-  gSpacemitTokenSpaceGuid.PcdSpiFlashSoftReset
+[BuildOptions]
+  GCC:*_*_*_CC_FLAGS = -Wno-unused-function

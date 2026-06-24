@@ -451,6 +451,7 @@ SetBytes (
  * Get TLV info
  */
 EFI_STATUS
+EFIAPI
 GetTlvInfo (
   IN  SPACEMIT_TLV_INFO_PROTOCOL  *This,
   IN  UINT8                       Tid,
@@ -497,6 +498,7 @@ GetTlvInfo (
  * Set TLV info
  */
 EFI_STATUS
+EFIAPI
 SetTlvInfo (
   IN  SPACEMIT_TLV_INFO_PROTOCOL  *This,
   IN UINT8                        Tid,
@@ -538,6 +540,7 @@ SetTlvInfo (
  * Write TLV info to EEPROM
  */
 EFI_STATUS
+EFIAPI
 FlushTlvInfo (
   IN  SPACEMIT_TLV_INFO_PROTOCOL  *This
   )
@@ -576,6 +579,7 @@ FlushTlvInfo (
  * Clear TLV info
  */
 EFI_STATUS
+EFIAPI
 ClearTlvInfo (
   IN  SPACEMIT_TLV_INFO_PROTOCOL  *This
   )
@@ -599,6 +603,7 @@ ClearTlvInfo (
  * Show TLV info
  */
 EFI_STATUS
+EFIAPI
 ShowTlvInfo (
   IN  SPACEMIT_TLV_INFO_PROTOCOL  *This
   )
@@ -708,6 +713,7 @@ ShowTlvInfo (
  * Dump TLV info to buffer
  */
 EFI_STATUS
+EFIAPI
 DumpTlvInfo (
   IN  SPACEMIT_TLV_INFO_PROTOCOL  *This,
   OUT UINT8                       *Buffer,
@@ -749,7 +755,6 @@ DumpTlvInfo (
  * Implement AsciiStrChr function
  */
 CHAR8 *
-EFIAPI
 AsciiStrChr (
   IN CONST CHAR8  *String,
   IN CHAR8        Char

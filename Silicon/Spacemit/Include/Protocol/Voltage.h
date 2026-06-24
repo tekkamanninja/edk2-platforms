@@ -27,8 +27,9 @@ typedef struct _SILICON_VOLTAGE_PROTOCOL SILICON_VOLTAGE_PROTOCOL;
  * @retval EFI_INVALID_PARAMETER One or more parameters are invalid
  * @retval EFI_NOT_FOUND         Specified voltage domain not found
  */
-typedef EFI_STATUS
-(*LIST_VOLTAGE)(
+typedef
+EFI_STATUS
+(EFIAPI *LIST_VOLTAGE) (
   IN SILICON_VOLTAGE_PROTOCOL  *This,
   IN CONST CHAR8               *DomainName
   );
@@ -45,8 +46,9 @@ typedef EFI_STATUS
  * @retval EFI_NOT_FOUND         Specified voltage domain not found
  * @retval Others                Error occurred during RPMI message handling
  */
-typedef EFI_STATUS
-(*ENABLE_VOLTAGE)(
+typedef
+EFI_STATUS
+(EFIAPI *ENABLE_VOLTAGE) (
   IN SILICON_VOLTAGE_PROTOCOL  *This,
   IN CONST CHAR8               *DomainName
   );
@@ -63,8 +65,9 @@ typedef EFI_STATUS
  * @retval EFI_NOT_FOUND         Specified voltage domain not found
  * @retval Others                Error occurred during RPMI message handling
  */
-typedef EFI_STATUS
-(*DISABLE_VOLTAGE)(
+typedef
+EFI_STATUS
+(EFIAPI *DISABLE_VOLTAGE) (
   IN SILICON_VOLTAGE_PROTOCOL  *This,
   IN CONST CHAR8               *DomainName
   );
@@ -82,8 +85,9 @@ typedef EFI_STATUS
  * @retval EFI_NOT_FOUND          Specified voltage domain not found
  * @retval Others                 Error occurred during RPMI message handling
  */
-typedef EFI_STATUS
-(*IS_ENABLED)(
+typedef
+EFI_STATUS
+(EFIAPI *IS_ENABLED) (
   IN SILICON_VOLTAGE_PROTOCOL  *This,
   IN CONST CHAR8               *DomainName,
   IN BOOLEAN                   *Enabled
@@ -100,8 +104,9 @@ typedef EFI_STATUS
  * @retval EFI_INVALID_PARAMETER If This or DomainName is NULL
  * @retval Other                 Other errors that may occur during voltage setting
  **/
-typedef EFI_STATUS
-(*SET_VOLTAGE)(
+typedef
+EFI_STATUS
+(EFIAPI *SET_VOLTAGE) (
   IN SILICON_VOLTAGE_PROTOCOL  *This,
   IN CONST CHAR8               *DomainName,
   IN UINTN                     VoltageMicroVolt
@@ -118,8 +123,9 @@ typedef EFI_STATUS
  * @retval EFI_INVALID_PARAMETER  One or more parameters are invalid
  * @retval Others                 Error occurred during RPMI message handling
  */
-typedef EFI_STATUS
-(*GET_VOLTAGE)(
+typedef
+EFI_STATUS
+(EFIAPI *GET_VOLTAGE) (
   IN SILICON_VOLTAGE_PROTOCOL  *This,
   IN CONST CHAR8               *DomainName,
   OUT UINTN                    *VoltageMicroVolt

@@ -994,8 +994,22 @@ RpmiClockChannelDeinit (
   ClockCtrlInstance->MpxyRpmiChan = NULL;
 }
 
+/**
+  Get the state of the clock specified by ClockName.
+
+  @param[in]  This        A pointer to the SILICON_CLOCKCTRL_PROTOCOL instance.
+  @param[in]  ClockName   A pointer to Null-terminated ASCII string to specify
+                          the clock name.
+  @param[out] ClockState  A pointer to the clock state.
+
+  @retval EFI_SUCCESS             Succeed.
+  @retval EFI_INVALID_PARAMETER   One of the input parameters is invalid.
+  @retval Other                   Other failures.
+
+**/
 STATIC
 EFI_STATUS
+EFIAPI
 ClkGetState (
   IN  SILICON_CLOCKCTRL_PROTOCOL  *This,
   IN  CONST CHAR8                 *ClockName,
@@ -1031,8 +1045,21 @@ ClkGetState (
   return EFI_SUCCESS;
 }
 
+/**
+  Set the state of the clock specified by ClockName.
+
+  @param[in]  This        A pointer to the SILICON_CLOCKCTRL_PROTOCOL instance.
+  @param[in]  ClockName   A pointer to Null-terminated ASCII string to specify
+                          the clock name.
+  @param[in]  ClockState  Clock state to be set.
+
+  @retval EFI_SUCCESS         Succeed.
+  @retval Other               Other failures.
+
+**/
 STATIC
 EFI_STATUS
+EFIAPI
 ClkSetState (
   IN  SILICON_CLOCKCTRL_PROTOCOL  *This,
   IN  CONST CHAR8                 *ClockName,
@@ -1064,8 +1091,22 @@ ClkSetState (
   return EFI_SUCCESS;
 }
 
+/**
+  Get the current rate of the clock specified by ClockName.
+
+  @param[in]  This        A pointer to the SILICON_CLOCKCTRL_PROTOCOL instance.
+  @param[in]  ClockName   A pointer to Null-terminated ASCII string to specify
+                          the clock name.
+  @param[out] ClockRate   A pointer to the current clock rate in Hz.
+
+  @retval EFI_SUCCESS             Succeed.
+  @retval EFI_INVALID_PARAMETER   One of the input parameters is invalid.
+  @retval Other                   Other failures.
+
+**/
 STATIC
 EFI_STATUS
+EFIAPI
 ClkGetRate (
   IN  SILICON_CLOCKCTRL_PROTOCOL  *This,
   IN  CONST CHAR8                 *ClockName,
@@ -1098,8 +1139,21 @@ ClkGetRate (
   return EFI_SUCCESS;
 }
 
+/**
+  Set the rate of the clock specified by ClockName.
+
+  @param[in]  This        A pointer to the SILICON_CLOCKCTRL_PROTOCOL instance.
+  @param[in]  ClockName   A pointer to Null-terminated ASCII string to specify
+                          the clock name.
+  @param[in]  ClockRate   The clock rate to set in Hz.
+
+  @retval EFI_SUCCESS         Succeed.
+  @retval Other               Other failures.
+
+**/
 STATIC
 EFI_STATUS
+EFIAPI
 ClkSetRate (
   IN  SILICON_CLOCKCTRL_PROTOCOL  *This,
   IN  CONST CHAR8                 *ClockName,
@@ -1130,8 +1184,21 @@ ClkSetRate (
   return EFI_SUCCESS;
 }
 
+/**
+  Get the maximum supported rate of the clock specified by ClockName.
+
+  @param[in]  This        A pointer to the SILICON_CLOCKCTRL_PROTOCOL instance.
+  @param[in]  ClockName   A pointer to Null-terminated ASCII string to specify
+                          the clock name.
+  @param  ClockRate       A pointer to the maximum clock rate in Hz.
+
+  @retval EFI_SUCCESS         Succeed.
+  @retval Other               Other failures.
+
+**/
 STATIC
 EFI_STATUS
+EFIAPI
 ClkGetMaxRate (
   IN  SILICON_CLOCKCTRL_PROTOCOL  *This,
   IN  CONST CHAR8                 *ClockName,
@@ -1155,8 +1222,21 @@ ClkGetMaxRate (
   return EFI_SUCCESS;
 }
 
+/**
+  Get the minimum supported rate of the clock specified by ClockName.
+
+  @param[in]  This        A pointer to the SILICON_CLOCKCTRL_PROTOCOL instance.
+  @param[in]  ClockName   A pointer to Null-terminated ASCII string to specify
+                          the clock name.
+  @param[out] ClockRate   A pointer to the minimum clock rate in Hz.
+
+  @retval EFI_SUCCESS         Succeed.
+  @retval Other               Other failures.
+
+**/
 STATIC
 EFI_STATUS
+EFIAPI
 ClkGetMinRate (
   IN  SILICON_CLOCKCTRL_PROTOCOL  *This,
   IN  CONST CHAR8                 *ClockName,
@@ -1192,6 +1272,7 @@ ClkGetMinRate (
 
 **/
 EFI_STATUS
+EFIAPI
 RiscvSbiMpxyRpmiClockDxeInitialize (
   IN EFI_HANDLE         ImageHandle,
   IN EFI_SYSTEM_TABLE   *SystemTable

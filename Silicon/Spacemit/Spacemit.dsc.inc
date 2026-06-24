@@ -383,8 +383,7 @@
   MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf {
     <LibraryClasses>
 !if $(EMU_VARIABLE_NV_MODE_ENABLE) != TRUE
-      # Add a dependency on gSpacemitFlashFvbServiceReadyProtocolGuid
-      NULL|Silicon/Spacemit/Library/PlatformFlashFvbReadyProtocolLib/PlatformFlashFvbReadyProtocolLib.inf
+      NULL|EmbeddedPkg/Library/NvVarStoreFormattedLib/NvVarStoreFormattedLib.inf
 !endif
       NULL|MdeModulePkg/Library/VarCheckUefiLib/VarCheckUefiLib.inf
       # do not use unaligned CopyMem () on the UEFI varstore NOR flash region

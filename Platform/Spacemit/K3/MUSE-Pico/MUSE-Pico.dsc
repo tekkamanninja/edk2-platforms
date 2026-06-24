@@ -106,6 +106,8 @@
   gSpacemitK3TokenSpaceGuid.PcdUsbHostHsOnlyMask|0x17
   # deb1: enable PCIe Port A + Port B (runtime split by GPIO detection)
   gSpacemitK3TokenSpaceGuid.PcdPcieHostEnableMask|0x03
+  # pico-itx / deb1: set pin to low Voltage(1.8v)
+  gSpacemitK3TokenSpaceGuid.PcdPcieHostPinState|"lowvoltage"
 
   # LCD configuration: eDP@pingroup0 or DP@pingroup1
   gSpacemitTokenSpaceGuid.PcdDisplayConnectorsPriority.DisplayOrderCount|2
@@ -125,6 +127,8 @@
   gSpacemitK3TokenSpaceGuid.PcdUsbHostHsOnlyMask|0x01
   # com260: enable PCIe Port A + Port D (bit 0,3)
   gSpacemitK3TokenSpaceGuid.PcdPcieHostEnableMask|0x09
+  # com260: set pin to default Voltage(3.3v)
+  gSpacemitK3TokenSpaceGuid.PcdPcieHostPinState|"default"
 
   # LCD configuration: DP@pingroup2, algin data size with UINT32
   # EDK2 does NOT support field-access syntax overlay; therefore, use a flat structure.
@@ -253,6 +257,9 @@
   gSpacemitK3TokenSpaceGuid.PcdUfsPhyMngBase|0x1b00
   gSpacemitK3TokenSpaceGuid.PcdUfsAtopBase|0x1c00
   gSpacemitK3TokenSpaceGuid.PcdUfsRefClkFreq|0
+
+  # eFuse bank
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitEfuseBankBase|0xF0702800
 
   # NETWORK GMAC
   gSpacemitK3TokenSpaceGuid.PcdDwEqosControllerConfigs.Num|2
@@ -669,6 +676,9 @@
 
   # platform info
   Silicon/Spacemit/K3/Drivers/PlatformInfoDxe/PlatformInfoDxe.inf
+
+  # eFuse read protocol
+  Silicon/Spacemit/K3/Drivers/EfuseDxe/EfuseDxe.inf
 
   #
   # Spinor flash support

@@ -60,7 +60,6 @@
   gSpacemitTlvInfoProtocolGuid = { 0x8F7D7B1E, 0x0E1C, 0x4C98, { 0xB1, 0x2E, 0x4E, 0xCF, 0xB3, 0x35, 0x60, 0x80 } }
   gEfiFdtFixupProtocolGuid = {0xe617d64c, 0xfe08, 0x46da, {0xf4, 0xdc, 0xbb, 0xd5, 0x87, 0x0c, 0x73, 0x00}}
   gRiscVIoMmuIsInitedProtocolGuid = {0x1a6b78b0, 0xe251, 0x409e, {0x89, 0x90, 0xdf, 0x3d, 0x85, 0xbb, 0xec, 0xe5}}
-  gSpacemitFlashFvbServiceReadyProtocolGuid = { 0x91C58F77, 0xFFDB, 0x0563, { 0x76, 0x8E, 0x43, 0xB4, 0x75, 0x1A, 0x71, 0xBB }}
   gSpacemitPlatformInfoProtocolGuid = { 0x6b157401, 0xaaf0, 0x4b6f, { 0x81, 0xb5, 0x3e, 0x15, 0x4a, 0x56, 0xf5, 0xd9 }}
   gSpacemitPlatformDataProtocolGuid = {0x73a4a188, 0xa060, 0x4548,{ 0xba, 0x7d, 0xcb, 0x38, 0x82, 0xaf, 0x4b, 0x71 }}
   gSpacemitSystemFirmwareDescriptorReadyProtocolGuid = { 0xBDDD2839, 0xC6C4, 0x40DE, { 0x83, 0xFE, 0xB9, 0xC6, 0x0F, 0x3A, 0xEE, 0x16 }}
@@ -77,6 +76,8 @@
   gSpacemitNetworkStackEnabledProtocolGuid = { 0x481E6968, 0x07EA, 0xE780, { 0x2B, 0xF6, 0x31, 0xC4, 0x9A, 0xCD, 0x71, 0xEB }}
 
   gDwPcieEcamModeConfigDoneProtocolGuid = {0xebc460e5, 0xf237, 0x43a1, {0x92, 0xad, 0x2c, 0x79, 0x27, 0xe5, 0xb8, 0x95}}
+
+  gSpacemitEfuseProtocolGuid = { 0xb3e7a2d1, 0x4f05, 0x4c8e, { 0xa9, 0x1c, 0x3d, 0x7f, 0x82, 0x56, 0xe0, 0xb4 }}
 
 [PcdsFeatureFlag]     # TokenNumber style is 0x0XXXXXXX, e.g. 0x00000001, 0x00000002, ...
   gSpacemitTokenSpaceGuid.PcdRamDiskSupported|FALSE|BOOLEAN|0x00000001
@@ -144,8 +145,13 @@
       Silicon/Spacemit/SpacemitPkg.dec
   }
 
-  gSpacemitTokenSpaceGuid.PcdSpacemitEnvSize|0|UINT32|0x10000037
-  gSpacemitTokenSpaceGuid.PcdSpacemitEnvOffset|0|UINT32|0x10000038
+  ## This PCD defines the size of ENV variables. It may be overridden in the .fdf file.
+  # @Prompt ENV variables size.
+  gSpacemitTokenSpaceGuid.PcdEnvSize|0|UINT32|0x10000037
+
+  ## The offset address of ENV variables in Spi Flash. It may be overridden in the .fdf file.
+  # @Prompt ENV variables offset address in Spi Flash.
+  gSpacemitTokenSpaceGuid.PcdFlashEnvOffset|0|UINT32|0x10000038
 
   gSpacemitTokenSpaceGuid.PcdDxeFvBase|0x0|UINT64|0x10000039
   gSpacemitTokenSpaceGuid.PcdDxeFvSize|0x0|UINT64|0x10000040
@@ -407,6 +413,11 @@
   #   2: ECAM supported by hardware
   #
   gSpacemitTokenSpaceGuid.PcdDwPcieEcamMode|0|UINT8|0x3000001D
+
+  ## This PCD defines the base address of reserved memory range for EMU ENV variables.
+  #  A non-ZERO value indicates a valid range reserved with size given by PcdEmuEnvSize.
+  # @Prompt Base address of reserved memory range for EMU ENV variables.
+  gSpacemitTokenSpaceGuid.PcdEmuEnvReserved|0|UINT64|0x3000001E
 
   # SDCARD/SDIO/EMMC configuration
   gSpacemitTokenSpaceGuid.PcdSdCardIsEnabled|FALSE|BOOLEAN|0x30001000

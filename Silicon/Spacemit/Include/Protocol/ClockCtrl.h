@@ -26,29 +26,83 @@ typedef enum {
   ENABLE_CLOCK  = 1
 } _SPACEMIT_SILICON_CLOCK_OP;
 
-typedef EFI_STATUS
-(*GET_CLOCK_STATE) (
+/**
+  Get the state of the clock specified by ClockName.
+
+  @param[in]  This        A pointer to the SILICON_CLOCKCTRL_PROTOCOL instance.
+  @param[in]  ClockName   A pointer to Null-terminated ASCII string to specify
+                          the clock name.
+  @param[out] ClockState  A pointer to the clock state.
+
+  @retval EFI_SUCCESS             Succeed.
+  @retval EFI_INVALID_PARAMETER   One of the input parameters is invalid.
+  @retval Other                   Other failures.
+
+**/
+typedef
+EFI_STATUS
+(EFIAPI *GET_CLOCK_STATE) (
   IN SILICON_CLOCKCTRL_PROTOCOL  *This,
   IN  CONST CHAR8                *ClockName,
   OUT UINT32                     *ClockState
   );
 
-typedef EFI_STATUS
-(*SET_CLOCK_STATE) (
+/**
+  Set the state of the clock specified by ClockName.
+
+  @param[in]  This        A pointer to the SILICON_CLOCKCTRL_PROTOCOL instance.
+  @param[in]  ClockName   A pointer to Null-terminated ASCII string to specify
+                          the clock name.
+  @param[in]  ClockState  Clock state to be set.
+
+  @retval EFI_SUCCESS         Succeed.
+  @retval Other               Other failures.
+
+**/
+typedef
+EFI_STATUS
+(EFIAPI *SET_CLOCK_STATE) (
   IN SILICON_CLOCKCTRL_PROTOCOL  *This,
   IN  CONST CHAR8                *ClockName,
   IN  UINT32                     ClockState
   );
 
-typedef EFI_STATUS
-(*GET_CLOCK_RATE) (
+/**
+  Get the rate of the clock specified by ClockName.
+
+  @param[in]  This        A pointer to the SILICON_CLOCKCTRL_PROTOCOL instance.
+  @param[in]  ClockName   A pointer to Null-terminated ASCII string to specify
+                          the clock name.
+  @param[out] ClockRate   A pointer to the clock rate in Hz.
+
+  @retval EFI_SUCCESS             Succeed.
+  @retval EFI_INVALID_PARAMETER   One of the input parameters is invalid.
+  @retval Other                   Other failures.
+
+**/
+typedef
+EFI_STATUS
+(EFIAPI *GET_CLOCK_RATE) (
   IN SILICON_CLOCKCTRL_PROTOCOL  *This,
   IN  CONST CHAR8                *ClockName,
   OUT UINT64                     *ClockRate
   );
 
-typedef EFI_STATUS
-(*SET_CLOCK_RATE) (
+/**
+  Set the rate of the clock specified by ClockName.
+
+  @param[in]  This        A pointer to the SILICON_CLOCKCTRL_PROTOCOL instance.
+  @param[in]  ClockName   A pointer to Null-terminated ASCII string to specify
+                          the clock name.
+  @param[in]  ClockRate   The clock rate to set in Hz.
+
+  @retval EFI_SUCCESS         Succeed.
+  @retval Other               Other failures.
+
+**/
+typedef
+EFI_STATUS
+(EFIAPI *SET_CLOCK_RATE) (
   IN SILICON_CLOCKCTRL_PROTOCOL  *This,
   IN  CONST CHAR8                *ClockName,
   OUT UINT64                     ClockRate

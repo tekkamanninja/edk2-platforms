@@ -20,7 +20,6 @@
 
 **/
 UINT16
-EFIAPI
 InternalGetBBSTypeFromFileSysPath (
   IN CHAR16                   *UsbPathTxt,
   IN CHAR16                   *FileSysPathTxt,
@@ -58,7 +57,6 @@ InternalGetBBSTypeFromFileSysPath (
 
 **/
 UINT16
-EFIAPI
 InternalGetBBSTypeFromUsbPath (
   IN CONST EFI_DEVICE_PATH_PROTOCOL   *UsbPath
   )
@@ -126,7 +124,6 @@ InternalGetBBSTypeFromUsbPath (
 
 **/
 UINT16
-EFIAPI
 InternalGetBBSTypeFromMessagingDevicePath (
   IN EFI_DEVICE_PATH_PROTOCOL *DevicePath,
   IN EFI_DEVICE_PATH_PROTOCOL *Node
@@ -184,7 +181,6 @@ InternalGetBBSTypeFromMessagingDevicePath (
 
 **/
 UINT16
-EFIAPI
 InternalGetBBSTypeByDevicePath (
   IN EFI_DEVICE_PATH_PROTOCOL *DevicePath
   )

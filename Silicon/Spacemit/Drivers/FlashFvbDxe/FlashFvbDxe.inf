@@ -44,6 +44,7 @@
   gEfiSystemNvDataFvGuid
   gEfiVariableGuid
   gEfiAuthenticatedVariableGuid
+  gEdkiiNvVarStoreFormattedGuid
 
 [Protocols]
   gEfiBlockIoProtocolGuid
@@ -53,7 +54,6 @@
   gEfiVariableWriteArchProtocolGuid
   gEfiCapsuleArchProtocolGuid
   gSpacemitSpiFlashProtocolGuid
-  gSpacemitFlashFvbServiceReadyProtocolGuid
 
 [Pcd.common]
   gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableBase64

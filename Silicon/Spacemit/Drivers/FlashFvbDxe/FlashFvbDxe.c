@@ -828,7 +828,6 @@ EXIT:
 }
 
 EFI_STATUS
-EFIAPI
 FvbInitialize (
   IN FV_FLASH_INSTANCE  *Instance
   )
@@ -939,14 +938,17 @@ FlashCreateInstance (
       return Status;
     }
 
+    //
+    // The driver implementing the variable service can now be dispatched.
+    //
     Status = gBS->InstallProtocolInterface (
-                                          &Instance->Handle,
-                                          &gSpacemitFlashFvbServiceReadyProtocolGuid,
-                                          EFI_NATIVE_INTERFACE,
-                                          NULL
-                                          );
+                            &gImageHandle,
+                            &gEdkiiNvVarStoreFormattedGuid,
+                            EFI_NATIVE_INTERFACE,
+                            NULL
+                            );
     if (EFI_ERROR (Status)) {
-      DEBUG ((DEBUG_ERROR, "%a(): Install FvbService ready protocol failed.\n", __func__));
+      DEBUG ((DEBUG_ERROR, "%a(): Install NvVartStore formatted protocol failed.\n", __func__));
     }
   } else {
     Instance->Initialized = TRUE;

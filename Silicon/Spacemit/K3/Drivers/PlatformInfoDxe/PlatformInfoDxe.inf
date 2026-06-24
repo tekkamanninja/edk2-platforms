@@ -35,6 +35,7 @@
 
 [Protocols]
   gSpacemitTlvInfoProtocolGuid          ## CONSUMES
+  gSpacemitEfuseProtocolGuid            ## CONSUMES
   gSpacemitPlatformInfoProtocolGuid     ## PRODUCES
 
 [Guids]
@@ -42,4 +43,4 @@
 [Pcd]
 
 [Depex]
-  gSpacemitTlvInfoProtocolGuid
+  gSpacemitTlvInfoProtocolGuid AND gSpacemitEfuseProtocolGuid

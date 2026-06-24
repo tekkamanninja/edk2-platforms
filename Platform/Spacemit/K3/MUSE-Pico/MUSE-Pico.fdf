@@ -214,6 +214,9 @@ INF Silicon/Spacemit/K3/Drivers/Ctf2301Dxe/Ctf2301Dxe.inf
 # platform info
 INF Silicon/Spacemit/K3/Drivers/PlatformInfoDxe/PlatformInfoDxe.inf
 
+# eFuse read protocol
+INF Silicon/Spacemit/K3/Drivers/EfuseDxe/EfuseDxe.inf
+
 # GPIO support
 #
 INF Silicon/Spacemit/K3/Drivers/GPIO/GpioDxe.inf

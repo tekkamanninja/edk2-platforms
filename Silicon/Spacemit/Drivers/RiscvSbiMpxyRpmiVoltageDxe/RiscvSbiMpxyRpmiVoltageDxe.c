@@ -76,6 +76,7 @@ GetVoltageDomainId (
  */
 STATIC
 EFI_STATUS
+EFIAPI
 ListVoltage (
   IN SILICON_VOLTAGE_PROTOCOL  *This,
   IN CONST CHAR8               *DomainName
@@ -148,6 +149,7 @@ ListVoltage (
  */
 STATIC
 EFI_STATUS
+EFIAPI
 Enable (
   IN SILICON_VOLTAGE_PROTOCOL  *This,
   IN CONST CHAR8               *DomainName
@@ -217,6 +219,7 @@ Enable (
  */
 STATIC
 EFI_STATUS
+EFIAPI
 Disable (
   IN SILICON_VOLTAGE_PROTOCOL  *This,
   IN CONST CHAR8               *DomainName
@@ -287,6 +290,7 @@ Disable (
  */
 STATIC
 EFI_STATUS
+EFIAPI
 IsEnabled (
   IN SILICON_VOLTAGE_PROTOCOL  *This,
   IN CONST CHAR8               *DomainName,
@@ -414,6 +418,7 @@ GetSupportVoltage (
  **/
 STATIC
 EFI_STATUS
+EFIAPI
 SetVoltage (
   IN SILICON_VOLTAGE_PROTOCOL  *This,
   IN CONST CHAR8               *DomainName,
@@ -497,6 +502,7 @@ SetVoltage (
  */
 STATIC
 EFI_STATUS
+EFIAPI
 GetVoltage (
   IN SILICON_VOLTAGE_PROTOCOL  *This,
   IN CONST CHAR8               *DomainName,

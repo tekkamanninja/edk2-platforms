@@ -18,31 +18,41 @@ STATIC CONST PINCTRL_DEVICE_DESC  mBoardDevices[] = {
   PC_DEVICE ("pcie", 0,
     PC_FUNCTION ("default",
       PC_STATE (PINCTRL_STATE_DEFAULT,
-        PC_GROUP ("pcie0_1_grp", 0, TRUE, 3300))
+        PC_GROUP ("pcie0_1_grp", 0, TRUE, 3300)),
+      PC_STATE ("lowvoltage",
+        PC_GROUP ("pcie0_1_grp", 0, TRUE, 1800)),
     )),
 
   PC_DEVICE ("pcie", 1,
     PC_FUNCTION ("default",
       PC_STATE (PINCTRL_STATE_DEFAULT,
-        PC_GROUP ("pcie1_1_grp", 0, TRUE, 3300))
+        PC_GROUP ("pcie1_1_grp", 0, TRUE, 3300)),
+      PC_STATE ("lowvoltage",
+        PC_GROUP ("pcie1_1_grp", 0, TRUE, 1800))
     )),
 
   PC_DEVICE ("pcie", 2,
     PC_FUNCTION ("default",
       PC_STATE (PINCTRL_STATE_DEFAULT,
-        PC_GROUP ("pcie2_1_grp", 0, TRUE, 3300))
+        PC_GROUP ("pcie2_1_grp", 0, TRUE, 3300)),
+      PC_STATE ("lowvoltage",
+        PC_GROUP ("pcie2_1_grp", 0, TRUE, 1800))
     )),
 
   PC_DEVICE ("pcie", 3,
     PC_FUNCTION ("default",
       PC_STATE (PINCTRL_STATE_DEFAULT,
-        PC_GROUP ("pcie3_0_grp", 0, TRUE, 3300))
+        PC_GROUP ("pcie3_0_grp", 0, TRUE, 3300)),
+      PC_STATE ("lowvoltage",
+        PC_GROUP ("pcie3_0_grp", 0, TRUE, 1800))
     )),
 
   PC_DEVICE ("pcie", 4,
     PC_FUNCTION ("default",
       PC_STATE (PINCTRL_STATE_DEFAULT,
-        PC_GROUP ("pcie4_1_grp", 0, TRUE, 3300))
+        PC_GROUP ("pcie4_1_grp", 0, TRUE, 3300)),
+      PC_STATE ("lowvoltage",
+        PC_GROUP ("pcie4_1_grp", 0, TRUE, 1800))
     )),
 
   PC_DEVICE ("sdhci", 0,

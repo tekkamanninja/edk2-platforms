@@ -127,7 +127,6 @@ FlashBlockIoFlushBlocks (
 //
 
 EFI_STATUS
-EFIAPI
 FvbInitialize (
   IN FV_FLASH_INSTANCE  *Instance
   );

@@ -80,6 +80,7 @@ Rand (
 **/
 STATIC
 EFI_STATUS
+EFIAPI
 PseudoRngGetInfo (
   IN      EFI_RNG_PROTOCOL   *This,
   IN OUT  UINTN              *RNGAlgorithmListSize,
@@ -154,6 +155,7 @@ GetTrngData (
 **/
 STATIC
 EFI_STATUS
+EFIAPI
 PseudoRngGetRNG (
   IN EFI_RNG_PROTOCOL   *This,
   IN EFI_RNG_ALGORITHM  *RNGAlgorithm,
