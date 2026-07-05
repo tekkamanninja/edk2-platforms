@@ -17,8 +17,10 @@
 [Sources]
   Fadt.aslc
   Madt.aslc
+  Pptt.aslc
   Rhct.aslc
   Spcr.aslc
+  Mcfg.aslc
   Dsdt/Dsdt.asl
 
 [Packages]

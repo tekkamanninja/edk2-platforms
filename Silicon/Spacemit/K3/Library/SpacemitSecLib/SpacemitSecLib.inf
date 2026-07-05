@@ -24,6 +24,11 @@
 [Packages]
   MdePkg/MdePkg.dec
   Silicon/Spacemit/SpacemitPkg.dec
+  Silicon/Spacemit/K3/K3.dec
 
 [LibraryClasses]
+  HobLib
   SpacemitSecHelperLib
+
+[FixedPcd]
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitAPMURegBase  ## CONSUMES

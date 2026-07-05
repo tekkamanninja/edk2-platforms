@@ -1,0 +1,44 @@
+/** @file
+  Processor Properties Topology Table (PPTT)
+
+  Copyright (c) 2026, SpacemiT Co., Ltd. All rights reserved.<BR>
+
+  SPDX-License-Identifier: BSD-2-Clause-Patent
+**/
+
+#define NUM_PPTT_PACKAGES 1
+
+#include <IndustryStandard/Acpi.h>
+#include "K3PlatformAcpi.h"
+#include "Pptt.h"
+
+STATIC EFI_ACPI_PROCESSOR_PROPERTIES_TOPOLOGY_TABLE Pptt = {
+  // EFI_ACPI_6_6_PROCESSOR_PROPERTIES_TOPOLOGY_TABLE_HEADER Header;
+  {
+    // EFI_ACPI_DESCRIPTION_HEADER Header;
+    ACPI_HEADER (
+      EFI_ACPI_6_6_PROCESSOR_PROPERTIES_TOPOLOGY_TABLE_STRUCTURE_SIGNATURE,
+      EFI_ACPI_PROCESSOR_PROPERTIES_TOPOLOGY_TABLE,
+      EFI_ACPI_6_6_PROCESSOR_PROPERTIES_TOPOLOGY_TABLE_REVISION
+    )
+  },
+
+  // PPTT_PACKAGE Packages[NUM_PPTT_PACKAGES];
+  {
+    // Packages[0]
+    {
+      // EFI_ACPI_6_6_PPTT_STRUCTURE_PROCESSOR Package;
+      PPTT_PACKAGE_PROC_STRUCT_INIT (0),
+
+      // PPTT_CLUSTER Clusters[2];
+      {
+        PPTT_CLUSTER_INIT (X100, 0, 0),
+        PPTT_CLUSTER_INIT (X100, 0, 1),
+      }
+    },
+  },
+};
+
+// Reference the table being generated to prevent the optimizer
+// from removing the data structure from the executable
+VOID* CONST ReferenceAcpiTable = &Pptt;

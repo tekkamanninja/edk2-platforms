@@ -12,4 +12,6 @@ DefinitionBlock ("DsdtTable.aml", "DSDT", 2, "SPMT  ", "K3", EFI_ACPI_OEM_REVISI
   include ("Cpu.asl")
   include ("Uart.asl")
   include ("Aplic.asl")
+  include ("Pci.asl")
+  include ("Usb.asl")
 }

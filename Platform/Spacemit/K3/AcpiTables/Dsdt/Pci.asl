@@ -48,88 +48,72 @@
 
 Scope (_SB)
 {
-  // PCIe host bridge 1
-  Device (PCI1) {
+  Device (PCI0) {
     Name (_HID, "PNP0A08")    // PCI Express Root Bridge
     Name (_CID, "PNP0A03")    // Compatible PCI Root Bridge
-    Name (_UID, 0)      // Unique ID
-    Name (_SEG, 1)      // PCI Segment Group Number
-    Name (_BBN, 0x00)   // PCI Base Bus Number
-    Name (_CCA, 0)      // Cache Coherency Attribute
+    Name (_UID, 0)            // Unique ID
+    Name (_SEG, 0)            // PCI Segment Group Number
+    Name (_BBN, 0x00)         // PCI Base Bus Number
+    Name (_CCA, 0)            // Cache Coherency Attribute
 
     Name (_CRS, ResourceTemplate () {
-      WordBusNumber (   // Bus numbers assigned to this root
-        ResourceProducer,
-        MinFixed,
-        MaxFixed,
-        PosDecode,
-        0x0,          // AddressGranularity, should be 2^n - 1
-        0x00,         // AddressMinimum
-        0xff,         // AddressMaximum
-        0x00,         // AddressTranslation
-        0x100         // RangeLength
+      WordBusNumber (
+        ResourceProducer, MinFixed, MaxFixed, PosDecode,
+        0x0,    // AddressGranularity
+        0x00,   // AddressMinimum
+        0xff,   // AddressMaximum
+        0x00,   // AddressTranslation
+        0x100   // RangeLength
       )
 
       // RISC-V BRS Spec v0.0.2 AML_020 requires that the IO space window
       // SHOULD NOT (NOT RECOMMENDED) be defined.
-#if 1
-      QWordIO (   // IO space
-        ResourceProducer,
-        MinFixed,
-        MaxFixed,
-        PosDecode,
-        EntireRange,
-        0x0,            // AddressGranularity, should be 2^n - 1
-        0x9F100000,     // AddressMinimum
-        0x9F10FFFF,     // AddressMaximum
-        0,              // AddressTranslation
-        0x10000         // RangeLength
-      )
-#endif
 
-      QWordMemory (   // non-prefetchable memory space
-        ResourceProducer,
-        PosDecode,
-        MinFixed,
-        MaxFixed,
-        NonCacheable,
-        ReadWrite,
-        0x0,               // AddressGranularity, should be 2^n - 1
-        0x90000000,        // AddressMinimum
-        0x9EFFFFFF,        // AddressMaximum
-        0,                 // AddressTranslation
-        0xF000000          // RangeLength
+      QWordMemory (    // non-prefetchable memory
+        ResourceProducer, PosDecode, MinFixed, MaxFixed,
+        NonCacheable, ReadWrite,
+        0x00000000,           // AddressGranularity, should be 2^n - 1
+        0x0010000000,         // PCI AddressMinimum
+        0x007FFFFFFF,         // PCI AddressMaximum
+        0x1100000000,         // AddressTranslation
+        0x0070000000          // RangeLength
+      )
+
+      QWordMemory (    // 64-bit prefetchable memory:
+        ResourceProducer, PosDecode, MinFixed, MaxFixed,
+        Prefetchable, ReadWrite,
+        0x0,                   // AddressGranularity, should be 2^n - 1
+        0x0000001800000000,    // AddressMinimum
+        0x00000018FFFFFFFF,    // AddressMaximum
+        0x0000000000000000,    // AddressTranslation
+        0x0000000100000000     // RangeLength
       )
     })
 
     PCI_OSC ()
 
-    // Reserved memory for ECAM region in MCFG
-    Device (RES1) {
-      Name (_HID, "PNP0C02")  // PNP Motherboard Resource
+    // Reserve the ECAM region declared in MCFG.
+    Device (RES0) {
+      Name (_HID, "PNP0C02")
       Name (_CRS, ResourceTemplate () {
         QWordMemory (
-          ResourceProducer,
-          PosDecode,
-          MinFixed,
-          MaxFixed,
-          NonCacheable,
-          ReadWrite,
-          0x0,            // AddressGranularity, should be 2^n - 1
-          0x9F000000,     // AddressMinimum
-          0x9F0FFFFF,     // AddressMaximum
-          0x00000000,     // AddressTranslation
-          0x100000        // RangeLength
+          ResourceProducer, PosDecode, MinFixed, MaxFixed,
+          NonCacheable, ReadWrite,
+          0x0,                   // AddressGranularity, should be 2^n - 1
+          0x0000001100000000,    // AddressMinimum
+          0x000000110FFFFFFF,    // AddressMaximum
+          0x0000000000000000,    // AddressTranslation
+          0x0000000010000000     // RangeLength
         )
       })
     }
-  } // End of PCI1
+  } // End of PCI0
 
   // PCIe host bridge 0 config space accessed over DBI interfaces.
-  Device (DBI1) {
+  Device (DBI0) {
     Name (_HID, "AMZN0001")
     Name (_CID, "PNP0C02")
-    Name (_UID, 1)  // should be equal to the corresponding PCI segment group number
+    Name (_UID, 0)
     Name (_CRS, ResourceTemplate () {
       QWordMemory (
         ResourceProducer,
@@ -138,12 +122,12 @@ Scope (_SB)
         MaxFixed,
         NonCacheable,
         ReadWrite,
-        0x0,            // AddressGranularity, should be 2^n - 1
-        0xCA400000,     // AddressMinimum
-        0xCA400FFF,     // AddressMaximum
-        0x00000000,     // AddressTranslation
-        0x1000          // RangeLength
+        0x0,           // AddressGranularity, should be 2^n - 1
+        0x80000000,    // AddressMinimum
+        0x80000FFF,    // AddressMaximum
+        0x00000000,    // AddressTranslation
+        0x1000         // RangeLength
       )
     })
-  } // End of DBIB
+  } // End DBI0
 }

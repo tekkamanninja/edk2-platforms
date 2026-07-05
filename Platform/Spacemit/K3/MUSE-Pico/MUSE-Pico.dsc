@@ -419,11 +419,11 @@
   # deb1: port A is wired as x4; if device-detect is active, firmware will split A/B into x2/x2.
   gSpacemitTokenSpaceGuid.PcdDwPcieControllerConfigTable.Data[0].NumLanes|4
   gSpacemitTokenSpaceGuid.PcdDwPcieControllerConfigTable.Data[0].ControllerMode|0
-  gSpacemitTokenSpaceGuid.PcdDwPcieControllerConfigTable.Data[0].CfgShiftModeEnabled|FALSE
+  gSpacemitTokenSpaceGuid.PcdDwPcieControllerConfigTable.Data[0].CfgShiftModeEnabled|TRUE
   # Root Bridge resources
   gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].Segment|0
   gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].ConfigBase|0x1100000000
-  gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].ConfigSize|0x10000
+  gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].ConfigSize|0x10000000
   gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].BusBase|0x0
   gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].BusLimit|0xFF
   # IO Space: Disabled (RISC-V uses MMIO only)
@@ -431,9 +431,9 @@
   gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].Io.PciSize|0x0
   gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].Io.CpuBase|0x0
   # MMIO Space (32-bit non-prefetchable)
-  gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].Mem.PciBase|0x00110000
-  gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].Mem.PciSize|0x7FEF0000
-  gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].Mem.CpuBase|0x1100110000
+  gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].Mem.PciBase|0x10000000
+  gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].Mem.PciSize|0x70000000
+  gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].Mem.CpuBase|0x1110000000
   # MMIO64 Space: Disabled
   gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].Mem64.PciBase|0x0
   gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable.ArrayData[0].Mem64.PciSize|0x0

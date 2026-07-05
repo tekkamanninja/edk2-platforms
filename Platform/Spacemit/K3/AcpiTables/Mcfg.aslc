@@ -1,0 +1,53 @@
+/** @file
+  PCI Express Memory Mapped Configuration Space Base Address Description Table (MCFG)
+
+  Copyright (c) 2026, SpacemiT Co., Ltd. All rights reserved.<BR>
+
+  SPDX-License-Identifier: BSD-2-Clause-Patent
+**/
+
+#include <Library/AcpiLib.h>
+#include <IndustryStandard/Acpi.h>
+#include <IndustryStandard/MemoryMappedConfigurationSpaceAccessTable.h>
+#include "K3PlatformAcpi.h"
+
+#pragma pack(1)
+typedef struct {
+  EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_BASE_ADDRESS_TABLE_HEADER Header;
+  EFI_ACPI_MEMORY_MAPPED_ENHANCED_CONFIGURATION_SPACE_BASE_ADDRESS_ALLOCATION_STRUCTURE Structures[1];
+} EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_BASE_ADDRESS_TABLE;
+#pragma pack()
+
+STATIC EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_BASE_ADDRESS_TABLE Mcfg = {
+  // EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_BASE_ADDRESS_TABLE_HEADER Header;
+  {
+    // EFI_ACPI_DESCRIPTION_HEADER    Header;
+    ACPI_HEADER (
+      EFI_ACPI_6_6_PCI_EXPRESS_MEMORY_MAPPED_CONFIGURATION_SPACE_BASE_ADDRESS_DESCRIPTION_TABLE_SIGNATURE,
+      EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_BASE_ADDRESS_TABLE,
+      EFI_ACPI_MEMORY_MAPPED_CONFIGURATION_SPACE_ACCESS_TABLE_REVISION
+    ),
+    // UINT64                         Reserved;
+    EFI_ACPI_RESERVED_QWORD
+  },
+  // EFI_ACPI_MEMORY_MAPPED_ENHANCED_CONFIGURATION_SPACE_BASE_ADDRESS_ALLOCATION_STRUCTURE Structures[];
+  {
+    // PCIe 0
+    {
+      // UINT64    BaseAddress;
+      0x1100000000,
+      // UINT16    PciSegmentGroupNumber;
+      0,
+      // UINT8     StartBusNumber;
+      0x00,
+      // UINT8     EndBusNumber;
+      0xff,
+      // UINT32    Reserved;
+      EFI_ACPI_RESERVED_DWORD
+    },
+  }
+};
+
+// Reference the table being generated to prevent the optimizer
+// from removing the data structure from the executable
+VOID* CONST ReferenceAcpiTable = &Mcfg;

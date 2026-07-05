@@ -84,12 +84,23 @@
 #endif
 
 Scope (_SB) {
-  CPU_DEVICE (CPU0, 0)
-  CPU_DEVICE (CPU1, 1)
-  CPU_DEVICE (CPU2, 2)
-  CPU_DEVICE (CPU3, 3)
-  CPU_DEVICE (CPU4, 4)
-  CPU_DEVICE (CPU5, 5)
-  CPU_DEVICE (CPU6, 6)
-  CPU_DEVICE (CPU7, 7)
+  Device (CL00) {
+    Name (_HID, "ACPI0010")
+    Name (_UID, 0x02000000)
+
+    CPU_DEVICE (CPU0, 0)
+    CPU_DEVICE (CPU1, 1)
+    CPU_DEVICE (CPU2, 2)
+    CPU_DEVICE (CPU3, 3)
+  } // Device (CL00)
+
+  Device (CL01) {
+    Name (_HID, "ACPI0010")
+    Name (_UID, 0x02000001)
+
+    CPU_DEVICE (CPU4, 4)
+    CPU_DEVICE (CPU5, 5)
+    CPU_DEVICE (CPU6, 6)
+    CPU_DEVICE (CPU7, 7)
+  } // Device (CL01)
 }
