@@ -221,8 +221,15 @@
   # for QSPI controller in K3, Spi flash is map to address below
   gSpacemitTokenSpaceGuid.PcdSFMemMapBaseAddress|0xB8000000
 
-  # Enable error status code reporting
+  # Status code reporting mask:
+  #   bit0 (0x01) = progress codes  -> prints "PROGRESS CODE: V... I..." on serial
+  #   bit1 (0x02) = error codes     -> prints "ERROR: C...:V... I..." on serial
+  #   bit2 (0x04) = debug codes     -> routes DEBUG() output through status code
+!if $(TARGET) == RELEASE
+  gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x02
+!else
   gEfiMdePkgTokenSpaceGuid.PcdReportStatusCodePropertyMask|0x07
+!endif
 
   gSpacemitK3TokenSpaceGuid.PcdSpacemitMPMURegBase|0xd4050000
   gSpacemitK3TokenSpaceGuid.PcdSpacemitAPMURegBase|0xd4282800
