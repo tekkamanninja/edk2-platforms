@@ -448,6 +448,11 @@ struct _EQOS_DEVICE {
 
   UINT32                               TxDescIdx;
   UINT32                               RxDescIdx;
+
+  VOID                                *TxRecycleBuf[EQOS_DESCRIPTORS_TX];
+  UINT32                               TxReclaimIdx;
+  UINT32                               TxPendingCount;
+
   BOOLEAN                              Started;
   BOOLEAN                              RegAccessOk;
 
@@ -579,6 +584,12 @@ VOID
 EqosGetDmaInterruptStatus (
   IN  EQOS_DEVICE        *Eqos,
   OUT UINT32             *InterruptStatus  OPTIONAL
+  );
+
+VOID
+EqosReclaimTxBuffer (
+  IN  EQOS_DEVICE  *Eqos,
+  OUT VOID         **TxBuf  OPTIONAL
   );
 
 EFI_STATUS

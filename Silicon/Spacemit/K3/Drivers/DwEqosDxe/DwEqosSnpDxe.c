@@ -606,9 +606,8 @@ EqosSnpGetStatus (
 
   EqosUpdateLink (Eqos);
 
-  if (TxBuf != NULL) {
-    *TxBuf = NULL;
-  }
+  EqosReclaimTxBuffer (Eqos, TxBuf);
+
   //
   // InterruptStatus is not currently consumed by the upper layers,
   // but we still read it for compliance and to log any detected

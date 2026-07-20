@@ -913,6 +913,50 @@ EqosGetDmaInterruptStatus (
   MmioOr32 (Eqos->Base + EQOS_DMA_CHAN0_STATUS, Mask);
 }
 
+VOID
+EqosReclaimTxBuffer (
+  IN  EQOS_DEVICE  *Eqos,
+  OUT VOID         **TxBuf  OPTIONAL
+  )
+{
+  if (TxBuf != NULL) {
+    EQOS_DESC  *Desc;
+
+    *TxBuf = NULL;
+
+    //
+    // Reclaim the oldest in-flight transmit descriptor(s).  A descriptor is
+    // done once the hardware clears its OWN bit.  Return one recycled Buffer
+    // pointer per call, as required by the UEFI Simple Network Protocol.
+    //
+    // TxPendingCount, not the (TxReclaimIdx != TxDescIdx) modulo comparison,
+    // gates the loop: once EQOS_DESCRIPTORS_TX buffers are outstanding the two
+    // indices wrap back to equal, so the indices alone cannot tell a full ring
+    // (pending == EQOS_DESCRIPTORS_TX) from an empty one (pending == 0).
+    //
+    while (Eqos->TxPendingCount > 0) {
+      Desc = EqosGetDesc (Eqos, Eqos->TxReclaimIdx, FALSE);
+      EqosInvalDescGeneric (Eqos, Desc);
+
+      if ((Desc->Tdes3 & EQOS_TDES3_TX_OWN) != 0) {
+        // Still owned by the hardware; nothing recycled yet.
+        break;
+      }
+
+      *TxBuf = Eqos->TxRecycleBuf[Eqos->TxReclaimIdx];
+      Eqos->TxRecycleBuf[Eqos->TxReclaimIdx] = NULL;
+
+      Eqos->TxReclaimIdx++;
+      Eqos->TxReclaimIdx %= EQOS_DESCRIPTORS_TX;
+      Eqos->TxPendingCount--;
+
+      if (*TxBuf != NULL) {
+        break;
+      }
+    }
+  }
+}
+
 EFI_STATUS
 EFIAPI
 EqosStart (
@@ -947,6 +991,9 @@ EqosStart (
 
   Eqos->TxDescIdx = 0;
   Eqos->RxDescIdx = 0;
+  Eqos->TxReclaimIdx = 0;
+  Eqos->TxPendingCount = 0;
+  ZeroMem (Eqos->TxRecycleBuf, sizeof (Eqos->TxRecycleBuf));
 
   Status = Eqos->Config->PlatOps->DeassertReset (Eqos);
   if (EFI_ERROR (Status)) {
@@ -1353,6 +1400,7 @@ EqosSend (
   EQOS_DESC  *NextDesc;
   UINTN      Addr;
   VOID       *TxBuf;
+  UINT32     DescIdx;
 
   //
   // Preconditions:
@@ -1364,6 +1412,20 @@ EqosSend (
   ASSERT (Eqos->TxBuffer != NULL);
   ASSERT (Buffer != NULL);
   ASSERT (Length <= EQOS_MAX_PACKET_SIZE);
+
+  //
+  // Reject new transmits while every TX descriptor still holds a Buffer that
+  // GetStatus() has not returned to the caller: the recycle ring is full.
+  // This explicit count is required because TxDescIdx and TxReclaimIdx are
+  // both modulo EQOS_DESCRIPTORS_TX, so once the ring fills they compare equal
+  // again and the indices alone cannot distinguish "full" from "empty".  The
+  // descriptor OWN bit cannot substitute either: hardware clears OWN as soon
+  // as a frame is emitted, well before GetStatus() recycles the Buffer, so the
+  // slot would be reused and its saved Buffer pointer overwritten and lost.
+  //
+  if (Eqos->TxPendingCount == EQOS_DESCRIPTORS_TX) {
+    return EFI_NOT_READY;
+  }
 
   Base  = (UINTN)Eqos->Base;
   TxBuf = (VOID *)((UINTN)Eqos->TxBuffer + (Eqos->TxDescIdx * EQOS_MAX_PACKET_SIZE));
@@ -1378,6 +1440,7 @@ EqosSend (
     return EFI_NOT_READY;
   }
 
+  DescIdx = Eqos->TxDescIdx;
   Eqos->TxDescIdx++;
   Eqos->TxDescIdx %= EQOS_DESCRIPTORS_TX;
 
@@ -1395,6 +1458,13 @@ EqosSend (
                   Length;
 
   EqosFlushDescGeneric (Eqos, TxDesc);
+
+  //
+  // Remember the caller's Buffer pointer for this descriptor so that
+  // GetStatus() can hand it back once the hardware clears the OWN bit.
+  //
+  Eqos->TxRecycleBuf[DescIdx] = Buffer;
+  Eqos->TxPendingCount++;
 
   NextDesc = EqosGetDesc (Eqos, Eqos->TxDescIdx, FALSE);
   MmioWrite32 (Base + EQOS_DMA_CHAN0_TX_END_ADDR, (UINT32)(UINTN)NextDesc);
