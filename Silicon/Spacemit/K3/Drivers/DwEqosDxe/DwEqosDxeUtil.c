@@ -919,39 +919,51 @@ EqosReclaimTxBuffer (
   OUT VOID         **TxBuf  OPTIONAL
   )
 {
+  //
+  // Caller must hold Eqos->Lock: this routine mutates the same TxRecycleBuf[],
+  // TxReclaimIdx and TxPendingCount state that EqosSend() writes, and relies on
+  // every pending descriptor holding a non-NULL Buffer pointer (see ASSERT
+  // below).  Both invariants hold only while Tx reclaim and Tx send are
+  // serialised under the lock.
+  //
   if (TxBuf != NULL) {
     EQOS_DESC  *Desc;
 
     *TxBuf = NULL;
 
     //
-    // Reclaim the oldest in-flight transmit descriptor(s).  A descriptor is
-    // done once the hardware clears its OWN bit.  Return one recycled Buffer
-    // pointer per call, as required by the UEFI Simple Network Protocol.
+    // Reclaim the oldest in-flight transmit descriptor, returning one recycled
+    // Buffer pointer per call as required by the UEFI Simple Network Protocol.
+    // A descriptor is done once the hardware clears its OWN bit; if the oldest
+    // pending descriptor is still owned by the hardware, nothing is recycled
+    // this call (and *TxBuf stays NULL).
     //
-    // TxPendingCount, not the (TxReclaimIdx != TxDescIdx) modulo comparison,
-    // gates the loop: once EQOS_DESCRIPTORS_TX buffers are outstanding the two
-    // indices wrap back to equal, so the indices alone cannot tell a full ring
-    // (pending == EQOS_DESCRIPTORS_TX) from an empty one (pending == 0).
+    // TxPendingCount, not a (TxReclaimIdx != TxDescIdx) modulo comparison,
+    // gates this check: once EQOS_DESCRIPTORS_TX buffers are outstanding the
+    // two indices wrap back to equal, so the indices alone cannot tell a full
+    // ring (pending == EQOS_DESCRIPTORS_TX) from an empty one (pending == 0).
     //
-    while (Eqos->TxPendingCount > 0) {
+    if (Eqos->TxPendingCount > 0) {
       Desc = EqosGetDesc (Eqos, Eqos->TxReclaimIdx, FALSE);
       EqosInvalDescGeneric (Eqos, Desc);
 
-      if ((Desc->Tdes3 & EQOS_TDES3_TX_OWN) != 0) {
-        // Still owned by the hardware; nothing recycled yet.
-        break;
-      }
+      if ((Desc->Tdes3 & EQOS_TDES3_TX_OWN) == 0) {
+        *TxBuf = Eqos->TxRecycleBuf[Eqos->TxReclaimIdx];
 
-      *TxBuf = Eqos->TxRecycleBuf[Eqos->TxReclaimIdx];
-      Eqos->TxRecycleBuf[Eqos->TxReclaimIdx] = NULL;
+        //
+        // Under the lock every descriptor counted in TxPendingCount had a
+        // non-NULL Buffer stored by EqosSend() before its count was
+        // incremented, so a completed descriptor always yields a Buffer to
+        // return.  ASSERT it so a violation (e.g. a future caller forgetting
+        // the lock) is caught in debug builds rather than silently dropping
+        // the caller's pointer.
+        //
+        ASSERT (*TxBuf != NULL);
 
-      Eqos->TxReclaimIdx++;
-      Eqos->TxReclaimIdx %= EQOS_DESCRIPTORS_TX;
-      Eqos->TxPendingCount--;
-
-      if (*TxBuf != NULL) {
-        break;
+        Eqos->TxRecycleBuf[Eqos->TxReclaimIdx] = NULL;
+        Eqos->TxReclaimIdx++;
+        Eqos->TxReclaimIdx %= EQOS_DESCRIPTORS_TX;
+        Eqos->TxPendingCount--;
       }
     }
   }
