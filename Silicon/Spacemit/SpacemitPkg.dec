@@ -1,0 +1,419 @@
+## @file
+#  SpacemiT public interfaces
+#
+#  Copyright (c) 2024, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  DEC_SPECIFICATION              = 0x0001001b
+  PACKAGE_NAME                   = SpacemitPkg
+  PACKAGE_GUID                   = 3432C676-499F-43D9-872F-FCA6F0A3BC74
+  PACKAGE_VERSION                = 1.0
+
+[Includes]
+  Include
+
+[LibraryClasses]
+  SpacemitSecLib|Include/Library/SpacemitSecLib.h
+  SpacemitSecHelperLib|Include/Library/SpacemitSecHelperLib.h
+  BoardPinctrlMapLib|Include/Library/BoardPinctrlMapLib.h
+
+[Guids]
+  gSpacemitTokenSpaceGuid = {0x0CC96275, 0x3C36, 0x4A0A, {0xA8, 0x33, 0x53, 0x04, 0xDF, 0x0A, 0xD0, 0x44}}
+  gShellSfHiiGuid = {0x63afaa11, 0xacd9, 0x46e1, {0x8b, 0xff, 0x61, 0x2e, 0xe5, 0xa5, 0x24, 0xc5} }
+  gShellEepromHiiGuid = {0xF75BF9A8, 0x839E, 0xFF56, {0xFE, 0x5A, 0xFF, 0xC5, 0x33, 0xA4, 0xD8, 0x17}}
+  gShellI2cHiiGuid = {0x7B5E10A5, 0xEE0F, 0xEF74, {0x33, 0xAB, 0x2C, 0x2F, 0x41, 0xB7, 0xA6, 0x80}}
+  gShellTlvToolHiiGuid = {0xBBD99B79, 0xFAFD, 0x4732, {0x9A, 0xA5, 0xF4, 0xFA, 0x06, 0x51, 0x0F, 0xFB}}
+  gSpacemitProductVariableGuid = {0x4F556D5E, 0xCF38, 0xCDF8, {0x22, 0x9C, 0x01, 0x78, 0xD0, 0x0F, 0xF0, 0x43}}
+  gEfiSystemFmpCapsuleImageTypeIdGuid = {0x6BEF1C3D, 0x132B, 0x45F0, { 0x84, 0xF8, 0x5D, 0xB2, 0x33, 0x0A, 0x46, 0xF5}}
+  gSpacemitDwGmacNonDiscoverableDeviceGuid = { 0x9783afa9, 0x73db, 0xd04a, { 0xd4, 0xf4, 0xde, 0x24, 0x68, 0x4e, 0x17, 0xad }}
+  gUserAuthenticationGuid = { 0xee24a7f7, 0x606b, 0x4724, { 0xb3, 0xc9, 0xf5, 0xae, 0x4a, 0x3b, 0x81, 0x65}}
+  gSpacemitDwEqosNonDiscoverableDeviceGuid = { 0xaff89c81, 0xb001, 0x40a4, { 0x92, 0x71, 0x97, 0x0a, 0x4f, 0x3c, 0xbf, 0x9e }}
+
+  gSpacemitEnterSetupEventGroupGuid = { 0x9E9EEF39, 0x242B, 0xA021, { 0x46, 0x76, 0x1D, 0x8D, 0x63, 0xE3, 0x70, 0x92 }}
+  gSpacemitExitSetupEventGroupGuid = { 0x03AF194E, 0x589B, 0xD80E, { 0xC6, 0x28, 0xAB, 0x9F, 0x2E, 0x6A, 0xC5, 0xBE }}
+  gSpacemitBdsAfterConsoleEventGroupGuid = { 0x1C2FC375, 0x8C2F, 0x59F6, { 0x46, 0xB9, 0x26, 0x14, 0xA4, 0x51, 0xF4, 0x2D }}
+  gSpacemitFrontPageFormsetGuid = { 0xF04755C0, 0xFF80, 0xE85D, { 0x64, 0x82, 0x8F, 0x59, 0xA8, 0xB0, 0xA1, 0xC6 }}
+  gSpacemitSystemInfoFormsetGuid = { 0xD7BBB239, 0x5251, 0x193C, { 0xFE, 0x51, 0x1D, 0xC8, 0x70, 0x06, 0x61, 0xA9 }}
+  gSpacemitPlatformConfigFormsetGuid = { 0x18FF9043, 0xFDB1, 0x334F, { 0x39, 0x78, 0x17, 0x3A, 0xDC, 0x73, 0x80, 0x42 }}
+  gSpacemitNetworkStackConfigFormsetGuid = { 0x79F36A76, 0x1C56, 0x8E62, { 0x1F, 0xA8, 0xB3, 0x92, 0xC0, 0x25, 0x9E, 0x63 }}
+  gSpacemitBootConfigFormsetGuid = { 0xD922B22F, 0xF52A, 0x7CC8, { 0x6A, 0xB5, 0xE6, 0x6B, 0x0B, 0x47, 0xC7, 0xAB }}
+  gSpacemitAcpiConfigFormsetGuid = { 0xA55E66CE, 0xE6E3, 0x2378, { 0x32, 0xD2, 0xCD, 0xF8, 0x19, 0x66, 0x09, 0x82 }}
+  gSpacemitRenesasUsbFwGuid = { 0x2A4DB5F7, 0x36E3, 0xA69C, { 0xBA, 0xF4, 0x01, 0x36, 0x2D, 0x40, 0x6E, 0x6D }}
+
+  #
+  # Platform Manager menu related GUID
+  #
+  gPlatformManagerFormsetGuid  = {0x2faa29ba, 0x0cf4, 0x4dcf, {0x86, 0x69, 0x4a, 0x44, 0x53, 0x2a, 0x69, 0x4f}}
+  gPlatformManagerEntryEventGuid = {0x9ce8ecb7, 0x0e87, 0x4ae0, {0x90, 0x66, 0xc1, 0x3d, 0xfa, 0xfb, 0x6d, 0x36}}
+  gPlatformManagerExitEventGuid  = {0x8dca33d6, 0x13cb, 0x4272, {0x81, 0x67, 0xe9, 0x97, 0x97, 0x9f, 0xdd, 0x50}}
+
+[Ppis]
+
+[Protocols]
+  gSpacemitSpiMasterProtocolGuid = {0xc37b64e7, 0x7352, 0x4560, {0xac, 0xc2, 0x68, 0xca, 0xdc, 0x13, 0xce, 0x67}}
+  gSpacemitSpiFlashProtocolGuid  = {0x9b70b19b, 0x8a29, 0x4651, {0x90, 0x36, 0x2c, 0x6a, 0xae, 0xae, 0x9e, 0xe7}}
+  gEfiI2cDeviceGuid = { 0xAC5DAA9E, 0x4D7B, 0x4C36, { 0x9E, 0x37, 0x48, 0xC7, 0x9A, 0xC5, 0x31, 0x2D }}
+  gSpacemitEepromProtocolGuid = {0x59fc3843, 0xd8d4, 0x40aa, {0xae, 0x07, 0x38, 0x96, 0x71, 0x38, 0x50, 0x00}}
+  gSpacemitTlvInfoProtocolGuid = { 0x8F7D7B1E, 0x0E1C, 0x4C98, { 0xB1, 0x2E, 0x4E, 0xCF, 0xB3, 0x35, 0x60, 0x80 } }
+  gEfiFdtFixupProtocolGuid = {0xe617d64c, 0xfe08, 0x46da, {0xf4, 0xdc, 0xbb, 0xd5, 0x87, 0x0c, 0x73, 0x00}}
+  gRiscVIoMmuIsInitedProtocolGuid = {0x1a6b78b0, 0xe251, 0x409e, {0x89, 0x90, 0xdf, 0x3d, 0x85, 0xbb, 0xec, 0xe5}}
+  gSpacemitFlashFvbServiceReadyProtocolGuid = { 0x91C58F77, 0xFFDB, 0x0563, { 0x76, 0x8E, 0x43, 0xB4, 0x75, 0x1A, 0x71, 0xBB }}
+  gSpacemitPlatformInfoProtocolGuid = { 0x6b157401, 0xaaf0, 0x4b6f, { 0x81, 0xb5, 0x3e, 0x15, 0x4a, 0x56, 0xf5, 0xd9 }}
+  gSpacemitPlatformDataProtocolGuid = {0x73a4a188, 0xa060, 0x4548,{ 0xba, 0x7d, 0xcb, 0x38, 0x82, 0xaf, 0x4b, 0x71 }}
+  gSpacemitSystemFirmwareDescriptorReadyProtocolGuid = { 0xBDDD2839, 0xC6C4, 0x40DE, { 0x83, 0xFE, 0xB9, 0xC6, 0x0F, 0x3A, 0xEE, 0x16 }}
+
+  gSpacemitSiliconClockCtrlProtocolGuid = { 0x4581D44A, 0x4DC4, 0x43C0, { 0x9A, 0x6E, 0x46, 0x27, 0xB7, 0x24, 0x3D, 0x6C }}
+  gSpacemitSiliconPinCtrlProtocolGuid = { 0xECB8597A, 0xC7A0, 0x4D7F, { 0x85, 0xCB, 0xF3, 0xF1, 0xD4, 0xEA, 0xF3, 0x20 }}
+  gSpacemitSiliconVoltageProtocolGuid = { 0x94715D38, 0x5143, 0x4F8E, { 0x9B, 0xA6, 0x69, 0x38, 0x9C, 0xA5, 0x33, 0xED }}
+
+  gFdtGatherDoneProtocolGuid = {0x5cf3f75f, 0x1d78, 0x448b, {0x86, 0xa7, 0x33, 0x99, 0xab, 0x2d, 0xda, 0x11}}
+
+  gSpacemitLcdConnectorProtocolGuid = {0x7BE180E9, 0x847D, 0x4CAC, {0xB3, 0x22, 0xA7, 0xE4, 0x3C, 0x76, 0x30, 0x66}}
+  gSpacemitLcdCrtcProtocolGuid = {0xBBB5E664, 0x0DE7, 0x4D7E, {0x85, 0xA7, 0x86, 0x93, 0x6C, 0x9D, 0xAB, 0x22}}
+
+  gSpacemitNetworkStackEnabledProtocolGuid = { 0x481E6968, 0x07EA, 0xE780, { 0x2B, 0xF6, 0x31, 0xC4, 0x9A, 0xCD, 0x71, 0xEB }}
+
+  gDwPcieEcamModeConfigDoneProtocolGuid = {0xebc460e5, 0xf237, 0x43a1, {0x92, 0xad, 0x2c, 0x79, 0x27, 0xe5, 0xb8, 0x95}}
+
+[PcdsFeatureFlag]     # TokenNumber style is 0x0XXXXXXX, e.g. 0x00000001, 0x00000002, ...
+  gSpacemitTokenSpaceGuid.PcdRamDiskSupported|FALSE|BOOLEAN|0x00000001
+  gSpacemitTokenSpaceGuid.PcdSpiFlashSoftReset|FALSE|BOOLEAN|0x00000002
+  gSpacemitTokenSpaceGuid.PcdEscEnterBootMenu|TRUE|BOOLEAN|0x00000003
+  gSpacemitTokenSpaceGuid.PcdSecureBootSupported|FALSE|BOOLEAN|0x00000004
+
+  # Indicate whether the device is capable of coherent DMA operations.
+  gSpacemitTokenSpaceGuid.PcdDmaCoherent|FALSE|BOOLEAN|0x00000005
+
+[PcdsFixedAtBuild]    # TokenNumber style is 0x1XXXXXXX, e.g. 0x10000001, 0x10000002, ...
+  gSpacemitTokenSpaceGuid.PcdSecStackBase|0|UINT64|0x10000001
+  gSpacemitTokenSpaceGuid.PcdSecStackSize|0x10000|UINT64|0x10000002
+  # This UEFI memory region is used in SEC phase to create HOBs, load DXE, etc.
+  #     Base = PcdSecStackBase + PcdSecStackSize - PcdSecUefiMemorySize
+  #     Size = PcdSecUefiMemorySize  (DEFAULT: 0x02000000 = 32MB)
+  # (The top of the UEFI memory region is reserved for the stack.)
+  gSpacemitTokenSpaceGuid.PcdSecUefiMemorySize|0x02000000|UINT64|0x10000003
+
+  # The maximum physical memory and I/O addressability.
+  #   e.g. for RISC-V MMU type sv39/sv48/sv57, the width of physical address is 56-bit.
+  gSpacemitTokenSpaceGuid.PcdMemoryAddressWidthMax|56|UINT8|0x10000004
+  gSpacemitTokenSpaceGuid.PcdIoAddressWidthMax|56|UINT8|0x10000005
+
+  gSpacemitTokenSpaceGuid.PcdRamDiskBase|0xffffffffffffffff|UINT64|0x10000006
+  gSpacemitTokenSpaceGuid.PcdRamDiskSize|0|UINT64|0x10000007
+
+  # spiflash memory map(XIP mode) address
+  gSpacemitTokenSpaceGuid.PcdSFMemMapBaseAddress|0|UINT64|0x10000008
+
+  gSpacemitTokenSpaceGuid.PcdDefaultSerialNumber|"0123456789ABCDEF"|VOID*|0x10000010
+  gSpacemitTokenSpaceGuid.PcdDefaultPartNumber|"0123456789"|VOID*|0x10000011
+
+  gSpacemitTokenSpaceGuid.PcdFdBaseAddress|0|UINT64|0x10000020
+  gSpacemitTokenSpaceGuid.PcdFvBaseAddress|0|UINT64|0x10000021
+  gSpacemitTokenSpaceGuid.PcdFdSize|0|UINT32|0x10000022
+  gSpacemitTokenSpaceGuid.PcdFvSize|0|UINT32|0x10000023
+
+  gSpacemitTokenSpaceGuid.PcdMaxIoPortAddress|0xFFFFFFFFFFFFFFFF|UINT64|0x10000024
+
+  # I2C Controller Configuration Structure
+  gSpacemitTokenSpaceGuid.PcdI2cControllerConfigs|{0x0}|I2C_CONTROLLER_CONFIG_ARRAY|0x10000030 {
+    <HeaderFiles>
+      Drivers/I2CMaster/I2CMaster/I2cPcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  # I2C Slave Device Configuration Structure
+  gSpacemitTokenSpaceGuid.PcdI2cSlaveConfig|{0x0}|I2C_SLAVE_CONFIG_ARRAY|0x10000031 {
+    <HeaderFiles>
+      Drivers/I2CMaster/I2CMaster/I2cPcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  # EEPROM Configuration Structure
+  gSpacemitTokenSpaceGuid.PcdEepromConfigs|{0x0}|EEPROM_CONFIG_ARRAY|0x10000032 {
+    <HeaderFiles>
+      Drivers/I2CMaster/Eeprom/EepromPcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  gSpacemitTokenSpaceGuid.PcdSpacemitEnvSize|0|UINT32|0x10000037
+  gSpacemitTokenSpaceGuid.PcdSpacemitEnvOffset|0|UINT32|0x10000038
+
+  gSpacemitTokenSpaceGuid.PcdDxeFvBase|0x0|UINT64|0x10000039
+  gSpacemitTokenSpaceGuid.PcdDxeFvSize|0x0|UINT64|0x10000040
+
+  gSpacemitTokenSpaceGuid.PcdSTQspiRegBase|0|UINT64|0x10000050
+  gSpacemitTokenSpaceGuid.PcdSTQspiMaxFrequency|0|UINT32|0x10000051
+  gSpacemitTokenSpaceGuid.PcdSTQspiControllerId|0|UINT8|0x10000052
+  gSpacemitTokenSpaceGuid.PcdSTQspiControllerName|"QSPI"|VOID*|0x10000058
+
+  gSpacemitTokenSpaceGuid.PcdRtcDieNumber|0|UINT8|0x00000058
+  gSpacemitTokenSpaceGuid.PcdRtcBusId|0|UINT8|0x00000059
+  gSpacemitTokenSpaceGuid.PcdRtcSlaveAddr|0|UINT8|0x0000005a
+  gSpacemitTokenSpaceGuid.PcdRtcSpeed|0|UINT32|0x0000005b
+  gSpacemitTokenSpaceGuid.PcdRtcDefaultYear|0|UINT16|0x0000005c
+  gSpacemitTokenSpaceGuid.PcdRtcDefaultMonth|0|UINT8|0x0000005d
+  gSpacemitTokenSpaceGuid.PcdRtcDefaultDay|0|UINT8|0x0000005e
+  gSpacemitTokenSpaceGuid.PcdRtcDefaultHour|0|UINT8|0x0000005f
+  gSpacemitTokenSpaceGuid.PcdRtcDefaultMinute|0|UINT8|0x00000060
+  gSpacemitTokenSpaceGuid.PcdRtcDefaultSecond|0|UINT8|0x00000061
+
+  # LCD Configuration Structure
+  gSpacemitTokenSpaceGuid.PcdSpacemitMipiDpuRegBase|0x0|UINT64|0x00000062
+  gSpacemitTokenSpaceGuid.PcdSpacemitMipiDsiRegBase|0x0|UINT64|0x00000063
+
+  gSpacemitTokenSpaceGuid.PcdLcdConfigs|{0x0}|LCD_CONFIG_ARRAY|0x10000064 {
+    <HeaderFiles>
+      Include/Library/LcdPcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  gSpacemitTokenSpaceGuid.PcdDisplayPanelsPriority|{0x0}|DISPLAY_PANEL_NAME|0x10000066 {
+    <HeaderFiles>
+      Include/Library/LcdPcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  # NUMA configuration limits (can be overridden per-platform in DSC)
+  gSpacemitTokenSpaceGuid.PcdSpacemitNumaMaxNodes         |8   |UINT32|0x10000067
+  gSpacemitTokenSpaceGuid.PcdSpacemitNumaMaxCpus          |128 |UINT32|0x10000068
+  gSpacemitTokenSpaceGuid.PcdSpacemitNumaMaxMemoryRegions |16  |UINT32|0x10000069
+
+  #
+  # Netword Stack Configurations
+  #
+  gSpacemitTokenSpaceGuid.PcdNetworkStackConfigEnabledDefault|FALSE|BOOLEAN|0x1000006A
+  gSpacemitTokenSpaceGuid.PcdNetworkStackConfigIpv4PxeSupportDefault|FALSE|BOOLEAN|0x1000006B
+  gSpacemitTokenSpaceGuid.PcdNetworkStackConfigIpv6PxeSupportDefault|FALSE|BOOLEAN|0x1000006C
+  gSpacemitTokenSpaceGuid.PcdNetworkStackConfigIpv4HttpSupportDefault|FALSE|BOOLEAN|0x1000006D
+  gSpacemitTokenSpaceGuid.PcdNetworkStackConfigIpv6HttpSupportDefault|FALSE|BOOLEAN|0x1000006E
+
+  # BERT (Boot Error Record Table) error region configuration
+  gSpacemitTokenSpaceGuid.PcdBertErrorRegionBase |0x0    |UINT64|0x1000006F
+  gSpacemitTokenSpaceGuid.PcdBertErrorRegionSize |0x1000 |UINT64|0x10000070
+
+  ## Indicates default boot priority in array.<BR><BR>
+  #  0x0    - UEFI HDD Boot Device Groups.<BR>
+  #  0x1    - UEFI CDROM/DVDROM Boot Device Groups.<BR>
+  #  0x2    - UEFI PXE Boot Device Groups.<BR>
+  #  0x3    - UEFI Usb Boot Device Groups.<BR>
+  #  0x4    - UEFI Other Boot Device Groups.<BR>
+  #  Others - Reserved.<BR>
+  # @Prompt Indicates default boot priority in array.
+  gSpacemitTokenSpaceGuid.PcdDefaultBootPriority|{0x0, 0x0, 0x0, 0x0, 0x0}|VOID*|0x10000071
+
+  ## Indicates if reporting ACPI tables to OS.<BR><BR>
+  #  TRUE  - Report ACPI tables to OS.<BR>
+  #  FALSE - Report device tree to OS.<BR>
+  # @Prompt Enabled reporting ACPI tables to OS.
+  gSpacemitTokenSpaceGuid.PcdAcpiPrefDefault|FALSE|BOOLEAN|0x10000072
+
+  # DP GPIO configuration
+  gSpacemitTokenSpaceGuid.PcdDpGpioPowerPin|0|UINT32|0x10000073
+  gSpacemitTokenSpaceGuid.PcdDpGpioEnablePin|0|UINT32|0x10000074
+  gSpacemitTokenSpaceGuid.PcdDpGpioBlPin|0|UINT32|0x10000075
+
+  #
+  # ACPI worker CPU template objects
+  #
+  gSpacemitTokenSpaceGuid.PcdAcpiWorkerTemplateObjectsCpu|{0x0}|ACPI_WORKER_PCD_TEMPLATE_OBJECTS|0x10000080 {
+    <HeaderFiles>
+      Library/AcpiWorkerPcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  #
+  # ACPI worker PCI template objects
+  #
+  gSpacemitTokenSpaceGuid.PcdAcpiWorkerTemplateObjectsPci|{0x0}|ACPI_WORKER_PCD_TEMPLATE_OBJECTS|0x10000081 {
+    <HeaderFiles>
+      Library/AcpiWorkerPcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  # TokenNumber 0x10000082~0x1000008F are reserved for PCDs of ACPI worker template objects
+
+  #
+  # ACPI worker: FDT and ASL path mappings
+  #
+  gSpacemitTokenSpaceGuid.PcdAcpiWorkerFdtAslPathMappings|{0x0}|ACPI_WORKER_PCD_FDT_ASL_PATH_MAPPINGS|0x10000090 {
+    <HeaderFiles>
+      Library/AcpiWorkerPcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  # Specify the device paths of Renesas usb contollers.
+  # If the PCD value is null, all of pci device paths for Renesas usb controllers are specified.
+  # The device paths are in text form and separated by a semi-colon.
+  # @Prompt Device paths of Renesas usb contollers.
+  gSpacemitTokenSpaceGuid.PcdRenesasUsbDevicePaths|L""|VOID*|0x10000091
+
+  # PCDs for Sdcard
+  gSpacemitTokenSpaceGuid.PcdSdCardBaseAddress|0x0|UINT64|0x10000100
+  gSpacemitTokenSpaceGuid.PcdSdCardControllerName|"SDH0"|VOID*|0x10000101
+  gSpacemitTokenSpaceGuid.PcdSdCardTxDelayCode|0|UINT8|0x10000102
+  gSpacemitTokenSpaceGuid.PcdSdCardClockRate|0x0|UINT64|0x10000103
+
+  # PCDs for Sdio
+  gSpacemitTokenSpaceGuid.PcdSdioBaseAddress|0x0|UINT64|0x10000200
+  gSpacemitTokenSpaceGuid.PcdSdioControllerName|"SDH1"|VOID*|0x10000201
+  gSpacemitTokenSpaceGuid.PcdSdioClockRate|0x0|UINT64|0x10000202
+
+  # PCDs for Emmc
+  gSpacemitTokenSpaceGuid.PcdEmmcBaseAddress|0x0|UINT64|0x10000300
+  gSpacemitTokenSpaceGuid.PcdEmmcControllerName|"SDH2"|VOID*|0x10000301
+  gSpacemitTokenSpaceGuid.PcdEmmcClockRate|0x0|UINT64|0x10000302
+
+[PcdsPatchableInModule]   # TokenNumber style is 0x2XXXXXXX, e.g. 0x20000001, 0x20000002, ...
+
+[PcdsDynamic]     # TokenNumber style is 0x3XXXXXXX, e.g. 0x30000001, 0x30000002, ...
+  #
+  # SMBIOS Type 0
+  #
+  gSpacemitTokenSpaceGuid.PcdEcFirmwareRevision|0x00FF00FF|UINT32|0x30000001
+
+  #
+  # SMBIOS Type 1
+  #
+  gSpacemitTokenSpaceGuid.PcdSmbiosSystemManufacturer|L"To Be Filled By O.E.M."|VOID*|0x30000002
+  gSpacemitTokenSpaceGuid.PcdSmbiosSystemProductName|L"To Be Filled By O.E.M."|VOID*|0x30000003
+  gSpacemitTokenSpaceGuid.PcdSmbiosSystemVersion|L"To Be Filled By O.E.M."|VOID*|0x30000004
+  gSpacemitTokenSpaceGuid.PcdSmbiosSystemSerialNumber|L"To Be Filled By O.E.M."|VOID*|0x30000005
+  gSpacemitTokenSpaceGuid.PcdSmbiosSystemSKU|L"To Be Filled By O.E.M."|VOID*|0x30000006
+  gSpacemitTokenSpaceGuid.PcdSmbiosSystemFamily|L"To Be Filled By O.E.M."|VOID*|0x30000007
+
+  #
+  # SMBIOS Type 2
+  #
+  gSpacemitTokenSpaceGuid.PcdSmbiosBaseBoardManufacturer|L"To Be Filled By O.E.M."|VOID*|0x30000008
+  gSpacemitTokenSpaceGuid.PcdSmbiosBaseBoardProductName|L"To Be Filled By O.E.M."|VOID*|0x30000009
+  gSpacemitTokenSpaceGuid.PcdSmbiosBaseBoardVersion|L"To Be Filled By O.E.M."|VOID*|0x3000000A
+  gSpacemitTokenSpaceGuid.PcdSmbiosBaseBoardSerialNumber|L"To Be Filled By O.E.M."|VOID*|0x3000000B
+  gSpacemitTokenSpaceGuid.PcdSmbiosBaseBoardAssertTag|L"To Be Filled By O.E.M."|VOID*|0x3000000C
+  gSpacemitTokenSpaceGuid.PcdSmbiosBaseBoardChassisLocation|L"To Be Filled By O.E.M."|VOID*|0x3000000D
+
+  #
+  # SMBIOS Type 3
+  #
+  gSpacemitTokenSpaceGuid.PcdSmbiosClassisManufacturer|L"To Be Filled By O.E.M."|VOID*|0x3000000E
+  gSpacemitTokenSpaceGuid.PcdSmbiosClassisVersion|L"To Be Filled By O.E.M."|VOID*|0x3000000F
+  gSpacemitTokenSpaceGuid.PcdSmbiosClassisSerialNumber|L"To Be Filled By O.E.M."|VOID*|0x30000010
+  gSpacemitTokenSpaceGuid.PcdSmbiosClassisAssertTag|L"To Be Filled By O.E.M."|VOID*|0x30000011
+  gSpacemitTokenSpaceGuid.PcdSmbiosClassisSKU|L"To Be Filled By O.E.M."|VOID*|0x30000012
+  gSpacemitTokenSpaceGuid.PcdSmbiosClassisType|0|UINT8|0x30000013
+  gSpacemitTokenSpaceGuid.PcdSmbiosClassisHeight|0|UINT8|0x30000014
+
+  #
+  # Common PCI Root Bridge Resource Configuration Structure
+  #
+  gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable|{0x0}|PCI_ROOT_BRIDGE_RESOURCE_CONFIG_ARRAY|0x30000016 {
+    <HeaderFiles>
+      Library/PciRootBrdigeResourceConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  #
+  # DesignWare-specific PCIe Controller Configuration Structure
+  #
+  gSpacemitTokenSpaceGuid.PcdDwPcieControllerConfigTable|{0x0}|DW_PCIE_CONTROLLER_CONFIGS|0x30000017 {
+    <HeaderFiles>
+      Library/DesignWarePcieControllerConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  #
+  # RISC-V IOMMU Configuration Structure
+  #
+  gSpacemitTokenSpaceGuid.PcdRiscVIoMmuConfigTable|{0x0}|RISCV_IOMMU_CONFIGS|0x30000018 {
+    <HeaderFiles>
+      Library/RiscVIoMmuConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  #
+  # DMA IOMMU mode:
+  #   0: DMA without IOMMU
+  #   1: DMA with software IOMMU
+  #   2: DMA with hardware IOMMU
+  #
+  gSpacemitTokenSpaceGuid.PcdDmaIoMmuMode|0|UINT8|0x30000019
+
+  #
+  # DMA IOMMU mappings
+  #
+  gSpacemitTokenSpaceGuid.PcdDmaIoMmuMappings|{0x0}|DMA_IOMMU_MAPPINGS|0x3000001A {
+    <HeaderFiles>
+      Library/DmaIoMmuConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  #
+  # ACPI worker: Firmware Files storing ACPI tables
+  #
+  gSpacemitTokenSpaceGuid.PcdAcpiWorkerTableFiles|{0x0}|ACPI_WORKER_PCD_TABLE_FILES|0x3000001B {
+    <HeaderFiles>
+      Library/AcpiWorkerPcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  ## Indicates if the POST logo will be displayed.<BR><BR>
+  #  TRUE  - The POST logo is displayed.<BR>
+  #  FALSE - The POST logo is not displayed.<BR>
+  # @Prompt Enabled the POST logo displayed.
+  gSpacemitTokenSpaceGuid.PcdQuietBoot|TRUE|BOOLEAN|0x3000001C
+
+  #
+  # DesignWare PCIe ECAM mode:
+  #   0: ECAM disabled
+  #   1: ECAM emulated by Cfg Shift Mode
+  #   2: ECAM supported by hardware
+  #
+  gSpacemitTokenSpaceGuid.PcdDwPcieEcamMode|0|UINT8|0x3000001D
+
+  # SDCARD/SDIO/EMMC configuration
+  gSpacemitTokenSpaceGuid.PcdSdCardIsEnabled|FALSE|BOOLEAN|0x30001000
+  gSpacemitTokenSpaceGuid.PcdSdCardDetectGpioPin|0|UINT32|0x30001001
+  gSpacemitTokenSpaceGuid.PcdSdCardDetectActive|TRUE|BOOLEAN|0x30001002
+
+  gSpacemitTokenSpaceGuid.PcdSdioIsEnabled|FALSE|BOOLEAN|0x30001100
+
+  gSpacemitTokenSpaceGuid.PcdEmmcIsEnabled|FALSE|BOOLEAN|0x30001200
+
+  # display connector priority.
+  gSpacemitTokenSpaceGuid.PcdDisplayConnectorsPriority|{0x0}|DISPLAY_CONNECTORS_PRIORITY_VARSTORE_DATA|0x30001300 {
+    <HeaderFiles>
+      Include/Library/LcdPcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+[PcdsDynamicEx]   # TokenNumber style is 0x4XXXXXXX, e.g. 0x40000001, 0x40000002, ...

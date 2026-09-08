@@ -1,0 +1,65 @@
+#  UsbHcd.inf
+#
+#  Copyright 2017, 2020 NXP
+#  Copyright 2025, SpacemiT Co., Ltd. All rights reserved.
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#
+
+[Defines]
+  INF_VERSION                     = 0x0001001A
+  BASE_NAME                       = UsbHcdDxe
+  FILE_GUID                       = 196e7c2a-37b2-4b85-8683-718588952449
+  MODULE_TYPE                     = DXE_DRIVER
+  VERSION_STRING                  = 1.0
+  ENTRY_POINT                     = InitializeUsbHcd
+
+[Sources.common]
+  UsbHcd.c
+  UsbHcd.h
+
+[Packages]
+  MdePkg/MdePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Spacemit/K3/K3.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  IoLib
+  PcdLib
+  TimerLib
+  MemoryAllocationLib
+  MemoryManagementLib
+  NonDiscoverableDeviceRegistrationLib
+  BoardPinctrlMapLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+
+[FixedPcd]
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostControllers
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostVbusConfigs
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostPortaSwitchBase
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostPortaSwitchFlip
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitAPMURegBase
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitAPBSpareRegBase
+
+[Pcd]
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostEnableMask
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostHsOnlyMask
+
+[Guids]
+  gEfiEndOfDxeEventGroupGuid
+
+[Protocols]
+  gEmbeddedGpioProtocolGuid
+  gSpacemitSiliconPinCtrlProtocolGuid  ## CONSUMES
+  gSpacemitSiliconClockCtrlProtocolGuid  ## CONSUMES
+
+[Depex]
+  gEmbeddedGpioProtocolGuid AND
+  gSpacemitSiliconClockCtrlProtocolGuid AND
+  gSpacemitSiliconPinCtrlProtocolGuid

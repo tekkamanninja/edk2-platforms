@@ -1,0 +1,59 @@
+## @file
+#  SPACEMIT K3 UFS Host Controller DXE Driver
+#
+#  Copyright (C) 2025 SPACEMIT Corporation
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = SpacemitK3UfsHcDxe
+  FILE_GUID                      = 12A3B456-789C-1234-5678-9ABCDEF01234
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = SpacemitK3UfsHcDriverEntryPoint
+
+[Sources]
+  SpacemitK3UfsHcDxe.c
+  SpacemitK3UfsHcDxe.h
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+  Silicon/Spacemit/K3/K3.dec
+
+[LibraryClasses]
+  UefiDriverEntryPoint
+  UefiBootServicesTableLib
+  DebugLib
+  BaseLib
+  BaseMemoryLib
+  DevicePathLib
+  MemoryManagementLib
+  MemoryAllocationLib
+  IoLib
+  TimerLib
+  PcdLib
+  DxeServicesTableLib
+
+[Protocols]
+  gEfiDevicePathProtocolGuid                  ## PRODUCES
+  gEdkiiUfsHostControllerProtocolGuid          ## PRODUCES
+  gEdkiiUfsHcPlatformProtocolGuid              ## PRODUCES
+  gEfiCpuArchProtocolGuid                      ## CONSUMES
+  gSpacemitSiliconClockCtrlProtocolGuid        ## CONSUMES
+  gEfiExtScsiPassThruProtocolGuid              ## CONSUMES
+
+[Pcd]
+  gSpacemitK3TokenSpaceGuid.PcdUfsHcBase
+  gSpacemitK3TokenSpaceGuid.PcdUfsAclkRate
+  gSpacemitK3TokenSpaceGuid.PcdUfsPhyMngBase
+  gSpacemitK3TokenSpaceGuid.PcdUfsAtopBase
+  gSpacemitK3TokenSpaceGuid.PcdUfsRefClkFreq
+  gSpacemitTokenSpaceGuid.PcdDmaCoherent
+  gSpacemitTokenSpaceGuid.PcdDmaIoMmuMappings
+
+[Depex]
+  gEfiCpuArchProtocolGuid AND gSpacemitSiliconClockCtrlProtocolGuid

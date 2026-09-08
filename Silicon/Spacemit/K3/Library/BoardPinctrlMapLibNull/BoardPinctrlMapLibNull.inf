@@ -1,0 +1,22 @@
+## @file
+#
+#  Copyright (c) 2026, SpacemiT Co., Ltd. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = BoardPinctrlMapLibNull
+  FILE_GUID                      = D3A7D66F-E5AE-4C2C-BFB4-2A0B950616D3
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = BoardPinctrlMapLib
+
+[Sources]
+  BoardPinctrlMapLibNull.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec

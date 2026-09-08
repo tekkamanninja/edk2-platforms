@@ -1,0 +1,76 @@
+## @file
+#  Synopsys DesignWare Ethernet Quality-of-Service (EQoS) UEFI SNP driver
+#
+#  Copyright (c) 2025, Spacemit Corporation. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = DwEqosSnpDxe
+  FILE_GUID                      = 904d9f41-c38a-4c05-833d-9a804ae60c59
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = EqosEntryPoint
+  UNLOAD_IMAGE                   = EqosUnload
+
+[Sources]
+  ComponentName.c
+  DriverBinding.c
+  DwEqosSnpDxe.c
+  DwEqosDxeUtil.h
+  DwEqosDxeUtil.c
+  DwEqosSpacemit.c
+  DwEqosControllerConfig.h
+  GenphyDxeUtil.h
+  GenphyDxeUtil.c
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  MdePkg/MdePkg.dec
+  NetworkPkg/NetworkPkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+  Silicon/Spacemit/K3/K3.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  DevicePathLib
+  DmaLib
+  IoLib
+  MemoryAllocationLib
+  MemoryManagementLib
+  NetLib
+  NonDiscoverableDeviceRegistrationLib
+  TimerLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+  UefiLib
+
+[Protocols]
+  gEdkiiNonDiscoverableDeviceProtocolGuid
+  gEfiAdapterInformationProtocolGuid
+  gEfiSimpleNetworkProtocolGuid
+  gSpacemitSiliconClockCtrlProtocolGuid
+  gSpacemitSiliconPinCtrlProtocolGuid
+  gEmbeddedGpioProtocolGuid
+  gEfiCpuArchProtocolGuid
+  gSpacemitTlvInfoProtocolGuid
+
+[Guids]
+  gSpacemitDwGmacNonDiscoverableDeviceGuid  ## PRODUCES
+  gEfiEventExitBootServicesGuid             ## CONSUMES
+
+[Pcd]
+  gSpacemitK3TokenSpaceGuid.PcdDwEqosControllerConfigs
+  gSpacemitK3TokenSpaceGuid.PcdGmacUseMask
+
+[Depex]
+  gEmbeddedGpioProtocolGuid AND
+  gSpacemitSiliconClockCtrlProtocolGuid AND
+  gEfiCpuArchProtocolGuid AND
+  gSpacemitSiliconPinCtrlProtocolGuid

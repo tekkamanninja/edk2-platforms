@@ -1,0 +1,45 @@
+## @file
+#  Platform Flash Access library.
+#
+#  Copyright (c) 2024, Spacemit Limited. All rights reserved.
+#  Copyright (c) 2018, Hisilicon Limited. All rights reserved.
+#  Copyright (c) 2018, Linaro Limited. All rights reserved.
+#  Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = PlatformFlashAccessLibDxe
+  FILE_GUID                      = 56dfdc0f-fa5e-4e76-968a-c407837428a6
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = PlatformFlashAccessLib|DXE_DRIVER
+  CONSTRUCTOR                    = PerformFlashAccessLibConstructor
+
+[Sources]
+  PlatformFlashAccessLibDxe.c
+
+[Packages]
+  MdeModulePkg/MdeModulePkg.dec
+  MdePkg/MdePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  SignedCapsulePkg/SignedCapsulePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  DebugLib
+  PcdLib
+  UefiBootServicesTableLib
+
+[Protocols]
+  gSpacemitSpiFlashProtocolGuid
+
+[FixedPcd]
+  gSpacemitTokenSpaceGuid.PcdFdBaseAddress
+
+[Depex]
+  gSpacemitSpiFlashProtocolGuid

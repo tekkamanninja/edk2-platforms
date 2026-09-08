@@ -1,0 +1,42 @@
+## @file
+#
+#  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = K3GpioDxe
+  FILE_GUID                      = 19e9eaff-51fe-4592-adc0-a26e68db3c80
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = K3GpioDxeInitialize
+
+[Sources]
+  GpioDxe.c
+  GpioDxe.h
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+  Silicon/Spacemit/K3/K3.dec
+
+[LibraryClasses]
+  IoLib
+  UefiDriverEntryPoint
+  MemoryManagementLib
+
+[Protocols]
+  gEmbeddedGpioProtocolGuid              ## PRODUCES
+  gSpacemitSiliconClockCtrlProtocolGuid  ## CONSUMES
+
+[Pcd]
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitMFPRRegBase
+  gSpacemitK3TokenSpaceGuid.PcdGpioControllerBase
+  gSpacemitK3TokenSpaceGuid.PcdGpioPinCount
+
+[Depex]
+  gSpacemitSiliconClockCtrlProtocolGuid

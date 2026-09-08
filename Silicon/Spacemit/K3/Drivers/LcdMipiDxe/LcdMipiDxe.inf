@@ -1,0 +1,55 @@
+## @file
+#
+#  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = SpacemitMipi
+  FILE_GUID                      = 0C03D296-03D4-4F36-9E9F-759DB6DB0B8C
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = LcdInitMipi
+
+[Sources]
+  LcdMipiDxe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+  Silicon/Spacemit/K3/K3.dec
+
+[LibraryClasses]
+  UefiDriverEntryPoint
+  UefiLib
+  DebugLib
+  UefiBootServicesTableLib
+  MemoryAllocationLib
+  BaseMemoryLib
+  MemoryManagementLib
+  CacheMaintenanceLib
+  IoLib
+  PcdLib
+  BaseLib
+  LcdMipiDsiCommonLib
+
+[Protocols]
+  gSpacemitLcdConnectorProtocolGuid
+  gEmbeddedGpioProtocolGuid
+  gSpacemitSiliconClockCtrlProtocolGuid  ## CONSUMES
+
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdLcdConfigs
+  gSpacemitTokenSpaceGuid.PcdDisplayPanelsPriority
+  gSpacemitTokenSpaceGuid.PcdSpacemitMipiDpuRegBase
+  gSpacemitTokenSpaceGuid.PcdSpacemitMipiDsiRegBase
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitAPMURegBase
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitAPBSpareRegBase
+
+[Depex]
+  gEmbeddedGpioProtocolGuid AND
+  gSpacemitSiliconClockCtrlProtocolGuid

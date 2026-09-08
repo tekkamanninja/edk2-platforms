@@ -1,0 +1,44 @@
+#/** @file
+#  Copyright (c) 2025, Spacemit Limited. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = SpacemitK3ClockDxe
+  FILE_GUID                      = 6058F4E6-14BE-479C-ACEE-6E9E3AC5CF27
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = SpacemitK3ClockDxeInitialize
+
+[Sources]
+  Pll.c
+  ClockDxe.c
+  QspiClockDxe.c
+  SdhcClockDxe.c
+  UfsClockDxe.c
+  LcdClockDxe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+  Silicon/Spacemit/K3/K3.dec
+
+[LibraryClasses]
+  IoLib
+  UefiDriverEntryPoint
+  MemoryManagementLib
+
+[Protocols]
+  gSpacemitSiliconClockCtrlProtocolGuid    ## PRODUCES
+
+[FixedPcd]
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitMPMURegBase
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitAPMURegBase
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitAPBSpareRegBase
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitAPBClockRegBase
+
+[Depex]
+  TRUE

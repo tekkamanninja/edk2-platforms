@@ -1,0 +1,48 @@
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  INF_VERSION                    = 0x00010006
+  BASE_NAME                      = UefiShellSpiFlashLib
+  FILE_GUID                      = b1dbfb17-a8e4-485e-8856-7d5f7f642037
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = NULL|UEFI_APPLICATION UEFI_DRIVER
+  CONSTRUCTOR                    = ShellSpiFlashLibConstructor
+  DESTRUCTOR                     = ShellSpiFlashLibDestructor
+
+[Sources]
+  SpiFlashCmd.c
+  SpiFlashCmd.uni
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdePkg/MdePkg.dec
+  ShellPkg/ShellPkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  UefiLib
+  UefiBootServicesTableLib
+  MemoryAllocationLib
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  ShellCommandLib
+  ShellLib
+  UefiLib
+  UefiRuntimeServicesTableLib
+  PcdLib
+  HiiLib
+  FileHandleLib
+
+[Pcd]
+
+[Protocols]
+  gSpacemitSpiFlashProtocolGuid
+  gSpacemitSpiMasterProtocolGuid
+
+[Guids]
+  gShellSfHiiGuid

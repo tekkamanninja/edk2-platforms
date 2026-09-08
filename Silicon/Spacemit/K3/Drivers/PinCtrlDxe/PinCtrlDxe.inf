@@ -1,0 +1,52 @@
+#/** @file
+#  Copyright (c) 2025, Spacemit Limited. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x0001001A
+  BASE_NAME                      = SpacemitK3PinCtrlDxe
+  FILE_GUID                      = C3B17A30-5E56-4C68-AD0E-7EDB31CEEC34
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = SpacemitK3PinCtrlDxeInitialize
+
+[Sources]
+  PinCtrlDxe.c
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+  Silicon/Spacemit/K3/K3.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  FdtHelperLib
+  FdtLib
+  HobLib
+  IoLib
+  MemoryAllocationLib
+  BoardPinctrlMapLib
+  UefiDriverEntryPoint
+  UefiBootServicesTableLib
+  PrintLib
+  MemoryManagementLib
+
+[Protocols]
+  gSpacemitSiliconPinCtrlProtocolGuid    ## PRODUCES
+
+[Guids]
+  gFdtHobGuid      ## CONSUMES
+  gFdtTableGuid    ## CONSUMES
+
+[FixedPcd]
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitMFPRRegBase
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitApbcAsfarRegBase
+
+[Depex]
+  TRUE

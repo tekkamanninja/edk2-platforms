@@ -1,0 +1,36 @@
+## @file
+#
+#  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = SpacemitDsiCommonLib
+  FILE_GUID                      = 6EECFB5D-FF6C-433A-A1A8-0427C47D2EEB
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = LcdMipiDsiCommonLib
+
+[Sources]
+  LcdGx09inx101.c
+  SpacemitDphy.c
+  SpacemitDsiCommon.c
+  SpacemitDsiDrv.c
+  SpacemitMipiPort.c
+  SpacemitVideoTx.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdSpacemitMipiDpuRegBase
+  gSpacemitTokenSpaceGuid.PcdSpacemitMipiDsiRegBase

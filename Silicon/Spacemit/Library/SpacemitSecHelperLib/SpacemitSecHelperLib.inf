@@ -1,0 +1,55 @@
+#
+#  Copyright (c) 2024, SpacemiT Co., Ltd. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  INF_VERSION                    = 0x0001001b
+  BASE_NAME                      = SpacemitSecHelperLib
+  FILE_GUID                      = B7414B41-95A3-4991-A51D-319B662BA9A2
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = SpacemitSecHelperLib|SEC
+
+#
+# The following information is for reference only and not required by the build tools.
+#
+#  VALID_ARCHITECTURES           = RISCV64
+#
+
+[Sources]
+  Cpu.c
+  Memory.c
+  Platform.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  UefiCpuPkg/UefiCpuPkg.dec
+
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  PcdLib
+  IoLib
+  PeCoffLib
+  RiscVSbiLib
+  PrePiLib
+  FdtLib
+  MemoryAllocationLib
+  HobLib
+
+[FixedPcd]
+  gSpacemitTokenSpaceGuid.PcdDxeFvBase                               ## CONSUMES
+  gSpacemitTokenSpaceGuid.PcdDxeFvSize                               ## CONSUMES
+
+  gSpacemitTokenSpaceGuid.PcdMemoryAddressWidthMax                   ## CONSUMES
+  gSpacemitTokenSpaceGuid.PcdIoAddressWidthMax                       ## CONSUMES
+
+[Guids]
+  gFdtHobGuid                       ## PRODUCES
+

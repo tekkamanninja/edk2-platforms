@@ -1,0 +1,67 @@
+## @file
+#
+#  Capsule for definitions of Flash definition file on SpacemiT K3 MUSE-Pico platform
+#
+#  Copyright (c) 2026, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[FD.SystemFirmwareImageFd]
+BaseAddress   = 0x00000000 # The base address of the Firmware in NOR Flash.
+Size          = 0x00800000 # The size in bytes of the FLASH Device
+ErasePolarity = 1
+
+0x00000000|0x00300000
+FILE = $(FIRMWARE_IMAGE)
+
+0x00300000|0x00010000
+FILE = $(WORKSPACE)/$(OUTPUT_DIRECTORY)/$(TARGET)_$(TOOL_CHAIN_TAG)/FV/SYSTEMFIRMWAREDESCRIPTOR.Fv
+
+[FV.SystemFirmwareUpdateCargo]
+FvAlignment        = 16
+ERASE_POLARITY     = 1
+MEMORY_MAPPED      = TRUE
+STICKY_WRITE       = TRUE
+LOCK_CAP           = TRUE
+LOCK_STATUS        = TRUE
+WRITE_DISABLED_CAP = TRUE
+WRITE_ENABLED_CAP  = TRUE
+WRITE_STATUS       = TRUE
+WRITE_LOCK_CAP     = TRUE
+WRITE_LOCK_STATUS  = TRUE
+READ_DISABLED_CAP  = TRUE
+READ_ENABLED_CAP   = TRUE
+READ_STATUS        = TRUE
+READ_LOCK_CAP      = TRUE
+READ_LOCK_STATUS   = TRUE
+
+  FILE RAW = B6213C4C-5643-45E9-8C57-F69ACCD2A461 {
+    FD = SystemFirmwareImageFd
+  }
+
+  FILE RAW = ce57b167-b0e4-41e8-a897-5f4feb781d40 { # gEdkiiSystemFmpCapsuleDriverFvFileGuid
+    $(WORKSPACE)/$(OUTPUT_DIRECTORY)/$(TARGET)_$(TOOL_CHAIN_TAG)/FV/CAPSULEDISPATCHFV.Fv
+  }
+
+  FILE RAW = 812136D3-4D3A-433A-9418-29BB9BF78F6E { # gEdkiiSystemFmpCapsuleConfigFileGuid
+    Platform/Spacemit/K3/MUSE-Pico/Feature/Capsule/SystemFirmwareUpdateConfig/SystemFirmwareUpdateConfig.ini
+  }
+
+[FmpPayload.FmpPayloadSystemFirmwarePkcs7]
+IMAGE_HEADER_INIT_VERSION = 0x02
+IMAGE_TYPE_ID             = 6BEF1C3D-132B-45F0-84F8-5DB2330A46F5 # PcdSystemFmpCapsuleImageTypeIdGuid
+IMAGE_INDEX               = 0x1
+HARDWARE_INSTANCE         = 0x0
+MONOTONIC_COUNT           = 0x1
+CERTIFICATE_GUID          = 4AAFD29D-68DF-49EE-8AA9-347D375665A7 # gEfiCertPkcs7Guid
+
+  FV = SystemFirmwareUpdateCargo
+
+[Capsule.MUSE-Pico]
+CAPSULE_GUID                = 6dcbd5ed-e82d-4c44-bda1-7194199ad92a # gEfiFmpCapsuleGuid
+CAPSULE_HEADER_SIZE         = 0x20
+CAPSULE_HEADER_INIT_VERSION = 0x1
+
+  FMP_PAYLOAD = FmpPayloadSystemFirmwarePkcs7

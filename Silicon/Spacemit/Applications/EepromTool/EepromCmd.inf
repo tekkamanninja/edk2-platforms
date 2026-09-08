@@ -1,0 +1,49 @@
+#
+#  Copyright (c) 2024, SpacemiT Co., Ltd. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  INF_VERSION                    = 0x00010006
+  BASE_NAME                      = UefiShellEepromLib
+  FILE_GUID                      = 3972E84E-810F-9CAC-3147-AB5CF2F8AB9B
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = NULL|UEFI_APPLICATION UEFI_DRIVER
+  CONSTRUCTOR                    = ShellEepromLibConstructor
+  DESTRUCTOR                     = ShellEepromLibDestructor
+
+[Sources]
+  EepromCmd.c
+  EepromCmd.uni
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdePkg/MdePkg.dec
+  ShellPkg/ShellPkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  UefiLib
+  UefiBootServicesTableLib
+  MemoryAllocationLib
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  ShellCommandLib
+  ShellLib
+  UefiRuntimeServicesTableLib
+  PcdLib
+  HiiLib
+  FileHandleLib
+
+[Protocols]
+  gSpacemitEepromProtocolGuid   ## CONSUMES
+
+[Guids]
+  gShellEepromHiiGuid
+
+[BuildOptions.RISCV64]
+  GCC:*_*_*_DLINK_FLAGS = -z noexecstack -z relro -z now

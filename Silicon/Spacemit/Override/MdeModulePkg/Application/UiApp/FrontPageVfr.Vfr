@@ -1,0 +1,101 @@
+///** @file
+//
+//  Front page formset.
+//
+//  Copyright (c) 2007 - 2015, Intel Corporation. All rights reserved.<BR>
+//  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.<BR>
+//  SPDX-License-Identifier: BSD-2-Clause-Patent
+//
+//**/
+
+#include "FrontPage.h"
+
+formset
+  guid     = FRONT_PAGE_FORMSET_GUID,
+  title    = STRING_TOKEN(STR_FRONT_PAGE_TITLE),
+  help     = STRING_TOKEN(STR_NULL_STRING),
+  classguid = FRONT_PAGE_FORMSET_GUID,
+
+  form formid = FRONT_PAGE_FORM_ID,
+       title  = STRING_TOKEN(STR_FRONT_PAGE_TITLE);
+       subtitle text = STRING_TOKEN(STR_NULL_STRING);
+
+    label LABEL_FRONTPAGE_INFORMATION;
+    //
+    // This is where we will dynamically add a Action type op-code to show
+    // the platform information.
+    //
+    label LABEL_END;
+
+    //
+    // System Date and Time
+    //
+    subtitle text = STRING_TOKEN(STR_NULL_STRING);
+
+    date
+      name    = Date,
+      prompt  = STRING_TOKEN(STR_SYSTEM_DATE_PROMPT),
+      help    = STRING_TOKEN(STR_SYSTEM_DATE_HELP),
+      flags   = STORAGE_TIME,
+      default = FixedPcdGet16(PcdRtcDefaultYear)/ \
+                FixedPcdGet8(PcdRtcDefaultMonth)/ \
+                FixedPcdGet8(PcdRtcDefaultDay),
+    enddate;
+
+    time
+      name    = Time,
+      prompt  = STRING_TOKEN(STR_SYSTEM_TIME_PROMPT),
+      help    = STRING_TOKEN(STR_SYSTEM_TIME_HELP),
+      flags   = STORAGE_TIME,
+      default = FixedPcdGet8(PcdRtcDefaultHour)/   \
+                FixedPcdGet8(PcdRtcDefaultMinute)/ \
+                FixedPcdGet8(PcdRtcDefaultSecond),
+    endtime;
+
+    subtitle text = STRING_TOKEN(STR_NULL_STRING);
+
+    action
+      questionid  = FRONT_PAGE_KEY_LOAD_DEFAULT,
+      prompt      = STRING_TOKEN(STR_LOAD_DEFAULT_PROMPT),
+      help        = STRING_TOKEN(STR_LOAD_DEFAULT_HELP),
+      flags       = INTERACTIVE,
+      config      = STRING_TOKEN(STR_NULL_STRING),
+    endaction;
+
+    subtitle text = STRING_TOKEN(STR_NULL_STRING);
+
+    action
+      questionid  = FRONT_PAGE_KEY_SAVE_CHANGE,
+      prompt      = STRING_TOKEN(STR_SAVE_CHANGES_PROMPT),
+      help        = STRING_TOKEN(STR_SAVE_CHANGES_HELP),
+      flags       = INTERACTIVE,
+      config      = STRING_TOKEN(STR_NULL_STRING),
+    endaction;
+
+    action
+      questionid  = FRONT_PAGE_KEY_DISCARD_CHAGNE,
+      prompt      = STRING_TOKEN(STR_DISCARD_CHANGES_PROMPT),
+      help        = STRING_TOKEN(STR_DISCARD_CHANGES_HELP),
+      flags       = INTERACTIVE,
+      config      = STRING_TOKEN(STR_NULL_STRING),
+    endaction;
+
+    action
+      questionid  = FRONT_PAGE_KEY_SAVE_AND_EXIT,
+      prompt      = STRING_TOKEN(STR_SAVE_AND_EXIT_PROMPT),
+      help        = STRING_TOKEN(STR_SAVE_AND_EXIT_HELP),
+      flags       = INTERACTIVE,
+      config      = STRING_TOKEN(STR_NULL_STRING),
+    endaction;
+
+    action
+      questionid  = FRONT_PAGE_KEY_DISCARD_AND_EXIT,
+      prompt      = STRING_TOKEN(STR_DISCARD_AND_EXIT_PROMPT),
+      help        = STRING_TOKEN(STR_DISCARD_AND_EXIT_HELP),
+      flags       = INTERACTIVE,
+      config      = STRING_TOKEN(STR_NULL_STRING),
+    endaction;
+
+  endform;
+
+endformset;

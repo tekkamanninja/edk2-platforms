@@ -1,0 +1,826 @@
+/** @file
+  FrontPage routines to handle the callbacks and browser calls
+
+Copyright (c) 2004 - 2017, Intel Corporation. All rights reserved.<BR>
+(C) Copyright 2018 Hewlett Packard Enterprise Development LP<BR>
+Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.<BR>
+SPDX-License-Identifier: BSD-2-Clause-Patent
+
+**/
+
+#include "FrontPage.h"
+#include "FrontPageCustomizedUi.h"
+
+#define MAX_STRING_LEN  200
+
+EFI_GUID  mFrontPageGuid = FRONT_PAGE_FORMSET_GUID;
+
+BOOLEAN  mResetRequired = FALSE;
+
+EFI_FORM_BROWSER2_PROTOCOL              *gFormBrowser2;
+EDKII_FORM_BROWSER_EXTENSION2_PROTOCOL  *gFormBrowserEx2;
+BOOLEAN                                 mModeInitialized = FALSE;
+extern CHAR8                            *gLanguageString;
+
+//
+// Boot video resolution and text mode.
+//
+UINT32  mBootHorizontalResolution = 0;
+UINT32  mBootVerticalResolution   = 0;
+UINT32  mBootTextModeColumn       = 0;
+UINT32  mBootTextModeRow          = 0;
+//
+// BIOS setup video resolution and text mode.
+//
+UINT32  mSetupTextModeColumn       = 0;
+UINT32  mSetupTextModeRow          = 0;
+UINT32  mSetupHorizontalResolution = 0;
+UINT32  mSetupVerticalResolution   = 0;
+
+FRONT_PAGE_CALLBACK_DATA  gFrontPagePrivate = {
+  FRONT_PAGE_CALLBACK_DATA_SIGNATURE,
+  NULL,
+  NULL,
+  NULL,
+  {
+    FakeExtractConfig,
+    FakeRouteConfig,
+    FrontPageCallback
+  }
+};
+
+HII_VENDOR_DEVICE_PATH  mFrontPageHiiVendorDevicePath = {
+  {
+    {
+      HARDWARE_DEVICE_PATH,
+      HW_VENDOR_DP,
+      {
+        (UINT8)(sizeof (VENDOR_DEVICE_PATH)),
+        (UINT8)((sizeof (VENDOR_DEVICE_PATH)) >> 8)
+      }
+    },
+    //
+    // {8E6D99EE-7531-48f8-8745-7F6144468FF2}
+    //
+    { 0x8e6d99ee, 0x7531, 0x48f8, { 0x87, 0x45, 0x7f, 0x61, 0x44, 0x46, 0x8f, 0xf2 }
+    }
+  },
+  {
+    END_DEVICE_PATH_TYPE,
+    END_ENTIRE_DEVICE_PATH_SUBTYPE,
+    {
+      (UINT8)(END_DEVICE_PATH_LENGTH),
+      (UINT8)((END_DEVICE_PATH_LENGTH) >> 8)
+    }
+  }
+};
+
+/**
+  This function allows a caller to extract the current configuration for one
+  or more named elements from the target driver.
+
+
+  @param This            Points to the EFI_HII_CONFIG_ACCESS_PROTOCOL.
+  @param Request         A null-terminated Unicode string in <ConfigRequest> format.
+  @param Progress        On return, points to a character in the Request string.
+                         Points to the string's null terminator if request was successful.
+                         Points to the most recent '&' before the first failing name/value
+                         pair (or the beginning of the string if the failure is in the
+                         first name/value pair) if the request was not successful.
+  @param Results         A null-terminated Unicode string in <ConfigAltResp> format which
+                         has all values filled in for the names in the Request string.
+                         String to be allocated by the called function.
+
+  @retval  EFI_SUCCESS            The Results is filled with the requested values.
+  @retval  EFI_OUT_OF_RESOURCES   Not enough memory to store the results.
+  @retval  EFI_INVALID_PARAMETER  Request is illegal syntax, or unknown name.
+  @retval  EFI_NOT_FOUND          Routing data doesn't match any storage in this driver.
+
+**/
+EFI_STATUS
+EFIAPI
+FakeExtractConfig (
+  IN  CONST EFI_HII_CONFIG_ACCESS_PROTOCOL  *This,
+  IN  CONST EFI_STRING                      Request,
+  OUT EFI_STRING                            *Progress,
+  OUT EFI_STRING                            *Results
+  )
+{
+  if ((Progress == NULL) || (Results == NULL)) {
+    return EFI_INVALID_PARAMETER;
+  }
+
+  *Progress = Request;
+  return EFI_NOT_FOUND;
+}
+
+/**
+  This function processes the results of changes in configuration.
+
+
+  @param This            Points to the EFI_HII_CONFIG_ACCESS_PROTOCOL.
+  @param Configuration   A null-terminated Unicode string in <ConfigResp> format.
+  @param Progress        A pointer to a string filled in with the offset of the most
+                         recent '&' before the first failing name/value pair (or the
+                         beginning of the string if the failure is in the first
+                         name/value pair) or the terminating NULL if all was successful.
+
+  @retval  EFI_SUCCESS            The Results is processed successfully.
+  @retval  EFI_INVALID_PARAMETER  Configuration is NULL.
+  @retval  EFI_NOT_FOUND          Routing data doesn't match any storage in this driver.
+
+**/
+EFI_STATUS
+EFIAPI
+FakeRouteConfig (
+  IN  CONST EFI_HII_CONFIG_ACCESS_PROTOCOL  *This,
+  IN  CONST EFI_STRING                      Configuration,
+  OUT EFI_STRING                            *Progress
+  )
+{
+  if ((Configuration == NULL) || (Progress == NULL)) {
+    return EFI_INVALID_PARAMETER;
+  }
+
+  *Progress = Configuration;
+
+  return EFI_NOT_FOUND;
+}
+
+/**
+  This function processes the results of changes in configuration.
+
+
+  @param This            Points to the EFI_HII_CONFIG_ACCESS_PROTOCOL.
+  @param Action          Specifies the type of action taken by the browser.
+  @param QuestionId      A unique value which is sent to the original exporting driver
+                         so that it can identify the type of data to expect.
+  @param Type            The type of value for the question.
+  @param Value           A pointer to the data being sent to the original exporting driver.
+  @param ActionRequest   On return, points to the action requested by the callback function.
+
+  @retval  EFI_SUCCESS           The callback successfully handled the action.
+  @retval  EFI_OUT_OF_RESOURCES  Not enough storage is available to hold the variable and its data.
+  @retval  EFI_DEVICE_ERROR      The variable could not be saved.
+  @retval  EFI_UNSUPPORTED       The specified Action is not supported by the callback.
+
+**/
+EFI_STATUS
+EFIAPI
+FrontPageCallback (
+  IN  CONST EFI_HII_CONFIG_ACCESS_PROTOCOL  *This,
+  IN  EFI_BROWSER_ACTION                    Action,
+  IN  EFI_QUESTION_ID                       QuestionId,
+  IN  UINT8                                 Type,
+  IN  EFI_IFR_TYPE_VALUE                    *Value,
+  OUT EFI_BROWSER_ACTION_REQUEST            *ActionRequest
+  )
+{
+  return UiFrontPageCallbackHandler (gFrontPagePrivate.HiiHandle, Action, QuestionId, Type, Value, ActionRequest);
+}
+
+/**
+
+  Update the menus in the front page.
+
+**/
+VOID
+UpdateFrontPageForm (
+  VOID
+  )
+{
+  VOID                *StartOpCodeHandle;
+  VOID                *EndOpCodeHandle;
+  EFI_IFR_GUID_LABEL  *StartGuidLabel;
+  EFI_IFR_GUID_LABEL  *EndGuidLabel;
+
+  //
+  // Allocate space for creation of UpdateData Buffer
+  //
+  StartOpCodeHandle = HiiAllocateOpCodeHandle ();
+  ASSERT (StartOpCodeHandle != NULL);
+
+  EndOpCodeHandle = HiiAllocateOpCodeHandle ();
+  ASSERT (EndOpCodeHandle != NULL);
+  //
+  // Create Hii Extend Label OpCode as the start opcode
+  //
+  StartGuidLabel               = (EFI_IFR_GUID_LABEL *)HiiCreateGuidOpCode (StartOpCodeHandle, &gEfiIfrTianoGuid, NULL, sizeof (EFI_IFR_GUID_LABEL));
+  StartGuidLabel->ExtendOpCode = EFI_IFR_EXTEND_OP_LABEL;
+  StartGuidLabel->Number       = LABEL_FRONTPAGE_INFORMATION;
+  //
+  // Create Hii Extend Label OpCode as the end opcode
+  //
+  EndGuidLabel               = (EFI_IFR_GUID_LABEL *)HiiCreateGuidOpCode (EndOpCodeHandle, &gEfiIfrTianoGuid, NULL, sizeof (EFI_IFR_GUID_LABEL));
+  EndGuidLabel->ExtendOpCode = EFI_IFR_EXTEND_OP_LABEL;
+  EndGuidLabel->Number       = LABEL_END;
+
+  //
+  // Updata Front Page form
+  //
+  UiCustomizeFrontPage (
+    gFrontPagePrivate.HiiHandle,
+    StartOpCodeHandle
+    );
+
+  HiiUpdateForm (
+    gFrontPagePrivate.HiiHandle,
+    &mFrontPageGuid,
+    FRONT_PAGE_FORM_ID,
+    StartOpCodeHandle,
+    EndOpCodeHandle
+    );
+
+  HiiFreeOpCodeHandle (StartOpCodeHandle);
+  HiiFreeOpCodeHandle (EndOpCodeHandle);
+}
+
+/**
+  Initialize HII information for the FrontPage
+
+
+  @retval  EFI_SUCCESS        The operation is successful.
+  @retval  EFI_DEVICE_ERROR   If the dynamic opcode creation failed.
+
+**/
+EFI_STATUS
+InitializeFrontPage (
+  VOID
+  )
+{
+  EFI_STATUS  Status;
+
+  //
+  // Locate Hii relative protocols
+  //
+  Status = gBS->LocateProtocol (&gEfiFormBrowser2ProtocolGuid, NULL, (VOID **) &gFormBrowser2);
+  if (EFI_ERROR (Status)) {
+    return Status;
+  }
+
+  Status = gBS->LocateProtocol (&gEdkiiFormBrowserEx2ProtocolGuid, NULL, (VOID **) &gFormBrowserEx2);
+  if (EFI_ERROR (Status)) {
+    return Status;
+  }
+
+  gFormBrowserEx2->SetScope (SystemLevel);
+
+  //
+  // Install Device Path Protocol and Config Access protocol to driver handle
+  //
+  gFrontPagePrivate.DriverHandle = NULL;
+  Status = gBS->InstallMultipleProtocolInterfaces (
+                                          &gFrontPagePrivate.DriverHandle,
+                                          &gEfiDevicePathProtocolGuid,
+                                          &mFrontPageHiiVendorDevicePath,
+                                          &gEfiHiiConfigAccessProtocolGuid,
+                                          &gFrontPagePrivate.ConfigAccess,
+                                          NULL
+                                          );
+  if (EFI_ERROR (Status)) {
+    return Status;
+  }
+
+  //
+  // Publish our HII data
+  //
+  gFrontPagePrivate.HiiHandle = HiiAddPackages (
+                                          &mFrontPageGuid,
+                                          gFrontPagePrivate.DriverHandle,
+                                          FrontPageVfrBin,
+                                          UiAppStrings,
+                                          NULL
+                                          );
+  if (gFrontPagePrivate.HiiHandle == NULL) {
+    return EFI_OUT_OF_RESOURCES;
+  }
+
+  //
+  // Update front page menus.
+  //
+  UpdateFrontPageForm ();
+
+  return Status;
+}
+
+/**
+  Call the browser and display the front page
+
+  @return   Status code that will be returned by
+            EFI_FORM_BROWSER2_PROTOCOL.SendForm ().
+
+**/
+EFI_STATUS
+CallFrontPage (
+  VOID
+  )
+{
+  EFI_STATUS                  Status;
+  EFI_BROWSER_ACTION_REQUEST  ActionRequest;
+
+  //
+  // Begin waiting for USER INPUT
+  //
+  REPORT_STATUS_CODE (
+    EFI_PROGRESS_CODE,
+    (EFI_SOFTWARE_DXE_BS_DRIVER | EFI_SW_PC_INPUT_WAIT)
+    );
+
+  ActionRequest = EFI_BROWSER_ACTION_REQUEST_NONE;
+  Status        = gFormBrowser2->SendForm (
+                                   gFormBrowser2,
+                                   &gFrontPagePrivate.HiiHandle,
+                                   1,
+                                   &mFrontPageGuid,
+                                   0,
+                                   NULL,
+                                   &ActionRequest
+                                   );
+  //
+  // Check whether user change any option setting which needs a reset to be effective
+  //
+  if ((ActionRequest == EFI_BROWSER_ACTION_REQUEST_RESET) ||
+      gFormBrowserEx2->IsResetRequired ()) {
+    EnableResetRequired ();
+  }
+
+  return Status;
+}
+
+/**
+  Remove the installed packages from the HiiDatabase.
+
+**/
+VOID
+FreeFrontPage (
+  VOID
+  )
+{
+  EFI_STATUS  Status;
+
+  if (gFrontPagePrivate.DriverHandle != NULL) {
+    Status = gBS->UninstallMultipleProtocolInterfaces (
+                    gFrontPagePrivate.DriverHandle,
+                    &gEfiDevicePathProtocolGuid,
+                    &mFrontPageHiiVendorDevicePath,
+                    &gEfiHiiConfigAccessProtocolGuid,
+                    &gFrontPagePrivate.ConfigAccess,
+                    NULL
+                    );
+    ASSERT_EFI_ERROR (Status);
+  }
+
+  //
+  // Publish our HII data
+  //
+  if (gFrontPagePrivate.HiiHandle != NULL) {
+    HiiRemovePackages (gFrontPagePrivate.HiiHandle);
+  }
+
+  if (gFrontPagePrivate.LanguageToken != NULL) {
+    FreePool (gFrontPagePrivate.LanguageToken);
+    gFrontPagePrivate.LanguageToken = NULL;
+  }
+
+  return;
+}
+
+/**
+  This function will change video resolution and text mode
+  according to defined setup mode or defined boot mode
+
+  @param  IsSetupMode   Indicate mode is changed to setup mode or boot mode.
+
+  @retval  EFI_SUCCESS  Mode is changed successfully.
+  @retval  Others             Mode failed to be changed.
+
+**/
+EFI_STATUS
+UiSetConsoleMode (
+  BOOLEAN  IsSetupMode
+  )
+{
+  EFI_GRAPHICS_OUTPUT_PROTOCOL          *GraphicsOutput;
+  EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL       *SimpleTextOut;
+  UINTN                                 SizeOfInfo;
+  EFI_GRAPHICS_OUTPUT_MODE_INFORMATION  *Info;
+  UINT32                                MaxGopMode;
+  UINT32                                MaxTextMode;
+  UINT32                                ModeNumber;
+  UINT32                                NewHorizontalResolution;
+  UINT32                                NewVerticalResolution;
+  UINT32                                NewColumns;
+  UINT32                                NewRows;
+  UINTN                                 HandleCount;
+  EFI_HANDLE                            *HandleBuffer;
+  EFI_STATUS                            Status;
+  UINTN                                 Index;
+  UINTN                                 CurrentColumn;
+  UINTN                                 CurrentRow;
+
+  MaxGopMode  = 0;
+  MaxTextMode = 0;
+
+  //
+  // Get current video resolution and text mode
+  //
+  Status = gBS->HandleProtocol (
+                  gST->ConsoleOutHandle,
+                  &gEfiGraphicsOutputProtocolGuid,
+                  (VOID **)&GraphicsOutput
+                  );
+  if (EFI_ERROR (Status)) {
+    GraphicsOutput = NULL;
+  }
+
+  Status = gBS->HandleProtocol (
+                  gST->ConsoleOutHandle,
+                  &gEfiSimpleTextOutProtocolGuid,
+                  (VOID **)&SimpleTextOut
+                  );
+  if (EFI_ERROR (Status)) {
+    SimpleTextOut = NULL;
+  }
+
+  if ((GraphicsOutput == NULL) || (SimpleTextOut == NULL)) {
+    return EFI_UNSUPPORTED;
+  }
+
+  if (IsSetupMode) {
+    //
+    // The required resolution and text mode is setup mode.
+    //
+    NewHorizontalResolution = mSetupHorizontalResolution;
+    NewVerticalResolution   = mSetupVerticalResolution;
+    NewColumns              = mSetupTextModeColumn;
+    NewRows                 = mSetupTextModeRow;
+  } else {
+    //
+    // The required resolution and text mode is boot mode.
+    //
+    NewHorizontalResolution = mBootHorizontalResolution;
+    NewVerticalResolution   = mBootVerticalResolution;
+    NewColumns              = mBootTextModeColumn;
+    NewRows                 = mBootTextModeRow;
+  }
+
+  if (GraphicsOutput != NULL) {
+    MaxGopMode = GraphicsOutput->Mode->MaxMode;
+  }
+
+  if (SimpleTextOut != NULL) {
+    MaxTextMode = SimpleTextOut->Mode->MaxMode;
+  }
+
+  //
+  // 1. If current video resolution is same with required video resolution,
+  //    video resolution need not be changed.
+  //    1.1. If current text mode is same with required text mode, text mode need not be changed.
+  //    1.2. If current text mode is different from required text mode, text mode need be changed.
+  // 2. If current video resolution is different from required video resolution, we need restart whole console drivers.
+  //
+  for (ModeNumber = 0; ModeNumber < MaxGopMode; ModeNumber++) {
+    Status = GraphicsOutput->QueryMode (
+                               GraphicsOutput,
+                               ModeNumber,
+                               &SizeOfInfo,
+                               &Info
+                               );
+    if (!EFI_ERROR (Status)) {
+      if ((Info->HorizontalResolution == NewHorizontalResolution) &&
+          (Info->VerticalResolution == NewVerticalResolution))
+      {
+        if ((GraphicsOutput->Mode->Info->HorizontalResolution == NewHorizontalResolution) &&
+            (GraphicsOutput->Mode->Info->VerticalResolution == NewVerticalResolution))
+        {
+          //
+          // Current resolution is same with required resolution, check if text mode need be set
+          //
+          Status = SimpleTextOut->QueryMode (SimpleTextOut, SimpleTextOut->Mode->Mode, &CurrentColumn, &CurrentRow);
+          ASSERT_EFI_ERROR (Status);
+          if ((CurrentColumn == NewColumns) && (CurrentRow == NewRows)) {
+            //
+            // If current text mode is same with required text mode. Do nothing
+            //
+            FreePool (Info);
+            return EFI_SUCCESS;
+          } else {
+            //
+            // If current text mode is different from required text mode.  Set new video mode
+            //
+            for (Index = 0; Index < MaxTextMode; Index++) {
+              Status = SimpleTextOut->QueryMode (SimpleTextOut, Index, &CurrentColumn, &CurrentRow);
+              if (!EFI_ERROR (Status)) {
+                if ((CurrentColumn == NewColumns) && (CurrentRow == NewRows)) {
+                  //
+                  // Required text mode is supported, set it.
+                  //
+                  Status = SimpleTextOut->SetMode (SimpleTextOut, Index);
+                  ASSERT_EFI_ERROR (Status);
+                  //
+                  // Update text mode PCD.
+                  //
+                  Status = PcdSet32S (PcdConOutColumn, mSetupTextModeColumn);
+                  ASSERT_EFI_ERROR (Status);
+                  Status = PcdSet32S (PcdConOutRow, mSetupTextModeRow);
+                  ASSERT_EFI_ERROR (Status);
+                  FreePool (Info);
+                  return EFI_SUCCESS;
+                }
+              }
+            }
+
+            if (Index == MaxTextMode) {
+              //
+              // If required text mode is not supported, return error.
+              //
+              FreePool (Info);
+              return EFI_UNSUPPORTED;
+            }
+          }
+        } else {
+          //
+          // If current video resolution is not same with the new one, set new video resolution.
+          // In this case, the driver which produces simple text out need be restarted.
+          //
+          Status = GraphicsOutput->SetMode (GraphicsOutput, ModeNumber);
+          if (!EFI_ERROR (Status)) {
+            FreePool (Info);
+            break;
+          }
+        }
+      }
+
+      FreePool (Info);
+    }
+  }
+
+  if (ModeNumber == MaxGopMode) {
+    //
+    // If the resolution is not supported, return error.
+    //
+    return EFI_UNSUPPORTED;
+  }
+
+  //
+  // Set PCD to Inform GraphicsConsole to change video resolution.
+  // Set PCD to Inform Consplitter to change text mode.
+  //
+  Status = PcdSet32S (PcdVideoHorizontalResolution, NewHorizontalResolution);
+  ASSERT_EFI_ERROR (Status);
+  Status = PcdSet32S (PcdVideoVerticalResolution, NewVerticalResolution);
+  ASSERT_EFI_ERROR (Status);
+  Status = PcdSet32S (PcdConOutColumn, NewColumns);
+  ASSERT_EFI_ERROR (Status);
+  Status = PcdSet32S (PcdConOutRow, NewRows);
+  ASSERT_EFI_ERROR (Status);
+
+  //
+  // Video mode is changed, so restart graphics console driver and higher level driver.
+  // Reconnect graphics console driver and higher level driver.
+  // Locate all the handles with GOP protocol and reconnect it.
+  //
+  Status = gBS->LocateHandleBuffer (
+                  ByProtocol,
+                  &gEfiSimpleTextOutProtocolGuid,
+                  NULL,
+                  &HandleCount,
+                  &HandleBuffer
+                  );
+  if (!EFI_ERROR (Status)) {
+    for (Index = 0; Index < HandleCount; Index++) {
+      gBS->DisconnectController (HandleBuffer[Index], NULL, NULL);
+    }
+
+    for (Index = 0; Index < HandleCount; Index++) {
+      gBS->ConnectController (HandleBuffer[Index], NULL, NULL, TRUE);
+    }
+
+    if (HandleBuffer != NULL) {
+      FreePool (HandleBuffer);
+    }
+  }
+
+  return EFI_SUCCESS;
+}
+
+/**
+  The user Entry Point for Application. The user code starts with this function
+  as the real entry point for the image goes into a library that calls this
+  function.
+
+  @param[in] ImageHandle    The firmware allocated handle for the EFI image.
+  @param[in] SystemTable    A pointer to the EFI System Table.
+
+  @retval EFI_SUCCESS       The entry point is executed successfully.
+  @retval other             Some error occurs when executing this entry point.
+
+**/
+EFI_STATUS
+EFIAPI
+InitializeUserInterface (
+  IN EFI_HANDLE        ImageHandle,
+  IN EFI_SYSTEM_TABLE  *SystemTable
+  )
+{
+  EFI_HII_HANDLE                   HiiHandle;
+  EFI_STATUS                       Status;
+  EFI_GRAPHICS_OUTPUT_PROTOCOL     *GraphicsOutput;
+  EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL  *SimpleTextOut;
+  UINTN                            BootTextColumn;
+  UINTN                            BootTextRow;
+
+  if (!mModeInitialized) {
+    //
+    // After the console is ready, get current video resolution
+    // and text mode before launching setup at first time.
+    //
+    Status = gBS->HandleProtocol (
+                    gST->ConsoleOutHandle,
+                    &gEfiGraphicsOutputProtocolGuid,
+                    (VOID **)&GraphicsOutput
+                    );
+    if (EFI_ERROR (Status)) {
+      GraphicsOutput = NULL;
+    }
+
+    Status = gBS->HandleProtocol (
+                    gST->ConsoleOutHandle,
+                    &gEfiSimpleTextOutProtocolGuid,
+                    (VOID **)&SimpleTextOut
+                    );
+    if (EFI_ERROR (Status)) {
+      SimpleTextOut = NULL;
+    }
+
+    if (GraphicsOutput != NULL) {
+      //
+      // Get current video resolution and text mode.
+      //
+      mBootHorizontalResolution = GraphicsOutput->Mode->Info->HorizontalResolution;
+      mBootVerticalResolution   = GraphicsOutput->Mode->Info->VerticalResolution;
+    }
+
+    if (SimpleTextOut != NULL) {
+      Status = SimpleTextOut->QueryMode (
+                                SimpleTextOut,
+                                SimpleTextOut->Mode->Mode,
+                                &BootTextColumn,
+                                &BootTextRow
+                                );
+      mBootTextModeColumn = (UINT32)BootTextColumn;
+      mBootTextModeRow    = (UINT32)BootTextRow;
+    }
+
+    //
+    // Get user defined text mode for setup.
+    //
+    mSetupHorizontalResolution = PcdGet32 (PcdSetupVideoHorizontalResolution);
+    mSetupVerticalResolution   = PcdGet32 (PcdSetupVideoVerticalResolution);
+    mSetupTextModeColumn       = PcdGet32 (PcdSetupConOutColumn);
+    mSetupTextModeRow          = PcdGet32 (PcdSetupConOutRow);
+
+    mModeInitialized = TRUE;
+  }
+
+  gBS->SetWatchdogTimer (0x0000, 0x0000, 0x0000, NULL);
+  gST->ConOut->ClearScreen (gST->ConOut);
+
+  //
+  // Install customized fonts needed by Front Page
+  //
+  HiiHandle = ExportFonts ();
+  ASSERT (HiiHandle != NULL);
+
+  InitializeStringSupport ();
+
+  UiSetConsoleMode (TRUE);
+  UiEntry (FALSE);
+  UiSetConsoleMode (FALSE);
+
+  UninitializeStringSupport ();
+  HiiRemovePackages (HiiHandle);
+
+  return EFI_SUCCESS;
+}
+
+/**
+  This function is the main entry of the UI entry.
+  The function will present the main menu of the system UI.
+
+  @param ConnectAllHappened Caller passes the value to UI to avoid unnecessary connect-all.
+
+**/
+VOID
+EFIAPI
+UiEntry (
+  IN BOOLEAN  ConnectAllHappened
+  )
+{
+  EFI_STATUS              Status;
+  EFI_BOOT_LOGO_PROTOCOL  *BootLogo;
+
+  //
+  // Enter Setup page.
+  //
+  REPORT_STATUS_CODE (
+    EFI_PROGRESS_CODE,
+    (EFI_SOFTWARE_DXE_BS_DRIVER | EFI_SW_PC_USER_SETUP)
+    );
+
+  EfiEventGroupSignal (&gSpacemitEnterSetupEventGroupGuid);
+
+  //
+  // Indicate if the connect all has been performed before.
+  // If has not been performed before, do here.
+  //
+  if (!ConnectAllHappened) {
+    EfiBootManagerConnectAll ();
+  }
+
+  //
+  // The boot option enumeration time is acceptable in Ui driver
+  //
+  EfiBootManagerRefreshAllBootOption ();
+
+  //
+  // Boot Logo is corrupted, report it using Boot Logo protocol.
+  //
+  Status = gBS->LocateProtocol (&gEfiBootLogoProtocolGuid, NULL, (VOID **)&BootLogo);
+  if (!EFI_ERROR (Status) && (BootLogo != NULL)) {
+    BootLogo->SetBootLogo (BootLogo, NULL, 0, 0, 0, 0);
+  }
+
+  Status = InitializeFrontPage ();
+  if (!EFI_ERROR (Status)) {
+    CallFrontPage ();
+  }
+
+  FreeFrontPage ();
+
+  if (gLanguageString != NULL) {
+    FreePool (gLanguageString);
+    gLanguageString = NULL;
+  }
+
+  EfiEventGroupSignal (&gSpacemitExitSetupEventGroupGuid);
+
+  //
+  // Will leave browser, check any reset required change is applied? if yes, reset system
+  //
+  SetupResetReminder ();
+}
+
+//
+//  Following are BDS Lib functions which contain all the code about setup browser reset reminder feature.
+//  Setup Browser reset reminder feature is that an reset reminder will be given before user leaves the setup browser  if
+//  user change any option setting which needs a reset to be effective, and  the reset will be applied according to  the user selection.
+//
+
+/**
+  Record the info that  a reset is required.
+  A  module boolean variable is used to record whether a reset is required.
+
+**/
+VOID
+EFIAPI
+EnableResetRequired (
+  VOID
+  )
+{
+  mResetRequired = TRUE;
+}
+
+/**
+  Check if  user changed any option setting which needs a system reset to be effective.
+
+**/
+BOOLEAN
+EFIAPI
+IsResetRequired (
+  VOID
+  )
+{
+  return mResetRequired;
+}
+
+/**
+  Check whether a reset is needed, and finish the reset reminder feature.
+  If a reset is needed, Popup a menu to notice user, and finish the feature
+  according to the user selection.
+
+**/
+VOID
+EFIAPI
+SetupResetReminder (
+  VOID
+  )
+{
+  //
+  // check any reset required change is applied? if yes, reset system
+  //
+  if (IsResetRequired ()) {
+    gRT->ResetSystem (EfiResetCold, EFI_SUCCESS, 0, NULL);
+    CpuDeadLoop ();
+  }
+}

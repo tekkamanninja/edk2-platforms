@@ -1,0 +1,43 @@
+## @file
+#  Read DTB root "model" and call LibPcdSetSku() to select the board SKU.
+#
+#  This driver must run before any SKU-sensitive driver (e.g. DwEqosDxe).
+#  Place it first in the FDF DXE firmware volume.
+#
+#  Copyright (c) 2026, Spacemit Corporation. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = SpacemitK3SkuSelectDxe
+  FILE_GUID                      = fb9bb015-d810-4007-b080-9d9946f08826
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = SkuSelectDxeEntryPoint
+
+[Sources]
+  SkuSelectDxe.c
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/K3/K3.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  FdtLib
+  HobLib
+  PcdLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+
+[Guids]
+  gFdtHobGuid      ## CONSUMES
+  gFdtTableGuid    ## CONSUMES
+
+[Depex]
+  TRUE

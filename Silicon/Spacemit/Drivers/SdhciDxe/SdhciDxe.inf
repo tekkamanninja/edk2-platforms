@@ -1,0 +1,59 @@
+#/** @file
+#
+#  Spacemit Cores SDHCI Controller
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x00010019
+  BASE_NAME                      = SdhciDxe
+  FILE_GUID                      = 4cd3a91b-990e-46a6-b609-9fa5d70d1f5f
+  MODULE_TYPE                    = UEFI_DRIVER
+  VERSION_STRING                 = 1.0
+
+  ENTRY_POINT                    = SdhciDxeInitialize
+
+[Sources.common]
+  SdhciDxe.c
+  SdhciPciHci.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  IoLib
+  MemoryAllocationLib
+  MemoryManagementLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+  UefiLib
+  UefiRuntimeServicesTableLib
+  NonDiscoverableDeviceRegistrationLib
+
+[Protocols]
+  gEdkiiSdMmcOverrideProtocolGuid                 ## PRODUCES
+  gEdkiiNonDiscoverableDeviceProtocolGuid         ## PRODUCES
+  gEfiPciIoProtocolGuid
+  gSpacemitSiliconClockCtrlProtocolGuid
+  gSpacemitSiliconPinCtrlProtocolGuid
+
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdSdCardBaseAddress
+  gSpacemitTokenSpaceGuid.PcdSdCardControllerName
+  gSpacemitTokenSpaceGuid.PcdSdCardIsEnabled
+  gSpacemitTokenSpaceGuid.PcdSdCardClockRate
+  gSpacemitTokenSpaceGuid.PcdSdCardTxDelayCode
+  gSpacemitTokenSpaceGuid.PcdEmmcBaseAddress
+  gSpacemitTokenSpaceGuid.PcdEmmcControllerName
+  gSpacemitTokenSpaceGuid.PcdEmmcIsEnabled
+  gSpacemitTokenSpaceGuid.PcdEmmcClockRate
+
+[Depex]
+  gSpacemitSiliconClockCtrlProtocolGuid AND
+  gSpacemitSiliconPinCtrlProtocolGuid

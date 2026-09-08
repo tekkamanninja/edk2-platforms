@@ -1,0 +1,61 @@
+## @file
+#  PCI Host Bridge Library instance for Spacemit K3 SOC
+#
+#  Copyright (c) 2017, Linaro Ltd. All rights reserved.<BR>
+#  Copyright (c) 2019 Marvell International Ltd. All rights reserved.<BR>
+#  Copyright (c) 2025 Spacemit Ltd. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = K3PcieHostBridgeLib
+  FILE_GUID                      = 5aae20dd-e72a-4eae-8e61-eaca3d5052c5
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = NULL|DXE_DRIVER
+  CONSTRUCTOR                    = K3PcieHostBridgeLibConstructor
+  DESTRUCTOR                     = K3PcieHostBridgeLibDestructor
+
+[Sources]
+  K3PcieHostBridgeLib.c
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+  Silicon/Spacemit/K3/K3.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  IoLib
+  DevicePathLib
+  MemoryAllocationLib
+  PcdLib
+  MemoryManagementLib
+  DesignWarePcieControllerLib
+  PrintLib
+
+[Protocols]
+  gSpacemitSiliconPinCtrlProtocolGuid       ## CONSUMES
+  gSpacemitSiliconClockCtrlProtocolGuid     ## CONSUMES
+  gEmbeddedGpioProtocolGuid                 ## SOMETIMES_CONSUMES
+
+[FixedPcd]
+  gSpacemitK3TokenSpaceGuid.PcdK3PciePhyConfigs
+  gSpacemitK3TokenSpaceGuid.PcdK3PciePortConfigs
+
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdDwPcieControllerConfigTable
+  gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable
+  gSpacemitK3TokenSpaceGuid.PcdPcieHostEnableMask
+
+[Depex]
+  gSpacemitSiliconPinCtrlProtocolGuid AND
+  gEmbeddedGpioProtocolGuid

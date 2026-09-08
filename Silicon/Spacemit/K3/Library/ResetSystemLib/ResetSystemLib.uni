@@ -1,0 +1,15 @@
+// /** @file
+// Library instance for ResetSystem library class for Spacemit K3 platform
+//
+// Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
+// Copyright (c) 2025, Spacemit Corporation. All rights reserved.<BR>
+//
+// SPDX-License-Identifier: BSD-2-Clause-Patent
+//
+// **/
+
+
+#string STR_MODULE_ABSTRACT             #language en-US "Library instance for ResetSystem library class for Spacemit K3 platform"
+
+#string STR_MODULE_DESCRIPTION          #language en-US "Library instance for ResetSystem library class for Spacemit K3 platform"
+

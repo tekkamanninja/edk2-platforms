@@ -1,0 +1,43 @@
+## @file
+#  RISC-V IOMMU DXE driver
+#
+#  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = RiscVIoMmuDxe
+  FILE_GUID                      = 00207613-3479-47B4-8165-92304CC318C3
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = RiscVIoMmuDxeInit
+
+[Sources]
+  RiscVIoMmuDxe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  DmaIoMmuLib
+  IoLib
+  PcdLib
+  MemoryAllocationLib
+  MemoryManagementLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdRiscVIoMmuConfigTable
+
+[Protocols]
+  gRiscVIoMmuIsInitedProtocolGuid          ## PRODUCES
+
+[Depex]
+  TRUE

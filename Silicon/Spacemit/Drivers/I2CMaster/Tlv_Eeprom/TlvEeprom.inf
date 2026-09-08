@@ -1,0 +1,48 @@
+## @file
+#  TLV EEPROM driver for Spacemit platforms
+#
+#  Copyright (c) 2024 Spacemit Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = TlvEeprom
+  FILE_GUID                      = 2ac23250-ee47-4a6b-a0f6-ca0dd512fc6b
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = TlvEepromDriverEntryPoint
+  UNLOAD_IMAGE                   = TlvEepromDriverUnload
+
+[Sources]
+  TlvEeprom.c
+  TlvEeprom.h
+
+[Packages]
+  MdeModulePkg/MdeModulePkg.dec
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  MemoryAllocationLib
+  BaseMemoryLib
+  PrintLib
+  BaseLib
+  DebugLib
+  IoLib
+  PcdLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+  UefiLib
+
+[Guids]
+  gSpacemitProductVariableGuid      ## CONSUMES
+
+[Protocols]
+  gSpacemitTlvInfoProtocolGuid      ## PRODUCES
+  gSpacemitEepromProtocolGuid       ## CONSUMES
+
+[Depex]
+  gSpacemitEepromProtocolGuid

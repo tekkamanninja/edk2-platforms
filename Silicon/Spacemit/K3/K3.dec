@@ -1,0 +1,119 @@
+## @file
+#  SpacemiT public interfaces
+#
+#  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  DEC_SPECIFICATION              = 0x0001001b
+  PACKAGE_NAME                   = SpacemitK3
+  PACKAGE_GUID                   = 18052e0e-d0c3-4833-93b6-0b4910f063c4
+  PACKAGE_VERSION                = 1.0
+
+[Protocols]
+
+[Guids]
+  gSpacemitK3TokenSpaceGuid = {0xc8002e18, 0x445b, 0x4707, {0x97, 0x31, 0x44, 0xb4, 0xd8, 0x26, 0x32, 0xde}}
+
+[PcdsFixedAtBuild]
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitMPMURegBase|0x0|UINT64|0x00000001
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitAPMURegBase|0x0|UINT64|0x00000002
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitAPBSpareRegBase|0x0|UINT64|0x00000003
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitAPBClockRegBase|0x0|UINT64|0x00000004
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitMFPRRegBase|0x0|UINT64|0x00000005
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitApbcAsfarRegBase|0x0|UINT64|0x00000006
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitCIURegBase|0x0|UINT64|0x00000007
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitWDTRegBase|0x0|UINT64|0x00000008
+
+  # GPIO Controller Configuration
+  gSpacemitK3TokenSpaceGuid.PcdGpioControllerBase|0|UINT64|0x00001001
+  gSpacemitK3TokenSpaceGuid.PcdGpioControllerCount|0|UINT32|0x00001002
+  gSpacemitK3TokenSpaceGuid.PcdGpioPinCount|0|UINT32|0x00001003
+
+  # GMAC Controller Configuration
+  gSpacemitK3TokenSpaceGuid.PcdDwEqosControllerConfigs|{0x0}|DW_EQOS_CONTROLLER_CONFIGS|0x00002001 {
+    <HeaderFiles>
+      K3/Drivers/DwEqosDxe/DwEqosControllerConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/K3/K3.dec
+  }
+
+  # PCDs for USB
+  ## Fixed USB controller hardware descriptions (SoC-level, shared by all boards)
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostControllers|{0x0}|USB_HOST_CONTROLLER_HW_ARRAY|0x00004001 {
+    <HeaderFiles>
+      K3/Drivers/UsbHcdInitDxe/UsbHostPcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+  ## USB Sideband Configurations
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostVbusConfigs|{0x0}|USB_HOST_VBUS_GPIO_CONFIG_ARRAY|0x00004002 {
+    <HeaderFiles>
+      K3/Drivers/UsbHcdInitDxe/UsbHostPcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostPortaSwitchBase|0|UINT64|0x00004004
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostPortaSwitchFlip|0|BOOLEAN|0x00004005
+
+  gSpacemitK3TokenSpaceGuid.PcdK3PciePhyConfigs|{0x0}|K3_PCIE_PHY_CONFIG_ARRAY|0x0000500A {
+    <HeaderFiles>
+      K3/Library/K3PcieHostBridgeLib/K3PciePcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+  gSpacemitK3TokenSpaceGuid.PcdK3PciePortConfigs|{0x0}|K3_PCIE_PORT_CONFIG_ARRAY|0x0000500B {
+    <HeaderFiles>
+      K3/Library/K3PcieHostBridgeLib/K3PciePcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  # CTF2301 controller (I2C slave config)
+  gSpacemitK3TokenSpaceGuid.PcdCtf2301Configs|{0x0}|CTF2301_CONFIG_ARRAY|0x0000500C {
+    <HeaderFiles>
+      K3/Drivers/Ctf2301Dxe/Ctf2301PcdConfig.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+
+  # UFS Host Controller Configuration
+  gSpacemitK3TokenSpaceGuid.PcdUfsHcBase|0|UINT64|0x00006001
+  gSpacemitK3TokenSpaceGuid.PcdUfsPhyMngBase|0|UINT32|0x00006007
+  gSpacemitK3TokenSpaceGuid.PcdUfsAtopBase|0|UINT32|0x00006008
+  # UFS ref clk freq: 0=19.2MHz, 1=26MHz, 2=38.4MHz, 3=Obsolete/52MHz
+  gSpacemitK3TokenSpaceGuid.PcdUfsRefClkFreq|0|UINT32|0x00006009
+  # UFS ACLK target rate (Hz); ClockDxe selects source/divider automatically
+  gSpacemitK3TokenSpaceGuid.PcdUfsAclkRate|0|UINT64|0x0000600A
+
+  # PCDs for DISPLAY
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitDpu0RegBase|0x0|UINT64|0x00007001
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitDpu1RegBase|0x0|UINT64|0x00007002
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitDp0RegBase|0x0|UINT64|0x00007003
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitDp1RegBase|0x0|UINT64|0x00007004
+
+[PcdsDynamic]
+  # Per-board GMAC activation bitmask (bit N = controller index N active).
+  gSpacemitK3TokenSpaceGuid.PcdGmacUseMask|0xFF|UINT8|0x30010001
+
+  # Per-board USB host controller activation bitmask (bit N = controller N active).
+  # 0xFF means "use each controller's own Enable field" (legacy/default).
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostEnableMask|0xFF|UINT8|0x30010002
+  # Per-board USB max-speed override bitmask (bit N set = controller N limited to HS).
+  # 0x00 means "use each controller's own MaxSpeed field" (no downgrade).
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostHsOnlyMask|0x00|UINT8|0x30010003
+
+  # Per-board PCIe port activation bitmask (bit N = port index N enabled).
+  # 0x03 = Port A + Port B (deb1 default).
+  gSpacemitK3TokenSpaceGuid.PcdPcieHostEnableMask|0x03|UINT8|0x30010004
+
+  # decide whether enable CTF2301
+  gSpacemitK3TokenSpaceGuid.PcdCtf2301Enable|FALSE|BOOLEAN|0x30010005

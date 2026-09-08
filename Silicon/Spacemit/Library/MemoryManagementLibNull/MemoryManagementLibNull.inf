@@ -1,0 +1,23 @@
+## @file
+#  Null Instance for Platform Memory Management library.
+#
+#  Copyright (c) 2025, Spacemit Limited. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = MemoryManagementLibNull
+  FILE_GUID                      = 9F12C82F-91FC-F728-F905-0FF329EC47C2
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = MemoryManagementLib
+
+[Sources]
+  MemoryManagementLibNull.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec

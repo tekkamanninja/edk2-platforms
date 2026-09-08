@@ -1,0 +1,52 @@
+## @file
+#  Spacemit implementation of Spi nor flash dxe driver.
+#
+#  Copyright (c) 2024, Spacemit Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = SpiNorFlashDxe
+  FILE_GUID                      = 187ead2e-dcd8-4d49-85bc-23a83e07ae65
+  MODULE_TYPE                    = DXE_RUNTIME_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = SpiFlashEntryPoint
+
+[Sources]
+  SpiNorFlashDxe.c
+  SpiNorFlashDxe.h
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  DebugLib
+  MemoryAllocationLib
+  NorFlashInfoLib
+  TimerLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+  UefiLib
+  UefiRuntimeLib
+  TimerLib
+  BaseMemoryLib
+  MemoryManagementLib
+
+[Guids]
+  gEfiEventVirtualAddressChangeGuid
+
+[Protocols]
+  gSpacemitSpiFlashProtocolGuid
+  gSpacemitSpiMasterProtocolGuid
+
+[Depex]
+  gSpacemitSpiMasterProtocolGuid
+
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdSpiFlashSoftReset

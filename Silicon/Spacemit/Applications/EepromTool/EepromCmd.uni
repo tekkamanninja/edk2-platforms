@@ -1,0 +1,51 @@
+/*******************************************************************************
+Copyright (C) 2016 Marvell International Ltd.
+Copyright (c) 2020, Intel Corporation. All rights reserved.
+
+SPDX-License-Identifier: BSD-2-Clause-Patent
+
+*******************************************************************************/
+
+/=#
+
+#langdef en-US "English"
+
+#string STR_GET_HELP_EEPROM    #language en-US ""
+".TH eepromtool 0 \"EEPROM read/write utility.\"\r\n"
+".SH NAME\r\n"
+"Read/write data from/to EEPROM devices.\r\n"
+".SH SYNOPSIS\r\n"
+" \r\n"
+"  eepromtool list\r\n"
+"  eepromtool read  <device> <address> <length>\r\n"
+"  eepromtool write <device> <address> <data>\r\n"
+".SH OPTIONS\r\n"
+" \r\n"
+"  list         - List all available EEPROM devices\r\n"
+"  read         - Read data from a specified EEPROM device\r\n"
+"  write        - Write data to a specified EEPROM device\r\n"
+"  device       - Device number (as listed by 'eepromtool list')\r\n"
+"  address      - EEPROM address to read/write\r\n"
+"  length       - Number of bytes to read\r\n"
+"  data         - Data bytes to write\r\n"
+".SH DESCRIPTION\r\n"
+" \r\n"
+"This command allows reading and writing of EEPROM data on selected EEPROM devices.\r\n"
+"Maximum buffer size is 256 bytes.\r\n"
+".SH EXAMPLES\r\n"
+" \r\n"
+"EXAMPLES:\r\n"
+"List all devices:\r\n"
+"  eepromtool list\r\n"
+"Read 10 bytes from address 0 of device 0\r\n"
+"  eepromtool read 0 0x0 0xA\r\n"
+"Write bytes to address 0 of device 0\r\n"
+"  eepromtool write 0 0x0 0x11 0x22 0x33\r\n"
+".SH RETURNVALUES\r\n"
+" \r\n"
+"RETURN VALUES:\r\n"
+"  SHELL_SUCCESS              The action was completed as requested.\r\n"
+"  SHELL_ABORTED              Error while processing command\r\n"
+"  SHELL_INVALID_PARAMETER    Command line parameter error\r\n"
+
+

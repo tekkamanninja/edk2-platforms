@@ -1,0 +1,40 @@
+## @file
+#
+#  Copyright (c) 2025, Spacemit Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = GenericBdsLib
+  FILE_GUID                      = DD662F3D-8BF3-69BA-3CA1-2201BC51EEF1
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = GenericBdsLib|DXE_DRIVER UEFI_APPLICATION UEFI_DRIVER
+
+[Sources]
+  GenericBdsLib.c
+  GenericBdsLibInternal.c
+  GenericBdsLibInternal.h
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  UefiLib
+  DebugLib
+  BaseMemoryLib
+  MemoryAllocationLib
+  DevicePathLib
+  FileHandleLib
+  UefiBootManagerLib
+  UefiBootServicesTableLib
+  UefiRuntimeServicesTableLib
+
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdDefaultBootPriority

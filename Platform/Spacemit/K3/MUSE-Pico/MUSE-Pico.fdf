@@ -1,0 +1,361 @@
+## @file
+#  Definitions of Flash definition file on K3 MUSE-Pico platform
+#
+#  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#
+# build as FIT(Flattened Image Tree) image, and image was write to spinor at offset 0xA0000
+#
+#
+#                          offset 0x0 (PcdSFMemMapBaseAddress + 0x210000 for XIP access)
+#                               0x0000 +---------------------------+
+#                                      | fit header                | FIT_HEADER_ALIGN_SIZE
+#                                      |                           | 0x1000
+#                               0x1000 +---------------------------+
+#                                      | FvMain Image (Compressed) | FLASH_FV_MAIN_SIZE
+#                                      |                           | 0x001FF000
+#                             0x200000 +---------------------------+
+#                                      | NVRAM Area=               |
+#                                      | Variable + FTW Working +  | NVRAM_AREA_SIZE
+#                                      | FTW Spare                 |
+#                          VARS_OFFSET +---+-------------------+---+
+#                                          |                   | VARS_SIZE
+#                                          |                   |
+#                  VARS_FTW_WORKING_OFFSET +-------------------+
+#                                          |                   | VARS_FTW_WORKING_SIZE
+#                                          |                   |
+#                    VARS_FTW_SPARE_OFFSET +-------------------+
+#                                          |                   | VARS_FTW_SPARE_SIZE
+#                                          |                   |
+#                                      +---+-------------------+---+
+#                                      | dtb                       |
+#                                      |                           |
+#                                      +---------------------------+
+#
+##
+
+[Defines]
+DEFINE BLOCK_SIZE        = 0x1000
+
+DEFINE FW_BASE_ADDRESS   = 0x102000000
+DEFINE FW_SIZE           = 0x002C0000
+DEFINE FW_BLOCKS         = 0x2C0
+
+DEFINE FVMAIN_ADDRESS    = 0x00211000
+DEFINE FVMAIN_OFFSET     = 0x00000000
+DEFINE FVMAIN_SIZE       = 0x001FF000
+
+DEFINE VARS_OFFSET             = $(FVMAIN_OFFSET) + $(FVMAIN_SIZE)
+DEFINE VARS_SIZE               = 0x40000
+DEFINE VARS_FTW_WORKING_OFFSET = $(VARS_OFFSET) + $(VARS_SIZE)
+DEFINE VARS_FTW_WORKING_SIZE   = 0x40000
+DEFINE VARS_FTW_SPARE_OFFSET   = $(VARS_FTW_WORKING_OFFSET) + $(VARS_FTW_WORKING_SIZE)
+DEFINE VARS_FTW_SPARE_SIZE     = 0x40000
+
+SET gSpacemitTokenSpaceGuid.PcdFdBaseAddress = $(FVMAIN_ADDRESS) - 0x1000
+SET gSpacemitTokenSpaceGuid.PcdFvBaseAddress = $(FVMAIN_ADDRESS)
+SET gSpacemitTokenSpaceGuid.PcdFdSize = $(FW_SIZE)
+SET gSpacemitTokenSpaceGuid.PcdFvSize = $(FW_SIZE) - 0x1000 - $(VARS_SIZE) - $(VARS_FTW_WORKING_SIZE) - $(VARS_FTW_SPARE_SIZE)
+
+#
+# NV Storage PCDs.
+#
+SET gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableBase64   = gSpacemitTokenSpaceGuid.PcdSFMemMapBaseAddress + $(FVMAIN_ADDRESS) + $(VARS_OFFSET)
+SET gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableSize     = $(VARS_SIZE)
+SET gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwWorkingBase64 = gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableBase64 + $(VARS_SIZE)
+SET gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwWorkingSize   = $(VARS_FTW_WORKING_SIZE)
+SET gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareBase64   = gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwWorkingBase64 + $(VARS_FTW_WORKING_SIZE)
+SET gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwSpareSize     = $(VARS_FTW_SPARE_SIZE)
+
+################################################################################
+#
+# Build the variable store and the firmware code as one unified flash device
+# image.
+#
+[FD.MUSE-Pico]
+BaseAddress   = $(FW_BASE_ADDRESS)
+Size          = $(FW_SIZE)
+ErasePolarity = 1
+# It must be: Size = BlockSize * NumBlocks
+BlockSize     = $(BLOCK_SIZE)
+NumBlocks     = $(FW_BLOCKS)
+
+$(FVMAIN_OFFSET)|$(FVMAIN_SIZE)
+gSpacemitTokenSpaceGuid.PcdDxeFvBase|gSpacemitTokenSpaceGuid.PcdDxeFvSize
+FV = FVMAIN_COMPACT
+
+#
+# NV_VARIABLE_STORE
+#
+$(VARS_OFFSET)|$(VARS_SIZE)
+DATA = {
+  ## This is the EFI_FIRMWARE_VOLUME_HEADER
+  # ZeroVector []
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  # FileSystemGuid: gEfiSystemNvDataFvGuid         =
+  #   { 0xFFF12B8D, 0x7696, 0x4C8B,
+  #     { 0xA9, 0x85, 0x27, 0x47, 0x07, 0x5B, 0x4F, 0x50 }}
+  0x8D, 0x2B, 0xF1, 0xFF, 0x96, 0x76, 0x8B, 0x4C,
+  0xA9, 0x85, 0x27, 0x47, 0x07, 0x5B, 0x4F, 0x50,
+  # FvLength: 0xC0000
+  0x00, 0x00, 0x0C, 0x00, 0x00, 0x00, 0x00, 0x00,
+  # Signature "_FVH"       # Attributes
+  0x5f, 0x46, 0x56, 0x48, 0xff, 0xfe, 0x04, 0x00,
+  # HeaderLength # CheckSum # ExtHeaderOffset #Reserved #Revision
+  0x48, 0x00, 0x28, 0x09, 0x00, 0x00, 0x00, 0x02,
+  # Blockmap[0]: 0x3 Blocks * 0x40000 Bytes / Block
+  0x3, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00,
+  # Blockmap[1]: End
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  ## This is the VARIABLE_STORE_HEADER
+  # It is compatible with SECURE_BOOT_ENABLE == FALSE as well.
+  # Signature: gEfiAuthenticatedVariableGuid =
+  #   { 0xaaf32c78, 0x947b, 0x439a,
+  #     { 0xa1, 0x80, 0x2e, 0x14, 0x4e, 0xc3, 0x77, 0x92 }}
+  0x78, 0x2c, 0xf3, 0xaa, 0x7b, 0x94, 0x9a, 0x43,
+  0xa1, 0x80, 0x2e, 0x14, 0x4e, 0xc3, 0x77, 0x92,
+  # Size: 0x40000 (gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageVariableSize) -
+  #         0x48 (size of EFI_FIRMWARE_VOLUME_HEADER) = 0x3FFB8
+  # This can speed up the Variable Dispatch a bit.
+  0xB8, 0xFF, 0x03, 0x00,
+  # FORMATTED: 0x5A #HEALTHY: 0xFE #Reserved: UINT16 #Reserved1: UINT32
+  0x5A, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+}
+
+#
+# NV_FTW_WORKING
+#
+$(VARS_FTW_WORKING_OFFSET)|$(VARS_FTW_WORKING_SIZE)
+DATA = {
+  # EFI_FAULT_TOLERANT_WORKING_BLOCK_HEADER->Signature = gEdkiiWorkingBlockSignatureGuid =
+  #  { 0x9e58292b, 0x7c68, 0x497d, { 0xa0, 0xce, 0x65,  0x0, 0xfd, 0x9f, 0x1b, 0x95 }}
+  0x2b, 0x29, 0x58, 0x9e, 0x68, 0x7c, 0x7d, 0x49,
+  0xa0, 0xce, 0x65,  0x0, 0xfd, 0x9f, 0x1b, 0x95,
+  # Crc:UINT32            #WorkingBlockValid:1, WorkingBlockInvalid:1, Reserved
+  0x5b, 0xe7, 0xc6, 0x86, 0xFE, 0xFF, 0xFF, 0xFF,
+  # WriteQueueSize: UINT64
+  #     Size: 0x40000 (gEfiMdeModulePkgTokenSpaceGuid.PcdFlashNvStorageFtwWorkingSize) -
+  #             0x20 (size of EFI_FAULT_TOLERANT_WORKING_BLOCK_HEADER) = 0x3FFE0
+  0xE0, 0xFF, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00
+}
+
+#
+# NV_FTW_SPARE
+#
+$(VARS_FTW_SPARE_OFFSET)|$(VARS_FTW_SPARE_SIZE)
+
+################################################################################
+[FV.DXEFV]
+BlockSize          = 0x10000
+FvAlignment        = 16
+ERASE_POLARITY     = 1
+MEMORY_MAPPED      = TRUE
+STICKY_WRITE       = TRUE
+LOCK_CAP           = TRUE
+LOCK_STATUS        = TRUE
+WRITE_DISABLED_CAP = TRUE
+WRITE_ENABLED_CAP  = TRUE
+WRITE_STATUS       = TRUE
+WRITE_LOCK_CAP     = TRUE
+WRITE_LOCK_STATUS  = TRUE
+READ_DISABLED_CAP  = TRUE
+READ_ENABLED_CAP   = TRUE
+READ_STATUS        = TRUE
+READ_LOCK_CAP      = TRUE
+READ_LOCK_STATUS   = TRUE
+
+!include Silicon/Spacemit/SpacemitDxeFv.fdf.inc
+!include Features/Ext4Pkg/Ext4.fdf.inc
+
+# SKU selection
+INF Silicon/Spacemit/K3/Drivers/SkuSelectDxe/SkuSelectDxe.inf
+
+INF  Silicon/RISC-V/ProcessorPkg/Universal/FdtDxe/FdtDxe.inf
+
+# system hardware module
+INF Silicon/Spacemit/K3/Drivers/ClockDxe/ClockDxe.inf
+INF Silicon/Spacemit/K3/Drivers/PinCtrlDxe/PinCtrlDxe.inf
+
+# FDT fixup protocol
+INF Silicon/Spacemit/Drivers/FdtFixupDxe/FdtFixupDxe.inf
+
+#
+# Firmware Volume Block service
+#
+INF Silicon/Spacemit/Drivers/FlashFvbDxe/FlashFvbDxe.inf
+
+# RPMI Voltage
+INF Silicon/Spacemit/Drivers/RiscvSbiMpxyRpmiVoltageDxe/RiscvSbiMpxyRpmiVoltageDxe.inf
+
+# I2C/EEPROM/TLV EEPROM support
+INF MdeModulePkg/Bus/I2c/I2cDxe/I2cDxe.inf
+INF Silicon/Spacemit/Drivers/I2CMaster/I2CMaster/I2cMaster.inf
+INF Silicon/Spacemit/Drivers/I2CMaster/Eeprom/EepromDxe.inf
+INF Silicon/Spacemit/Drivers/I2CMaster/Tlv_Eeprom/TlvEeprom.inf
+
+INF Silicon/Spacemit/K3/Drivers/Ctf2301Dxe/Ctf2301Dxe.inf
+
+# platform info
+INF Silicon/Spacemit/K3/Drivers/PlatformInfoDxe/PlatformInfoDxe.inf
+
+# GPIO support
+#
+INF Silicon/Spacemit/K3/Drivers/GPIO/GpioDxe.inf
+
+# Network support
+!include NetworkPkg/Network.fdf.inc
+INF Silicon/Spacemit/Drivers/PseudoRngDxe/PseudoRngDxe.inf
+INF Silicon/Spacemit/K3/Drivers/DwEqosDxe/DwEqosDxe.inf
+
+#
+# Spinor flash support
+#
+INF Silicon/Spacemit/Drivers/Spi/STQspiDxe/QspiDxe.inf
+INF Silicon/Spacemit/Drivers/Spi/SpiNorFlashDxe/SpiNorFlashDxe.inf
+
+#
+# USB Support
+#
+INF Silicon/Spacemit/Override/MdeModulePkg/Bus/Pci/NonDiscoverablePciDeviceDxe/NonDiscoverablePciDeviceDxe.inf
+INF MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
+INF MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
+INF MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
+INF MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
+INF Silicon/Spacemit/K3/Drivers/UsbHcdInitDxe/UsbHcd.inf
+
+#
+# SD/MMC support
+#
+INF MdeModulePkg/Bus/Sd/EmmcDxe/EmmcDxe.inf
+INF MdeModulePkg/Bus/Sd/SdDxe/SdDxe.inf
+INF Silicon/Spacemit/Override/MdeModulePkg/Bus/Pci/SdMmcPciHcDxe/SdMmcPciHcDxe.inf
+INF Silicon/Spacemit/Drivers/SdhciDxe/SdhciDxe.inf
+
+#
+# PCIe support
+#
+INF Silicon/Spacemit/Drivers/PciCpuIo2Dxe/PciCpuIo2Dxe.inf
+INF Silicon/Spacemit/Override/MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf
+INF Silicon/Spacemit/Override/MdeModulePkg/Bus/Pci/PciBusDxe/PciBusDxe.inf
+
+#
+# GOP support
+#
+INF  Silicon/Spacemit/Drivers/LcdGraphicsOutputDxe/LcdGraphicsOutputDxe.inf
+INF  Silicon/Spacemit/K3/Drivers/DpuDxe/DpuDxe.inf
+#INF  Silicon/Spacemit/K3/Drivers/LcdMipiDxe/LcdMipiDxe.inf
+INF  Silicon/Spacemit/K3/Drivers/LcdDpDxe/LcdDpDxe.inf
+
+# boot logo
+# INF Silicon/Spacemit/Drivers/LogoDxe/LogoDxe.inf
+
+#
+# NVMe support (for PCIe NVMe storage)
+#
+INF MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
+
+#
+# UFS support
+#
+INF Silicon/Spacemit/K3/Drivers/UfsHcDxe/SpacemitK3UfsHcDxe.inf
+INF MdeModulePkg/Bus/Ufs/UfsPassThruDxe/UfsPassThruDxe.inf
+INF MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
+INF MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
+
+#
+# Firmware update
+#
+!if $(CAPSULE_ENABLE)
+  INF SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareReportDxe.inf
+  INF MdeModulePkg/Universal/EsrtDxe/EsrtDxe.inf
+!endif
+
+INF  ShellPkg/DynamicCommand/TftpDynamicCommand/TftpDynamicCommand.inf
+#INF  ShellPkg/DynamicCommand/HttpDynamicCommand/HttpDynamicCommand.inf
+INF  OvmfPkg/LinuxInitrdDynamicShellCommand/LinuxInitrdDynamicShellCommand.inf
+INF  ShellPkg/Application/Shell/Shell.inf
+
+INF  MdeModulePkg/Application/UiApp/UiApp.inf
+
+################################################################################
+[FV.FVMAIN_COMPACT]
+FvAlignment        = 16
+ERASE_POLARITY     = 1
+MEMORY_MAPPED      = TRUE
+STICKY_WRITE       = TRUE
+LOCK_CAP           = TRUE
+LOCK_STATUS        = TRUE
+WRITE_DISABLED_CAP = TRUE
+WRITE_ENABLED_CAP  = TRUE
+WRITE_STATUS       = TRUE
+WRITE_LOCK_CAP     = TRUE
+WRITE_LOCK_STATUS  = TRUE
+READ_DISABLED_CAP  = TRUE
+READ_ENABLED_CAP   = TRUE
+READ_STATUS        = TRUE
+READ_LOCK_CAP      = TRUE
+READ_LOCK_STATUS   = TRUE
+FvNameGuid         = 06486C29-CDFA-4FBE-8732-8EA1CC0168D6
+
+INF Silicon/Spacemit/Sec/SecMain.inf
+
+!if $(CAPSULE_ENABLE)
+  INF RuleOverride = FMP_IMAGE_DESC Platform/Spacemit/K3/MUSE-Pico/Feature/Capsule/SystemFirmwareDescriptor/SystemFirmwareDescriptor.inf
+!endif
+
+FILE FV_IMAGE = 91DA8A5D-2469-49C0-8E37-CA55B92F03E6 {
+   # gLzmaCustomDecompressGuid =
+   #   { 0xEE4E5898, 0x3914, 0x4259, { 0x9D, 0x6E, 0xDC, 0x7B, 0xD7, 0x94, 0x03, 0xCF }}
+   SECTION GUIDED EE4E5898-3914-4259-9D6E-DC7BD79403CF PROCESSING_REQUIRED = TRUE {
+     SECTION FV_IMAGE = DXEFV
+   }
+ }
+
+################################################################################
+!if $(CAPSULE_ENABLE)
+[FV.SystemFirmwareDescriptor]
+FvAlignment        = 8
+ERASE_POLARITY     = 1
+MEMORY_MAPPED      = TRUE
+STICKY_WRITE       = TRUE
+LOCK_CAP           = TRUE
+LOCK_STATUS        = TRUE
+WRITE_DISABLED_CAP = TRUE
+WRITE_ENABLED_CAP  = TRUE
+WRITE_STATUS       = TRUE
+WRITE_LOCK_CAP     = TRUE
+WRITE_LOCK_STATUS  = TRUE
+READ_DISABLED_CAP  = TRUE
+READ_ENABLED_CAP   = TRUE
+READ_STATUS        = TRUE
+READ_LOCK_CAP      = TRUE
+READ_LOCK_STATUS   = TRUE
+
+INF RuleOverride = FMP_IMAGE_DESC Platform/Spacemit/K3/MUSE-Pico/Feature/Capsule/SystemFirmwareDescriptor/SystemFirmwareDescriptor.inf
+
+[FV.CapsuleDispatchFv]
+FvAlignment        = 8
+ERASE_POLARITY     = 1
+MEMORY_MAPPED      = TRUE
+STICKY_WRITE       = TRUE
+LOCK_CAP           = TRUE
+LOCK_STATUS        = TRUE
+WRITE_DISABLED_CAP = TRUE
+WRITE_ENABLED_CAP  = TRUE
+WRITE_STATUS       = TRUE
+WRITE_LOCK_CAP     = TRUE
+WRITE_LOCK_STATUS  = TRUE
+READ_DISABLED_CAP  = TRUE
+READ_ENABLED_CAP   = TRUE
+READ_STATUS        = TRUE
+READ_LOCK_CAP      = TRUE
+READ_LOCK_STATUS   = TRUE
+
+INF SignedCapsulePkg/Universal/SystemFirmwareUpdate/SystemFirmwareUpdateDxe.inf
+
+!endif
+
+!include Silicon/Spacemit/SpacemitFvRules.fdf.inc

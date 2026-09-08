@@ -1,0 +1,44 @@
+## @file
+#
+#  Copyright (c) 2025, Spacemit Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = DiskInfoLib
+  FILE_GUID                      = EAA48DB2-5CC4-B7EE-D9E1-CFEB7DCE19C8
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = DiskInfoLib|DXE_DRIVER UEFI_APPLICATION UEFI_DRIVER
+
+[Sources]
+  DiskInfoLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  UefiLib
+  DebugLib
+  SortLib
+  BaseMemoryLib
+  MemoryAllocationLib
+  PrintLib
+  DevicePathLib
+  UefiBootServicesTableLib
+
+[Guids]
+  gEfiDiskInfoAhciInterfaceGuid
+  gEfiDiskInfoNvmeInterfaceGuid
+
+[Protocols]
+  gEfiDiskInfoProtocolGuid
+  gEfiBlockIoProtocolGuid
+  gEfiNvmExpressPassThruProtocolGuid
+  gEfiDevicePathProtocolGuid

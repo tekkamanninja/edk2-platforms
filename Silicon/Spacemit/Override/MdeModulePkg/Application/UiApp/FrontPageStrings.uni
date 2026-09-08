@@ -1,0 +1,46 @@
+///** @file
+//
+//  String definitions for BdsPlatform formset.
+//
+//  Copyright (c) 2004 - 2016, Intel Corporation. All rights reserved.<BR>
+//  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.<BR>
+//  SPDX-License-Identifier: BSD-2-Clause-Patent
+//
+//**/
+
+/=#
+
+#langdef   en-US "English"
+
+#string STR_NULL_STRING                       #language en-US ""
+
+#string STR_FRONT_PAGE_TITLE                  #language en-US "BIOS Setup Utility"
+#string STR_CONTINUE_PROMPT                   #language en-US "Continue"
+#string STR_CONTINUE_HELP                     #language en-US "This selection will direct the system to continue to booting process"
+#string STR_RESET_STRING                      #language en-US "Reset"
+#string STR_RESET_STRING_HELP                 #language en-US "Reset system."
+#string STR_LANGUAGE_SELECT                   #language en-US "Select Language"
+#string STR_LANGUAGE_SELECT_HELP              #language en-US "This is the option one adjusts to change the language for the current system"
+#string STR_MISSING_STRING                    #language en-US "Missing String"
+
+#string STR_SYSTEM_DATE_PROMPT                #language en-US "System Date"
+#string STR_SYSTEM_DATE_HELP                  #language en-US "Displays and changes the System Date from the Real-Time Clock. Format is Month/Day/Year."
+#string STR_SYSTEM_TIME_PROMPT                #language en-US "System Time"
+#string STR_SYSTEM_TIME_HELP                  #language en-US "Displays and changes the System Time from the Real-Time Clock. Time is displayed in 24-hour format."
+#string STR_LOAD_DEFAULT_PROMPT               #language en-US "Load Defaults"
+#string STR_LOAD_DEFAULT_HELP                 #language en-US "Load setup default settings."
+#string STR_SAVE_CHANGES_PROMPT               #language en-US "Save Changes"
+#string STR_SAVE_CHANGES_HELP                 #language en-US "Save the setup changes."
+#string STR_DISCARD_CHANGES_PROMPT            #language en-US "Discard Changes"
+#string STR_DISCARD_CHANGES_HELP              #language en-US "Discard the setup changes."
+#string STR_SAVE_AND_EXIT_PROMPT              #language en-US "Save Changes and Exit"
+#string STR_SAVE_AND_EXIT_HELP                #language en-US "Save the setup changes and exit."
+#string STR_DISCARD_AND_EXIT_PROMPT           #language en-US "Discard Changes and Exit"
+#string STR_DISCARD_AND_EXIT_HELP             #language en-US "Discard the setup changes and exit."
+
+#string STR_POPUP_LOAD_DEFAULT_MESSAGE        #language en-US "Load default configurations?"
+#string STR_POPUP_SAVE_CHANGES_MESSAGE        #language en-US "Save configuration changes?"
+#string STR_POPUP_DISCARD_CHANGES_MESSAGE     #language en-US "Discard configuration changes?"
+#string STR_POPUP_SAVE_AND_EXIT_MESSAGE       #language en-US "Save configuration changes and exit?"
+#string STR_POPUP_DISCARD_AND_EXIT_MESSAGE    #language en-US "Discard configuration changes and exit?"
+#string STR_POPUP_CONFIRM_OPTIONS             #language en-US "Press 'Y' to confirm, 'N'/'ESC' to ignore."

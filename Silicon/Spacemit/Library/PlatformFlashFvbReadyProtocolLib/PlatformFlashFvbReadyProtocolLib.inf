@@ -1,0 +1,31 @@
+## @file
+#  A hook-in library for modules depending on Flash Firmware Volume Block Service Ready Protocol.
+#
+#  Plugging this library instance into one module makes it depend on the
+#  gSpacemitFlashFvbServiceReadyProtocolGuid, to ensure the module is loaded after
+#  another module (usually a Flash DXE driver) produces this protocol.
+#
+#  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                   = 0x0001001b
+  BASE_NAME                     = PlatformFlashFvbReadyProtocolLib
+  FILE_GUID                     = 8481078F-53A6-4F2B-A60B-E318055C7F83
+  MODULE_TYPE                   = DXE_DRIVER
+  VERSION_STRING                = 1.0
+  LIBRARY_CLASS                 = NULL|DXE_DRIVER
+  CONSTRUCTOR                   = PlatformFlashFvbReadyProtocolLibConstructor
+
+[Sources]
+  PlatformFlashFvbReadyProtocolLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[Depex]
+  gSpacemitFlashFvbServiceReadyProtocolGuid

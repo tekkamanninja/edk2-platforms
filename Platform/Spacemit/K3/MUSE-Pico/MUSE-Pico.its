@@ -1,0 +1,46 @@
+/*
+ * SPDX-License-Identifier: BSD-2-Clause
+ *
+ * Copyright (c) 2025, Spacemit Ltd.
+ *
+ *  description for flattened image tree file.
+ */
+
+/dts-v1/;
+
+/ {
+    description = "EDK2 FIT image for K3 MUSE-Pico";
+    #address-cells = <2>;
+    fit,fdt-list = "of-list";
+
+    images {
+        uefi {
+            description = "EDK2";
+            type = "standalone";
+            os = "u-boot";
+            arch = "riscv";
+            compression = "none";
+            load = <0x1 0x02000000>;
+            data = /incbin/("./MUSE-PICO.fd");
+        };
+
+        fdt_1 {
+            description = "MUSE-Pico";
+            type = "flat_dt";
+            compression = "none";
+            data = /incbin/("./K3.dtb");
+            hash-1 {
+                algo = "crc32";
+            };
+        };
+    };
+
+    configurations {
+        default = "conf_1";
+        conf_1 {
+            description = "MUSE-Pico";
+            loadables = "uefi";
+            fdt = "fdt_1";
+        };
+    };
+};

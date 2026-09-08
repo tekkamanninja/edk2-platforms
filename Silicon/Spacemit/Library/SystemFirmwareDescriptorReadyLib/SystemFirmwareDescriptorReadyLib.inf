@@ -1,0 +1,31 @@
+## @file
+#  A hook-in library for modules depending on System Firmware Descriptor Service Ready Protocol.
+#
+#  Plugging this library instance into one module makes it depend on the
+#  gSpacemitSystemFirmwareDescriptorReadyProtocolGuid, to ensure the module is loaded after
+#  another module (usually a system firmware descriptor builder) produces this protocol.
+#
+#  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                   = 0x0001001b
+  BASE_NAME                     = SystemFirmwareDescriptorReadyLib
+  FILE_GUID                     = 23862476-6349-4824-8076-698743258193
+  MODULE_TYPE                   = DXE_DRIVER
+  VERSION_STRING                = 1.0
+  LIBRARY_CLASS                 = NULL|DXE_DRIVER
+  CONSTRUCTOR                   = SystemFirmwareDescriptorReadyLibConstructor
+
+[Sources]
+  SystemFirmwareDescriptorReadyLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[Depex]
+  gSpacemitSystemFirmwareDescriptorReadyProtocolGuid    ## CONSUMES

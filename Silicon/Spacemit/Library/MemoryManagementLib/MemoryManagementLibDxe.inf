@@ -1,0 +1,32 @@
+## @file
+#  Platform Memory Management library.
+#
+#  Copyright (c) 2024, Spacemit Limited. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = MemoryManagementLibDxe
+  FILE_GUID                      = EB0889C4-0C84-46CD-8F74-31513B27D470
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = MemoryManagementLib|DXE_DRIVER DXE_RUNTIME_DRIVER UEFI_DRIVER UEFI_APPLICATION
+  CONSTRUCTOR                    = MemoryManagementLibConstructor
+
+[Sources]
+  MemoryManagementLibDxe.c
+
+[Packages]
+  MdeModulePkg/MdeModulePkg.dec
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  DebugLib
+  PcdLib
+  UefiBootServicesTableLib
+  DxeServicesTableLib

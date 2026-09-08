@@ -1,0 +1,56 @@
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = I2cMasterDxe
+  FILE_GUID                      = 8CA0A6C6-6B3D-4C0C-A1D1-85F05D8A7C92
+  MODULE_TYPE                    = UEFI_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = I2cMasterEntryPoint
+
+[Sources]
+  I2cMaster.c
+  I2cMaster.h
+  I2cPcdConfig.h
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  UefiLib
+  UefiDriverEntryPoint
+  UefiBootServicesTableLib
+  MemoryAllocationLib
+  DebugLib
+  IoLib
+  TimerLib
+  BaseLib
+  BaseMemoryLib
+  PrintLib
+  DxeServicesTableLib
+  MemoryManagementLib
+
+[Protocols]
+  gEfiDriverBindingProtocolGuid                   ## PRODUCES
+  gEfiI2cMasterProtocolGuid                       ## PRODUCES
+  gEfiI2cEnumerateProtocolGuid                    ## PRODUCES
+  gEfiI2cBusConfigurationManagementProtocolGuid   ## PRODUCES
+  gEfiDevicePathProtocolGuid                      ## PRODUCES
+  gEfiI2cHostProtocolGuid                         ## CONSUMES
+  gSpacemitSiliconPinCtrlProtocolGuid             ## CONSUMES
+
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdI2cControllerConfigs
+  gSpacemitTokenSpaceGuid.PcdI2cSlaveConfig
+
+[FixedPcd]
+  gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel
+
+[Depex]
+  TRUE
+
+

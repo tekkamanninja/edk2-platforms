@@ -1,0 +1,54 @@
+## @file
+#  CTF2301 I2C PWM controller DXE driver.
+#
+#  Writes max PWM duty to register 0x4C at boot to enable the fan.
+#  The I2C controller index is configured via PcdCtf2301Configs in the DSC.
+#
+#  Copyright (c) 2026, Spacemit Corporation. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = SpacemitK3Ctf2301Dxe
+  FILE_GUID                      = 1E5A8C3D-6F2B-4A0E-9C7D-3B8E1F5A2468
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = Ctf2301EntryPoint
+
+[Sources]
+  Ctf2301Dxe.c
+  Ctf2301Dxe.h
+  Ctf2301PcdConfig.h
+
+[Packages]
+  MdeModulePkg/MdeModulePkg.dec
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+  Silicon/Spacemit/K3/K3.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  MemoryAllocationLib
+  PcdLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+  UefiLib
+
+[Protocols]
+  gEfiDriverBindingProtocolGuid   ## PRODUCES
+  gEfiI2cIoProtocolGuid           ## CONSUMES
+  gEfiI2cEnumerateProtocolGuid    ## SOMETIMES_CONSUMES
+  gEfiI2cMasterProtocolGuid       ## SOMETIMES_CONSUMES
+
+[Pcd]
+  gSpacemitK3TokenSpaceGuid.PcdCtf2301Configs
+  gSpacemitK3TokenSpaceGuid.PcdCtf2301Enable
+
+[Depex]
+  gEfiI2cIoProtocolGuid AND
+  gEfiI2cEnumerateProtocolGuid AND
+  gEfiI2cMasterProtocolGuid

@@ -1,0 +1,48 @@
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = SpacemitEepromDxe
+  FILE_GUID                      = 63B1DCD0-16FA-7118-BF60-E736B1A4A864
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = SpacemitEepromInitialise
+
+[Sources.common]
+  Eeprom.c
+  Eeprom.h
+  EepromPcdConfig.h
+
+[Packages]
+  MdeModulePkg/MdeModulePkg.dec
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  IoLib
+  PcdLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+  UefiLib
+
+[Protocols]
+  gEfiDriverBindingProtocolGuid
+  gSpacemitEepromProtocolGuid
+  gEfiI2cIoProtocolGuid          ## CONSUMES
+  gEfiI2cHostProtocolGuid        ## CONSUMES
+  gEfiI2cEnumerateProtocolGuid   ## CONSUMES
+  gEfiI2cMasterProtocolGuid      ## CONSUMES
+  gEfiDevicePathProtocolGuid     ## CONSUMES
+
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdEepromConfigs
+
+[Depex]
+  TRUE AND
+  gEfiI2cIoProtocolGuid AND
+  gEfiI2cHostProtocolGuid AND
+  gEfiI2cEnumerateProtocolGuid AND
+  gEfiI2cMasterProtocolGuid AND
+  gEfiDevicePathProtocolGuid
+

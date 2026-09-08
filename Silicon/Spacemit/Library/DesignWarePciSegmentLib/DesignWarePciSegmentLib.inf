@@ -1,0 +1,31 @@
+## @file
+#  PCI Segment Library for Synopsys DesignWare PCIe controller
+#
+#  Copyright (c) 2016 - 2018, Intel Corporation. All rights reserved.
+#  Copyright (c) 2024, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = DesignWarePciSegmentLib
+  FILE_GUID                      = F15D8072-FA4C-438D-B5FC-979287003121
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = PciSegmentLib
+
+[Sources]
+  DesignWarePciSegmentLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  IoLib
+  BaseMemoryLib
+  DesignWarePcieControllerLib

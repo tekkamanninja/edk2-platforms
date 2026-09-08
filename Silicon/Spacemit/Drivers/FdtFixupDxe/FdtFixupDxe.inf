@@ -1,0 +1,46 @@
+#/** @file
+#
+#    Copyright (c) 2025, Spacemit Limited. All rights reserved.
+#
+#    SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = FdtFixupDxe
+  FILE_GUID                      = 02e4b0b8-b91b-43c4-8c3d-3a93d0a900b4
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = FdtFixupInitialize
+
+[Sources.common]
+  FdtFixupDxe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  UefiLib
+  UefiDriverEntryPoint
+  FdtLib
+  HobLib
+  TimerLib
+
+[Guids]
+
+[Protocols]
+  gEfiFdtFixupProtocolGuid                       ## PRODUCES
+  gSpacemitPlatformInfoProtocolGuid              ## CONSUMES
+
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdDefaultSerialNumber
+  gSpacemitTokenSpaceGuid.PcdDefaultPartNumber
+
+[Depex]
+  gSpacemitPlatformInfoProtocolGuid

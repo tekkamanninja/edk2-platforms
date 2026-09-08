@@ -1,0 +1,61 @@
+## @file
+#  TLV EEPROM Tool application for UEFI Shell
+#  Provides commands for TLV EEPROM operations
+#
+#  Copyright (c) 2024, SpacemiT Co., Ltd. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010006
+  BASE_NAME                      = UefiShellTlvLib
+  FILE_GUID                      = 8A2F4D0E-9B3C-4F1A-A5D6-C7E8F9A0B1C2
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = NULL|UEFI_APPLICATION UEFI_DRIVER
+  CONSTRUCTOR                    = ShellTlvLibConstructor
+  DESTRUCTOR                     = ShellTlvLibDestructor
+
+#
+#  VALID_ARCHITECTURES           = IA32 X64 ARM AARCH64 RISCV64
+#
+
+[Sources]
+  TlvCmd.c
+  TlvCmd.uni
+
+[Packages]
+  MdePkg/MdePkg.dec
+  ShellPkg/ShellPkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  UefiLib
+  UefiBootServicesTableLib
+  MemoryAllocationLib
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  ShellCommandLib
+  ShellLib
+  UefiRuntimeServicesTableLib
+  PcdLib
+  HiiLib
+  FileHandleLib
+  PrintLib
+  ShellCEntryLib
+
+[Protocols]
+  gSpacemitTlvInfoProtocolGuid   ## CONSUMES
+
+[Guids]
+  gShellTlvToolHiiGuid           ## CONSUMES
+
+[BuildOptions]
+  *_*_*_CC_FLAGS = -DDISABLE_NEW_DEPRECATED_INTERFACES
+
+[BuildOptions.RISCV64]
+  GCC:*_*_*_DLINK_FLAGS = -z noexecstack -z relro -z now

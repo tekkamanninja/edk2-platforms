@@ -1,0 +1,42 @@
+## @file
+#  PCI Segment Library
+#
+#  Copyright (c) 2016 - 2018, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 2024, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = PciSegmentLib
+  FILE_GUID                      = 8FD3104E-8B3A-B98D-B7FB-94B38876652B
+  MODULE_TYPE                    = BASE
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = PciSegmentLib
+  CONSTRUCTOR                    = PciSegmentLibConstructor
+  DESTRUCTOR                     = PciSegmentLibDestructor
+
+#
+# The following information is for reference only and not required by the build
+# tools.
+#
+#  VALID_ARCHITECTURES           = RISCV64
+#
+
+[Sources]
+  PciSegmentLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  IoLib
+  PcdLib
+
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdBoardPciRootBridgeResourceConfigTable

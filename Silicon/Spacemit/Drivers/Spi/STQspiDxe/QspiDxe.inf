@@ -1,0 +1,52 @@
+#
+# SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = SpacemitQspiDxe
+  FILE_GUID                      = D6F412A4-4128-4FDF-B63B-60944577E736
+  MODULE_TYPE                    = DXE_RUNTIME_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = SpacemitQspiEntryPoint
+
+[Sources]
+  QspiDxe.c
+  QspiDxe.h
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  IoLib
+  DebugLib
+  TimerLib
+  DxeServicesTableLib
+  MemoryAllocationLib
+  NorFlashInfoLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+  UefiLib
+  UefiRuntimeLib
+  MemoryManagementLib
+
+[Guids]
+  gEfiEventVirtualAddressChangeGuid
+
+[FixedPcd]
+  gSpacemitTokenSpaceGuid.PcdSFMemMapBaseAddress
+  gSpacemitTokenSpaceGuid.PcdSTQspiRegBase
+  gSpacemitTokenSpaceGuid.PcdSTQspiMaxFrequency
+  gSpacemitTokenSpaceGuid.PcdSTQspiControllerId
+  gSpacemitTokenSpaceGuid.PcdSTQspiControllerName
+
+[Protocols]
+  gSpacemitSpiMasterProtocolGuid         ## PRODUCES
+  gSpacemitSiliconClockCtrlProtocolGuid  ## CONSUMES
+  gSpacemitSiliconPinCtrlProtocolGuid    ## CONSUMES
+
+[Depex]
+  gSpacemitSiliconClockCtrlProtocolGuid AND gSpacemitSiliconPinCtrlProtocolGuid

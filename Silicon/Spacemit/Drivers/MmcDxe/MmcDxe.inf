@@ -1,0 +1,51 @@
+#/** @file
+#  Build file for the MMC DXE driver
+#
+#  Copyright (c) 2011-2015, ARM Limited. All rights reserved.
+#  Copyright (c) 2025, Spacemit Limited. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+#**/
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = MmcDxe
+  FILE_GUID                      = cc467531-2903-4239-8c26-9b1df444242f
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+
+  ENTRY_POINT                    = MmcDxeInitialize
+
+[Sources.common]
+  ComponentName.c
+  Mmc.c
+  MmcBlockIo.c
+  MmcIdentification.c
+  MmcDebug.c
+  MmcDiskInfo.c
+  Diagnostics.c
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdePkg/MdePkg.dec
+
+[LibraryClasses]
+  BaseLib
+  UefiLib
+  UefiDriverEntryPoint
+  BaseMemoryLib
+
+[Guids]
+  gEfiDiskInfoSdMmcInterfaceGuid                ## SOMETIMES_CONSUMES ## GUID
+
+[Protocols]
+  gEfiDiskIoProtocolGuid
+  gEfiBlockIoProtocolGuid
+  gEfiDiskInfoProtocolGuid
+  gEfiDevicePathProtocolGuid
+  gEmbeddedMmcHostProtocolGuid
+  gEfiDriverDiagnostics2ProtocolGuid
+
+[Depex]
+  TRUE

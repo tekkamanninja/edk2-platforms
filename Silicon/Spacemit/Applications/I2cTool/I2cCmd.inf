@@ -1,0 +1,64 @@
+## @file
+#  I2C Tool application for UEFI Shell
+#  Provides commands for I2C bus and device operations similar to Linux i2c-tools
+#
+#  Copyright (c) 2023, SpacemiT Co., Ltd. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010006
+  BASE_NAME                      = UefiShellI2cLib
+  FILE_GUID                      = 3F7280A1-5F0A-4B76-AA34-DD8DBCF21C7F
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = NULL|UEFI_APPLICATION UEFI_DRIVER
+  CONSTRUCTOR                    = ShellI2cLibConstructor
+  DESTRUCTOR                     = ShellI2cLibDestructor
+
+#
+#  VALID_ARCHITECTURES           = IA32 X64 ARM AARCH64 RISCV64
+#
+
+[Sources]
+  I2cCmd.c
+  I2cCmd.uni
+
+[Packages]
+  EmbeddedPkg/EmbeddedPkg.dec
+  MdePkg/MdePkg.dec
+  ShellPkg/ShellPkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  UefiLib
+  UefiBootServicesTableLib
+  MemoryAllocationLib
+  BaseLib
+  BaseMemoryLib
+  DebugLib
+  ShellCommandLib
+  ShellLib
+  UefiRuntimeServicesTableLib
+  PcdLib
+  HiiLib
+  FileHandleLib
+  PrintLib
+  ShellCEntryLib
+
+[Protocols]
+  gEfiI2cIoProtocolGuid          ## CONSUMES
+  gEfiI2cEnumerateProtocolGuid   ## CONSUMES
+
+[Guids]
+  gEfiHiiPlatformSetupFormsetGuid   ## SOMETIMES_CONSUMES
+  gShellI2cHiiGuid                  ## CONSUMES
+
+[BuildOptions]
+  *_*_*_CC_FLAGS = -DDISABLE_NEW_DEPRECATED_INTERFACES
+
+[BuildOptions.RISCV64]
+  GCC:*_*_*_DLINK_FLAGS = -z noexecstack -z relro -z now

@@ -1,0 +1,59 @@
+## @file
+#
+#  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.<BR>
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = SpacemitDp
+  FILE_GUID                      = F239D9A7-BCD8-4AD4-9CFD-C7243ACDD7FA
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = LcdInitDp
+
+[Sources]
+  InnoDpPhy.c
+  InnoDp.c
+  LcdDpDxe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+  Silicon/Spacemit/K3/K3.dec
+
+[LibraryClasses]
+  UefiDriverEntryPoint
+  TimerLib
+  UefiLib
+  DebugLib
+  UefiBootServicesTableLib
+  MemoryAllocationLib
+  BaseMemoryLib
+  IoLib
+  PcdLib
+  BaseLib
+  MemoryManagementLib
+  CacheMaintenanceLib
+
+[Protocols]
+  gSpacemitLcdConnectorProtocolGuid
+  gSpacemitSiliconPinCtrlProtocolGuid
+  gSpacemitSiliconClockCtrlProtocolGuid  ## CONSUMES
+  gEmbeddedGpioProtocolGuid              ## CONSUMES
+
+[Pcd]
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitDp0RegBase
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitDp1RegBase
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitDpu0RegBase
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitDpu1RegBase
+  gSpacemitK3TokenSpaceGuid.PcdSpacemitAPMURegBase
+  gSpacemitTokenSpaceGuid.PcdDpGpioPowerPin
+  gSpacemitTokenSpaceGuid.PcdDpGpioEnablePin
+  gSpacemitTokenSpaceGuid.PcdDpGpioBlPin
+
+[Depex]
+  TRUE

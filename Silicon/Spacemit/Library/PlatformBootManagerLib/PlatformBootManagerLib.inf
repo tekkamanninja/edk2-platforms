@@ -1,0 +1,52 @@
+## @file
+#  Spacemit implementation of PlatformBootManagerLib.
+#
+#  Copyright (c) 2024, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001b
+  BASE_NAME                      = SpacemitPlatformBootManagerLib
+  FILE_GUID                      = 054AB898-F71B-43D8-85A5-93D81309A5DA
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = PlatformBootManagerLib|DXE_DRIVER
+
+#
+# The following information is for reference only and not required by the build tools.
+#
+#  VALID_ARCHITECTURES           = RISCV64
+#
+
+[Sources]
+  PlatformBootManager.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  ShellPkg/ShellPkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  PcdLib
+  UefiLib
+  DevicePathLib
+  UefiBootManagerLib
+  UefiBootServicesTableLib
+  MemoryAllocationLib
+  BootLogoLib
+
+[Guids]
+  gEfiEndOfDxeEventGroupGuid                     ## CONSUMES
+  gUefiShellFileGuid                             ## CONSUMES
+  gSpacemitBdsAfterConsoleEventGroupGuid         ## CONSUMES
+
+[Protocols]
+  gEfiLoadedImageProtocolGuid                    ## CONSUMES
+
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdEscEnterBootMenu

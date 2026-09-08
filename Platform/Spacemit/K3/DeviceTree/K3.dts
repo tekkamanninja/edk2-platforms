@@ -1,0 +1,356 @@
+/*
+ * SPDX-License-Identifier: BSD-2-Clause
+ *
+ * Copyright (c) 2025, Spacemit Ltd.
+ *
+ */
+
+/dts-v1/;
+
+#include "K3Cpus.dtsi"
+
+/ {
+	compatible = "spacemit,k3", "riscv";
+	#address-cells = <2>;
+	#size-cells = <2>;
+
+	chosen {
+		stdout-path = "uart0:115200";
+	};
+
+	aliases {
+		console = &uart0;
+	};
+
+	memory@100000000 {
+		device_type = "memory";
+		reg = <0x1 0x00000000 0x0 0x80000000>;
+	};
+
+	soc {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		compatible = "simple-bus";
+		ranges;
+
+		clint0: clint@f1810000 {
+			compatible = "riscv,clint0";
+			interrupts-extended = <&cpu0_intc  3 &cpu0_intc  7
+				&cpu1_intc  3 &cpu1_intc  7
+				&cpu2_intc  3 &cpu2_intc  7
+				&cpu3_intc  3 &cpu3_intc  7
+				&cpu4_intc  3 &cpu4_intc  7
+				&cpu5_intc  3 &cpu5_intc  7
+				&cpu6_intc  3 &cpu6_intc  7
+				&cpu7_intc  3 &cpu7_intc  7
+				&cpu8_intc  3 &cpu8_intc  7
+				&cpu9_intc  3 &cpu9_intc  7
+				&cpu10_intc  3 &cpu10_intc  7
+				&cpu11_intc  3 &cpu11_intc  7
+				&cpu12_intc  3 &cpu12_intc  7
+				&cpu13_intc  3 &cpu13_intc  7
+				&cpu14_intc  3 &cpu14_intc  7
+				&cpu15_intc  3 &cpu15_intc  7
+			>;
+			reg = <0x0 0xf1810000 0x0 0x00010000>;
+			clint,has-no-64bit-mmio;
+		};
+
+		maplic: interrupt-controller@f1800000 {
+			compatible = "riscv,aplic";
+			msi-parent = <&mimsic>;
+			/*aplic config*/
+			reg = <0x0 0xf1800000 0x0 0x4000>;
+			interrupt-controller;
+			#interrupt-cells = <2>;
+			/*the number of wired interrupt sources*/
+			riscv,num-sources = <512>;
+			riscv,children = <&saplic>;
+			/*M-mode delegate S-mode*/
+			riscv,delegate = <&saplic 1 512>;
+			status = "okay";
+		};
+
+		saplic: interrupt-controller@e0804000 {
+			compatible = "riscv,aplic";
+			/*aplic config*/
+			reg = <0x0 0xe0804000 0x0 0x4000>;
+			msi-parent = <&simsic>;
+			#interrupt-cells = <2>;
+			interrupt-controller;
+			/*the number of wired interrupt sources*/
+			riscv,num-sources = <512>;
+			status = "disabled";
+		};
+
+		mimsic: interrupt-controller@f1000000 {
+			compatible = "riscv,imsics";
+			interrupts-extended = <&cpu0_intc 11 &cpu1_intc 11
+					&cpu2_intc 11 &cpu3_intc 11
+					&cpu4_intc 11 &cpu5_intc 11
+					&cpu6_intc 11 &cpu7_intc 11
+					&cpu8_intc 11 &cpu9_intc 11
+					&cpu10_intc 11 &cpu11_intc 11
+					&cpu12_intc 11 &cpu13_intc 11
+					&cpu14_intc 11 &cpu15_intc 11>;
+			reg = <0x0 0xf1000000 0x0 0x10000>;
+			interrupt-controller;
+			#interrupt-cells = <0>;
+			#msi-cells = <0>;
+			msi-controller;
+			/* Number of interrupt identities: 511 */
+			riscv,num-ids = <511>;
+			status = "okay";
+		};
+
+		simsic: interrupt-controller@e0400000 {
+			compatible = "riscv,imsics";
+			interrupts-extended = <&cpu0_intc 9 &cpu1_intc 9
+				&cpu2_intc 9 &cpu3_intc 9
+				&cpu4_intc 9 &cpu5_intc 9
+				&cpu6_intc 9 &cpu7_intc 9
+				&cpu8_intc 9 &cpu9_intc 9
+				&cpu10_intc 9 &cpu11_intc 9
+				&cpu12_intc 9 &cpu13_intc 9
+				&cpu14_intc 9 &cpu15_intc 9>;
+			reg = <0x0 0xe0400000 0x0 0x400000>;
+			interrupt-controller;
+			#interrupt-cells = <0>;
+			#msi-cells = <0>;
+			msi-controller;
+			/* Number of interrupt identities: 511 */
+			riscv,num-ids = <511>;
+			/* Number of guest interrupt identities: 511 */
+			riscv,num-guest-ids = <511>;
+			/* Number of HART index bits: 4 (2^4 = 16 harts) */
+			riscv,hart-index-bits = <4>;
+			/*
+			 * Number of guest index bits: 6
+			 *   2^6 = 64 interrupt files
+			 *       = 1 s-level interrupt file + 63 vs-level interrupt files
+			 *
+			 * But on K3,
+			 *   X100: only 7 of the 63 vs-level interrupt files are valid.
+			 *   A100: no valid vs-level interrupt files.
+			 */
+			riscv,guest-index-bits = <6>;
+			status = "okay";
+		};
+
+		rpmi_shmem_mbox: rpmi-shmem-mbox@cac90c00 {
+			compatible = "riscv,rpmi-shmem-mbox";
+			reg = <0x1 0x00e00000 0x0 0x1000>,
+				<0x1 0x00e01000 0x0 0x1000>,
+				<0x1 0x00e02000 0x0 0x1000>,
+				<0x1 0x00e03000 0x0 0x1000>,
+				<0x0 0xcac90c00 0x0 0x100>;
+			reg-names = "a2p-req", "p2a-ack", "p2a-req", "a2p-ack", "db-reg";
+			riscv,slot-size = <256>;
+			#mbox-cells = <1>;
+			status = "okay";
+		};
+
+		rpmi_mpxy_clk: rpmi-mpxy-clk@0 {
+			compatible = "riscv,rpmi-mpxy-clock";
+			mboxes = <&rpmi_shmem_mbox 8>;
+			riscv,sbi-mpxy-channel-id = <8>;
+			status = "okay";
+		};
+
+		rpmi_mpxy_voltage: rpmi-mpxy-voltage@0 {
+			compatible = "riscv,rpmi-mpxy-voltage";
+			mboxes = <&rpmi_shmem_mbox 7>;
+			riscv,sbi-mpxy-channel-id = <7>;
+			status = "okay";
+		};
+
+		rpmi_system_suspend: rpmi-system-suspend@0 {
+			compatible = "riscv,rpmi-system-suspend";
+			mboxes = <&rpmi_shmem_mbox 4>;
+			riscv,sbi-mpxy-channel-id = <4>;
+			status = "okay";
+		};
+
+		rpmi_mpxy_hsm: rpmi-mpxy-hsm@0 {
+			compatible = "riscv,rpmi-hsm";
+			mboxes = <&rpmi_shmem_mbox 5>;
+			riscv,sbi-mpxy-channel-id = <5>;
+			status = "okay";
+		};
+
+		rpmi_mpxy_domain: rpmi-mpxy-domain@0 {
+			compatible = "riscv,rpmi-mpxy-domain";
+			mboxes = <&rpmi_shmem_mbox 9>;
+			riscv,sbi-mpxy-channel-id = <9>;
+			status = "okay";
+		};
+
+		rpmi_mpxy_rtc: rpmi-mpxy-rtc@0 {
+			compatible = "riscv,rpmi-mpxy-rtc";
+			mboxes = <&rpmi_shmem_mbox 14>;
+			riscv,sbi-mpxy-channel-id = <14>;
+			status = "okay";
+		};
+
+		rpmi_mpxy_pwrkey: rpmi-mpxy-pwrkey@0 {
+			compatible = "riscv,rpmi-mpxy-pwrkey";
+			mboxes = <&rpmi_shmem_mbox 15>;
+			riscv,sbi-mpxy-channel-id = <15>;
+			status = "okay";
+		};
+
+		rpmi_mpxy_sysreset: rpmi-mpxy-sysreset@0 {
+			compatible = "riscv,rpmi-system-reset";
+			mboxes = <&rpmi_shmem_mbox 3>;
+			riscv,sbi-mpxy-channel-id = <3>;
+			status = "okay";
+		};
+
+		uart0: uart@d4017000 {
+			compatible = "ns16550";
+			reg = <0x00000000 0xD4017000 0x00000000 0x00000100>;
+			reg-shift = <2>;
+			reg-io-width = <4>;
+			clock-frequency = <14745600>;
+			status = "okay";
+		};
+
+		pinctrl: pinctrl@d401e000 {
+			compatible = "pinctrl-single";
+			reg = <0x0 0xd401e000 0x0 0x400>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+			#pinctrl-cells = <2>;
+			#gpio-range-cells = <3>;
+			pinctrl-single,register-width = <32>;
+			pinctrl-single,function-mask = <0xfff7>;
+
+			range: gpio-range {
+				#pinctrl-single,gpio-range-cells = <3>;
+			};
+		};
+
+	};
+
+	/* X100 PMU (Performance Monitoring Unit) */
+	pmu {
+		compatible = "riscv,pmu";
+
+		riscv,event-to-mhpmevent =
+			/* CPU_CYCLES */
+			<0x00001 0x0 0x1e>,
+			/* INSTRUCTIONS */
+			<0x00002 0x0 0x1f>,
+			/* BRANCH_INSTRUCTIONS */
+			<0x00005 0x0 0x01>,
+			/* BRANCH_MISSES */
+			<0x00006 0x0 0x02>,
+			/* STALLED_CYCLES_FRONTEND */
+			<0x00008 0x0 0x03>,
+			/* STALLED_CYCLES_BACKEND */
+			<0x00009 0x0 0x04>,
+			/* L1D_READ_ACCESS */
+			<0x10000 0x0 0x06>,
+			/* L1D_READ_MISS */
+			<0x10001 0x0 0x05>,
+			/* L1D_WRITE_ACCESS */
+			<0x10002 0x0 0x0a>,
+			/* L1D_WRITE_MISS */
+			<0x10003 0x0 0x09>,
+			/* L1D_PREFETCH_ACCESS */
+			<0x10004 0x0 0x08>,
+			/* L1D_PREFETCH_MISS */
+			<0x10005 0x0 0x07>,
+			/* L1I_READ_ACCESS  */
+			<0x10008 0x0 0x0c>,
+			/* L1I_READ_MISS */
+			<0x10009 0x0 0x0b>,
+			/* DTLB_READ_ACCESS */
+			<0x10018 0x0 0x16>,
+			/* DTLB_WRITE_ACCESS */
+			<0x1001a 0x0 0x1a>,
+			/* DTLB_WRITE_MISS */
+			<0x1001b 0x0 0x19>,
+			/* ITLB_READ_ACCESS */
+			<0x10020 0x0 0x1c>,
+			/* ITLB_READ_MISS */
+			<0x10021 0x0 0x1b>;
+
+		/*
+		 * 16 valid counters: mhpmcounter3 ~ mhpmcounter18
+		 *   - mhpmcounter17: Cycles
+		 *   - mhpmcounter18: Instructions
+		 *   - mhpmcounter3~16: Other events
+		 */
+		riscv,event-to-mhpmcounters =
+			<0x00001 0x00001 0x00020000>,
+			<0x00002 0x00002 0x00040000>,
+			<0x00005 0x00006 0x0001fff8>,
+			<0x00008 0x00009 0x0001fff8>,
+			<0x10000 0x10005 0x0001fff8>,
+			<0x10008 0x10009 0x0001fff8>,
+			<0x10018 0x10018 0x0001fff8>,
+			<0x1001a 0x1001b 0x0001fff8>,
+			<0x10020 0x10021 0x0001fff8>;
+
+		/*
+		 * 16 valid counters: mhpmcounter3 ~ mhpmcounter18
+		 *   - mhpmcounter17: Cycles
+		 *   - mhpmcounter18: Instructions
+		 *   - mhpmcounter3~16: Other events
+		 */
+		riscv,raw-event-to-mhpmcounters =
+			<0x0 0x01 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x02 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x03 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x04 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x05 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x06 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x07 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x08 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x09 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x0a 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x0b 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x0c 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x10 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x11 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x12 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x13 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x14 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x15 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x16 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x17 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x18 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x19 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x1a 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x1b 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x1c 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x1e 0xffffffff 0xffffffff 0x00020000>,  /* Cycles */
+			<0x0 0x1f 0xffffffff 0xffffffff 0x00040000>,  /* Instructions */
+			<0x0 0x20 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x21 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x22 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x24 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x25 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x26 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x27 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x28 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x29 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x2b 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x2d 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x32 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x33 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x34 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x35 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x36 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x37 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x38 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x3a 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x3b 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x3c 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x3d 0xffffffff 0xffffffff 0x0001fff8>,
+			<0x0 0x3f 0xffffffff 0xffffffff 0x0001fff8>;
+	};
+};
+
+#include "../MUSE-Pico/DeviceTree/MUSE-PicoPinctrl.dtsi"

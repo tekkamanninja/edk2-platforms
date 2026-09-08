@@ -1,0 +1,31 @@
+## @file
+#  RISC-V SBI MPXY interfaces
+#
+#  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                   = 0x0001001b
+  BASE_NAME                     = RiscVSbiMpxyLib
+  FILE_GUID                     = 463C6C68-2DF3-4AC1-8FD7-AAC46C23B00E
+  MODULE_TYPE                   = DXE_DRIVER
+  VERSION_STRING                = 1.0
+  LIBRARY_CLASS                 = RiscVSbiMpxyLib|DXE_DRIVER DXE_RUNTIME_DRIVER UEFI_APPLICATION UEFI_DRIVER
+  CONSTRUCTOR                   = RiscVSbiMpxyLibConstructor
+  DESTRUCTOR                    = RiscVSbiMpxyLibDestructor
+
+[Sources]
+  RiscVSbiMpxyLib.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  DebugLib
+  MemoryAllocationLib
+  RiscVSbiLib

@@ -1,0 +1,71 @@
+// /** @file
+// TLV EEPROM Tool command
+//
+// Copyright (c) 2024, SpacemiT Co., Ltd. All rights reserved.<BR>
+//
+// SPDX-License-Identifier: BSD-2-Clause-Patent
+//
+// **/
+
+/=#
+
+#langdef   en-US "english"
+
+#string STR_GEN_TOO_MANY           #language en-US "%H%s%N: Too many arguments.\r\n"
+#string STR_GEN_TOO_FEW            #language en-US "%H%s%N: Too few arguments.\r\n"
+#string STR_GEN_PARAM_INV          #language en-US "%H%s%N: Invalid argument - '%H%s%N'\r\n"
+#string STR_GEN_PROBLEM            #language en-US "%H%s%N: Unknown flag - '%H%s%N'\r\n"
+#string STR_GEN_NO_VALUE           #language en-US "%H%s%N: Missing argument for flag - '%H%s%N'\r\n"
+#string STR_GEN_ERR_AD             #language en-US "%H%s%N: Access denied.\r\n"
+#string STR_GEN_FIND_FAIL          #language en-US "%H%s%N: File not found - '%H%s%N'\r\n"
+
+#string STR_GET_HELP_TLVTOOL       #language en-US ""
+".TH tlvtool 0 "Manage TLV EEPROM information."\r\n"
+".SH NAME\r\n"
+"Manage TLV EEPROM information.\r\n"
+".SH SYNOPSIS\r\n"
+" \r\n"
+"tlvtool show\r\n"
+"tlvtool get <code>\r\n"
+"tlvtool set <code> <value>\r\n"
+"tlvtool flush\r\n"
+"tlvtool clear\r\n"
+".SH OPTIONS\r\n"
+" \r\n"
+"  show                    - Display all TLV information\r\n"
+"  get <code>              - Get TLV value by code\r\n"
+"  set <code> <value>      - Set TLV value (not saved until flush)\r\n"
+"  flush                   - Save changes to EEPROM\r\n"
+"  clear                   - Clear all TLV data\r\n"
+".SH DESCRIPTION\r\n"
+" \r\n"
+"NOTES:\r\n"
+"  This command manages TLV (Type-Length-Value) formatted EEPROM data.\r\n"
+"  Common TLV codes:\r\n"
+"    0x21 - Product Name\r\n"
+"    0x22 - Part Number\r\n"
+"    0x23 - Serial Number\r\n"
+"    0x24 - MAC Base Address\r\n"
+"    0x25 - Manufacture Date\r\n"
+"    0x26 - Device Version\r\n"
+".SH EXAMPLES\r\n"
+" \r\n"
+"EXAMPLES:\r\n"
+"  * To display all TLV information:\r\n"
+"    fs0:\> tlvtool show\r\n"
+" \r\n"
+"  * To get serial number:\r\n"
+"    fs0:\> tlvtool get 0x23\r\n"
+" \r\n"
+"  * To set product name:\r\n"
+"    fs0:\> tlvtool set 0x21 MUSE-Pico\r\n"
+" \r\n"
+"  * To save changes:\r\n"
+"    fs0:\> tlvtool flush\r\n"
+".SH RETURNVALUES\r\n"
+" \r\n"
+"RETURN VALUES:\r\n"
+"  SHELL_SUCCESS             The action was completed as requested.\r\n"
+"  SHELL_NOT_FOUND           TLV protocol not found.\r\n"
+"  SHELL_DEVICE_ERROR        Operation failed.\r\n"
+"  SHELL_INVALID_PARAMETER   Invalid parameters.\r\n"

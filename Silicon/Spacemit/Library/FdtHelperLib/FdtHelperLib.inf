@@ -1,0 +1,31 @@
+## @file
+#  Provides FDT helper interfaces based on FdtLib.
+#
+#  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                     = 0x0001001b
+  BASE_NAME                       = FdtHelperLib
+  FILE_GUID                       = 75A053CE-8572-4B03-BB4B-22C65E6BB7F0
+  MODULE_TYPE                     = BASE
+  VERSION_STRING                  = 1.0
+  LIBRARY_CLASS                   = FdtHelperLib
+
+[Sources]
+  Common.c
+  Cpu.c
+  Pci.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  DebugLib
+  FdtLib
+  MemoryAllocationLib

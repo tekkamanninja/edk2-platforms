@@ -1,0 +1,49 @@
+## @file
+#  System Firmware descriptor.
+#
+#  Copyright (c) 2016, Intel Corporation. All rights reserved.<BR>
+#  Copyright (c) 2025, Spacemit Ltd. All rights reserved.<BR>
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001000B
+  BASE_NAME                      = SystemFirmwareDescriptor
+  FILE_GUID                      = 90B2B846-CA6D-4D6E-A8D3-C140A8E110AC
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = SystemFirmwareDescriptorEntry
+
+[Sources]
+  SystemFirmwareDescriptorDxe.c
+  SystemFirmwareDescriptor.aslc
+
+[Packages]
+  MdePkg/MdePkg.dec
+  MdeModulePkg/MdeModulePkg.dec
+  SignedCapsulePkg/SignedCapsulePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseLib
+  PcdLib
+  DebugLib
+  UefiDriverEntryPoint
+
+[Protocols]
+  gSpacemitSystemFirmwareDescriptorReadyProtocolGuid    ## PRODUCES
+  gEfiFirmwareVolume2ProtocolGuid                       ## CONSUMES
+
+[Pcd]
+  gSpacemitTokenSpaceGuid.PcdFdSize
+  gSpacemitTokenSpaceGuid.PcdFvBaseAddress
+  gSpacemitTokenSpaceGuid.PcdSFMemMapBaseAddress
+  gEfiMdeModulePkgTokenSpaceGuid.PcdSystemFmpCapsuleImageTypeIdGuid
+  gEfiSignedCapsulePkgTokenSpaceGuid.PcdEdkiiSystemFirmwareImageDescriptor
+
+[Guids]
+  gEdkiiSystemFirmwareImageDescriptorFileGuid           ## CONSUMES
+
+[Depex]
+  gEfiFirmwareVolume2ProtocolGuid

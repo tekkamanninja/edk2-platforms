@@ -1,0 +1,41 @@
+## @file
+#  Communication interfaces with regulator over MPXY RPMI
+#
+#  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                   = 0x00010005
+  BASE_NAME                     = RpmiVoltageDxe
+  FILE_GUID                     = E6B65E00-B9CB-42E9-BD86-A75A82863E48
+  MODULE_TYPE                   = DXE_DRIVER
+  VERSION_STRING                = 1.0
+  ENTRY_POINT                   = RpmiVoltageInitialize
+
+[Sources]
+  RiscvSbiMpxyRpmiVoltageDxe.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  Silicon/Spacemit/SpacemitPkg.dec
+
+[LibraryClasses]
+  BaseMemoryLib
+  DebugLib
+  UefiDriverEntryPoint
+  MemoryAllocationLib
+  RiscVSbiMpxyLib
+  RiscVSbiMpxyRpmiLib
+
+[Pcd]
+
+[Protocols]
+  gSpacemitSiliconVoltageProtocolGuid            ## PRODUCES
+
+[Guids]
+
+[Depex]
+  TRUE
