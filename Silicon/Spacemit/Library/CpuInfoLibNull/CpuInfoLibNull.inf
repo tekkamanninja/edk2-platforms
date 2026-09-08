@@ -1,0 +1,21 @@
+## @file
+#  Null implementation of CpuInfoLib.
+#
+#  Copyright (c) 2025, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = CpuInfoLibNull
+  FILE_GUID                      = 3A7E4B2C-D1F8-4E9A-B5C6-8F2D1E0A7B34
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = CpuInfoLib
+
+[Sources]
+  CpuInfoLibNull.c
+
+[Packages]
+  MdePkg/MdePkg.dec

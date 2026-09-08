@@ -4,8 +4,9 @@
   the correct PCD SKU before any SKU-sensitive driver runs.
 
   SKU mapping:
-    model contains "com260"  ->  SKU 1 (COM260)
-    anything else            ->  SKU 0 (DEFAULT)
+    model contains "com260"   ->  SKU 1 (COM260)
+    model contains "fml13v05" ->  SKU 2 (FML13V05)
+    anything else             ->  SKU 0 (DEFAULT)
 
   Copyright (c) 2025, Spacemit Corporation
 
@@ -27,6 +28,7 @@
 
 #define SKU_ID_DEFAULT  0
 #define SKU_ID_COM260   1
+#define SKU_ID_FML13V05 2
 
 STATIC
 CONST VOID *
@@ -111,6 +113,9 @@ SkuSelectDxeEntryPoint (
   if (AsciiStrStr (Model, "k3_com260") != NULL) {
     SkuId = SKU_ID_COM260;
     DEBUG ((DEBUG_INFO, "%a: SKU set to COM260 (%u)\n", __func__, SkuId));
+  } else if (AsciiStrStr (Model, "k3-deepcomputing-fml13v05") != NULL) {
+    SkuId = SKU_ID_FML13V05;
+    DEBUG ((DEBUG_INFO, "%a: SKU set to FML13V05 (%u)\n", __func__, SkuId));
   } else {
     SkuId = SKU_ID_DEFAULT;
     DEBUG ((DEBUG_INFO, "%a: SKU set to DEFAULT (%u)\n", __func__, SkuId));

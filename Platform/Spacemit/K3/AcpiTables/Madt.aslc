@@ -1,0 +1,129 @@
+/** @file
+  Multiple APIC Description Table (MADT)
+
+  Copyright (c) 2026, SpacemiT Co., Ltd. All rights reserved.<BR>
+
+  SPDX-License-Identifier: BSD-2-Clause-Patent
+**/
+
+#include <Library/AcpiLib.h>
+#include <IndustryStandard/Acpi.h>
+#include "K3PlatformAcpi.h"
+#include <Acpi66Temp.h>
+
+#pragma pack(1)
+typedef struct {
+  EFI_ACPI_6_6_MULTIPLE_APIC_DESCRIPTION_TABLE_HEADER    Header;
+  EFI_ACPI_6_6_RINTC_STRUCTURE                           Rintc[FixedPcdGet32 (PcdX100HartCount)];
+  EFI_ACPI_6_6_IMSIC_STRUCTURE                           Imsic;
+  EFI_ACPI_6_6_APLIC_STRUCTURE                           Aplic;
+} EFI_ACPI_MULTIPLE_APIC_DESCRIPTION_TABLE;
+#pragma pack()
+
+STATIC EFI_ACPI_MULTIPLE_APIC_DESCRIPTION_TABLE  Madt = {
+  {
+    ACPI_HEADER (
+      EFI_ACPI_6_5_MULTIPLE_APIC_DESCRIPTION_TABLE_SIGNATURE,
+      EFI_ACPI_MULTIPLE_APIC_DESCRIPTION_TABLE,
+      EFI_ACPI_6_5_MULTIPLE_APIC_DESCRIPTION_TABLE_REVISION
+      ),
+    //
+    // MADT specific fields
+    //
+    0,    // LocalApicAddress
+    0,    // Flags
+  },
+
+  // 1. RINTC Structure (Hart 0)
+  {
+    EFI_ACPI_6_6_RINTC_STRUCTURE_INIT (
+      0x00000001,    // Flags
+      0x0,           // HartId
+      0x0,           // AcpiProcessorUid
+      0x0,           // ExtIntcId
+      0xE0400000,    // ImsicAddress
+      0x40000        // ImsicSize
+      ),
+    EFI_ACPI_6_6_RINTC_STRUCTURE_INIT (
+      0x00000001,    // Flags
+      0x1,           // HartId
+      0x1,           // AcpiProcessorUid
+      0x0,           // ExtIntcId
+      0xE0440000,    // ImsicAddress
+      0x40000        // ImsicSize
+    ),
+    EFI_ACPI_6_6_RINTC_STRUCTURE_INIT (
+      0x00000001,    // Flags
+      0x2,           // HartId
+      0x2,           // AcpiProcessorUid
+      0x0,           // ExtIntcId
+      0xE0480000,    // ImsicAddress
+      0x40000        // ImsicSize
+    ),
+    EFI_ACPI_6_6_RINTC_STRUCTURE_INIT (
+      0x00000001,    // Flags
+      0x3,           // HartId
+      0x3,           // AcpiProcessorUid
+      0x0,           // ExtIntcId
+      0xE04c0000,    // ImsicAddress
+      0x40000        // ImsicSize
+    ),
+    EFI_ACPI_6_6_RINTC_STRUCTURE_INIT (
+      0x00000001,    // Flags
+      0x4,           // HartId
+      0x4,           // AcpiProcessorUid
+      0x0,           // ExtIntcId
+      0xE0500000,    // ImsicAddress
+      0x40000        // ImsicSize
+    ),
+    EFI_ACPI_6_6_RINTC_STRUCTURE_INIT (
+      0x00000001,    // Flags
+      0x5,           // HartId
+      0x5,           // AcpiProcessorUid
+      0x0,           // ExtIntcId
+      0xE0540000,    // ImsicAddress
+      0x40000        // ImsicSize
+    ),
+    EFI_ACPI_6_6_RINTC_STRUCTURE_INIT (
+      0x00000001,    // Flags
+      0x6,           // HartId
+      0x6,           // AcpiProcessorUid
+      0x0,           // ExtIntcId
+      0xE0580000,    // ImsicAddress
+      0x40000        // ImsicSize
+    ),
+    EFI_ACPI_6_6_RINTC_STRUCTURE_INIT (
+      0x00000001,    // Flags
+      0x7,           // HartId
+      0x7,           // AcpiProcessorUid
+      0x0,           // ExtIntcId
+      0xE05c0000,    // ImsicAddress
+      0x40000        // ImsicSize
+    ),
+  },
+
+  // 2. IMSIC Structure
+  EFI_ACPI_6_6_IMSIC_STRUCTURE_INIT (
+    511,    // NumSupervisorIntIds
+    63,     // NumGuestIntIds
+    6,      // GuestIndexBits
+    4,      // HartIndexBits
+    0,      // GroupIndexBits
+    24      // GroupIndexShift
+    ),
+
+  // 3. APLIC Structure
+  EFI_ACPI_6_6_APLIC_STRUCTURE_INIT (
+    0x0,               // AplicId
+    { 0x00000000 },    // HardwareId
+    0,                 // NumIdcs
+    511,               // NumExtIntSources
+    0,                 // GsiBase
+    0x00558500000,     // AplicAddress
+    0x10000            // AplicSize
+    ),
+};
+
+// Reference the table being generated to prevent the optimizer
+// from removing the data structure from the executable
+VOID *CONST  ReferenceAcpiTable = &Madt;

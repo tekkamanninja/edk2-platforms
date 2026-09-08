@@ -309,8 +309,8 @@ DpFind1080p60FromEdid (
   }
 
   if (DpFind1080p60Dtd (
-                        (CONST EDID_DETAILED_TIMING *)&Edid->MonitorDetails,
-                        1,
+                        Edid->MonitorDetails,
+                        EDID_DETAILED_TIMING_COUNT,
                         Timing
                         ))
   {
@@ -343,6 +343,58 @@ DpFind1080p60FromEdid (
   }
 
   return FALSE;
+}
+
+STATIC
+BOOLEAN
+DpEdidHeaderValid (
+  IN CONST UINT8  *Edid
+  )
+{
+  STATIC CONST UINT8  ExpectedHeader[8] = {
+    0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00
+  };
+
+  return CompareMem (Edid, ExpectedHeader, sizeof (ExpectedHeader)) == 0;
+}
+
+STATIC
+BOOLEAN
+DpEdidBlockChecksumValid (
+  IN CONST UINT8  *Edid
+  )
+{
+  UINT32  Index;
+  UINT8   Sum;
+
+  Sum = 0;
+  for (Index = 0; Index < EDID_LENGTH; Index++) {
+    Sum = (UINT8)(Sum + Edid[Index]);
+  }
+
+  return Sum == 0;
+}
+
+STATIC
+VOID
+DpDumpEdidData (
+  IN CONST UINT8  *Edid,
+  IN UINT32       EdidLen
+  )
+{
+  UINT32  Offset;
+
+  for (Offset = 0; Offset < EdidLen; Offset += 16) {
+    DEBUG (
+           (DEBUG_INFO,
+            "EDID[%03u]: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x\n",
+            Offset,
+            Edid[Offset + 0], Edid[Offset + 1], Edid[Offset + 2], Edid[Offset + 3],
+            Edid[Offset + 4], Edid[Offset + 5], Edid[Offset + 6], Edid[Offset + 7],
+            Edid[Offset + 8], Edid[Offset + 9], Edid[Offset + 10], Edid[Offset + 11],
+            Edid[Offset + 12], Edid[Offset + 13], Edid[Offset + 14], Edid[Offset + 15])
+           );
+  }
 }
 
 /**
@@ -401,7 +453,7 @@ DpEnable (
     Value  = MmioRead32 (PmuAddr + 0x23C);
     Value |= BIT (2);
     MmioWrite32 (PmuAddr + 0x23C, Value);
-  } else if ((Priv->DpId == 1) || (Priv->EdpId == 1)) {
+  } else if ((Priv->DpId == 1)) {
     ClockCtrlProtocol->SetClockRate (
                                      ClockCtrlProtocol,
                                      "DSI4LN2_PIX",
@@ -486,6 +538,7 @@ DpReadEdid (
       }
     }
 
+    DpDumpEdidData (Buf, EdidSize);
     return (EFI_STATUS)EdidSize;
   }
 
@@ -509,9 +562,19 @@ EdidGetTiming (
     return EFI_INVALID_PARAMETER;
   }
 
+  if (!DpEdidHeaderValid (Edid)) {
+    DEBUG ((DEBUG_ERROR, "EDID header invalid, reject timing parse\n"));
+    return EFI_DEVICE_ERROR;
+  }
+
+  if (!DpEdidBlockChecksumValid (Edid)) {
+    DEBUG ((DEBUG_ERROR, "EDID checksum invalid, reject timing parse\n"));
+    return EFI_DEVICE_ERROR;
+  }
+
   ZeroMem (Timing, sizeof (*Timing));
 
-  DpDecodeDetailedTiming (&EdidMon->MonitorDetails, Timing);
+  DpDecodeDetailedTiming (&EdidMon->MonitorDetails[0], Timing);
 
   if (PanelBpp != NULL) {
     *PanelBpp = 24;
@@ -539,10 +602,12 @@ DpReadTiming (
 
   DEBUG ((DEBUG_INFO, "%s\n", __FUNCTION__));
 
-  EdidLen = (INT32)DpReadEdid (Priv, Edid, sizeof (Edid));
-  if (EdidLen < 0) {
-    return (EFI_STATUS)EdidLen;
+  Status = DpReadEdid (Priv, Edid, sizeof (Edid));
+  if (EFI_ERROR (Status)) {
+    return Status;
   }
+
+  EdidLen = (INT32)Status;
 
   Status = EdidGetTiming (Edid, EdidLen, &Timing, &PanelBpp);
   if (EFI_ERROR (Status)) {
@@ -574,6 +639,7 @@ DpReadTiming (
     Info->VsyncInvert    = 0;
     Info->InvertPixclock = 0;
     Info->PixclockFreq   = Timing.Pixelclock.Typ;
+    Info->PixFmtOut      = OUTFMT_RGB888;
     Info->Flags          = Timing.Flags;
 
     DEBUG (
@@ -795,7 +861,7 @@ DpClockInit (
     /* enable aclk */
     Freq = LcdCfg->AClk;
     if (Freq == 0) {
-      Freq = 409000000;
+      Freq = 409600000;
     }
 
     ClockCtrlProtocol->SetClockRate (
@@ -879,7 +945,7 @@ DpClockInit (
     /* enable aclk */
     Freq = LcdCfg->AClk;
     if (Freq == 0) {
-      Freq = 409000000;
+      Freq = 409600000;
     }
 
     ClockCtrlProtocol->SetClockRate (
@@ -1039,6 +1105,8 @@ DpConnectorInit (
 
   Priv->DpId = CrtcState->DpuId;
 
+  DpApplyDefaultPinctrlState (CrtcState->PinGroup);
+
   DpuDpMmioRemap (Priv->DpId);
 
   Ret = DpPowerOn (Priv->DpId);
@@ -1046,8 +1114,6 @@ DpConnectorInit (
     DEBUG ((DEBUG_ERROR, "[DpConnectorInit] Dp power on failed: %r\n", Ret));
     return EFI_DEVICE_ERROR;
   }
-
-  DpApplyDefaultPinctrlState (CrtcState->PinGroup);
 
   Ret = DpClockInit (Priv->DpId, ConnectorState);
   if (EFI_ERROR (Ret)) {
@@ -1097,9 +1163,21 @@ DpConnectorInit (
     return EFI_DEVICE_ERROR;
   }
 
+  SocDpHwCleanHpd (&Priv->DpDev);
+
   IsVideoConnected = TRUE;
-  DpReadTiming (Priv, ConnectorState);
-  DpEnable (Priv, ConnectorState);
+  Ret = DpReadTiming (Priv, ConnectorState);
+  if (EFI_ERROR (Ret)) {
+    DEBUG ((DEBUG_ERROR, "[DpConnectorInit] failed to read DP timing: %r\n", Ret));
+    return Ret;
+  }
+
+  Ret = DpEnable (Priv, ConnectorState);
+  if (EFI_ERROR (Ret)) {
+    DEBUG ((DEBUG_ERROR, "[DpConnectorInit] failed to enable DP: %r\n", Ret));
+    return Ret;
+  }
+
   return EFI_SUCCESS;
 }
 
@@ -1123,10 +1201,21 @@ DpConnectorDetect (
 
   DEBUG ((DEBUG_INFO, "[DpConnectorDetect] DpType=%d\n", Priv->DpType));
 
-  if (Priv->DpType == INNO_DP) {
+  if (Priv->DpType == INNO_EDP) {
     DEBUG ((DEBUG_INFO, "[DpConnectorDetect] Calling SocDpHwDetectHpd...\n"));
     Ret              = SocDpHwDetectHpd (&Priv->DpDev);
     IsVideoConnected = (Ret >= 0);
+    SocDpHwCleanHpd (&Priv->DpDev);
+
+    DEBUG (
+           (DEBUG_INFO, "[DpConnectorDetect] SocDpHwDetectHpd returned: Ret=%d, IsVideoConnected=%d\n",
+            Ret, IsVideoConnected)
+           );
+  } else if (Priv->DpType == INNO_DP) {
+    DEBUG ((DEBUG_INFO, "[DpConnectorDetect] Calling SocDpHwDetectHpd...\n"));
+    Ret              = SocDpHwDetectHpd (&Priv->DpDev);
+    IsVideoConnected = (Ret >= 0);
+    SocDpHwCleanHpd (&Priv->DpDev);
 
     DEBUG (
            (DEBUG_INFO, "[DpConnectorDetect] SocDpHwDetectHpd returned: Ret=%d, IsVideoConnected=%d\n",

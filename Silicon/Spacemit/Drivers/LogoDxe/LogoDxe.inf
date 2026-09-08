@@ -29,6 +29,7 @@
 
 [Sources]
   Logo.bmp
+  Logo_fml13v05.bmp
   Logo.c
   Logo.idf
 
@@ -40,6 +41,7 @@
   UefiBootServicesTableLib
   UefiDriverEntryPoint
   DebugLib
+  PcdLib
 
 [Protocols]
   gEfiHiiDatabaseProtocolGuid        ## CONSUMES

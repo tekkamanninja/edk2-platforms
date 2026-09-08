@@ -15,7 +15,6 @@
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/NonDiscoverableDeviceRegistrationLib.h>
 #include <Library/PcdLib.h>
-#include <Protocol/TlvInfo.h>
 #include "DwEqosDxeUtil.h"
 
 //
@@ -114,9 +113,6 @@ EqosNotifyExitBootServices (
   return;
 }
 
-// Use TLV 0x24 as "MAC Base Address" (6 bytes)
-#define TLV_MAC_BASE_ADDRESS  0x24
-
 STATIC
 BOOLEAN
 IsValidMac (
@@ -157,30 +153,41 @@ IsValidMac (
 
 STATIC
 EFI_STATUS
-ReadMacFromEepromTlv (
+ReadMacAddress (
   OUT EFI_MAC_ADDRESS  *Mac
   )
 {
-  EFI_STATUS                  Status;
-  SPACEMIT_TLV_INFO_PROTOCOL  *Tlv;
-  UINT8                       Buf[6];
+  EFI_STATUS              Status;
+  PLATFORM_INFO_PROTOCOL  *PlatformInfo;
 
   if (Mac == NULL) {
     return EFI_INVALID_PARAMETER;
   }
 
-  Status = gBS->LocateProtocol (&gSpacemitTlvInfoProtocolGuid, NULL, (VOID **)&Tlv);
-  if (EFI_ERROR (Status) || (Tlv == NULL)) {
+  // Locate the PlatformInfo protocol
+  Status = gBS->LocateProtocol (
+                  &gSpacemitPlatformInfoProtocolGuid,
+                  NULL,
+                  (void **)&PlatformInfo
+                  );
+  if (EFI_ERROR (Status) || (PlatformInfo == NULL)) {
     return EFI_NOT_FOUND;
   }
 
-  Status = Tlv->GetTlvInfo (Tlv, TLV_MAC_BASE_ADDRESS, (CHAR8 *)Buf, sizeof (Buf));
-  if (EFI_ERROR (Status)) {
-    return Status;
+  if (!EFI_ERROR (
+         PlatformInfo->GetPlatformInfo (
+                         PlatformInfo,
+                         "ethaddr",
+                         Mac,
+                         sizeof (EFI_MAC_ADDRESS)
+                         )
+         ))
+  {
+    return EFI_SUCCESS;
   }
 
-  CopyMem (Mac, Buf, 6);
-  return EFI_SUCCESS;
+  CopyMem (Mac, PcdGetPtr (PcdDwGmacDefaultMacAddress), sizeof (EFI_MAC_ADDRESS));
+  return EFI_NOT_FOUND;
 }
 
 STATIC
@@ -218,7 +225,7 @@ GetPlatformMacAddress (
 {
   EFI_STATUS  Status;
 
-  Status = ReadMacFromEepromTlv (Mac);
+  Status = ReadMacAddress (Mac);
   if (!EFI_ERROR (Status) && IsValidMac (Mac)) {
     return EFI_SUCCESS;
   }

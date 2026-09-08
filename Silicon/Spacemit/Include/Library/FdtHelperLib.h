@@ -140,6 +140,7 @@ typedef struct {
 
   UINTN                         Id;
   FDT_CPU_MAP_HIERARCHY_TYPE    HierarchyType;
+  UINTN                         HierarchyLevel;   // Starting from 1, top-down incremental
 
   //
   // For a leaf node, IsEnabled == TRUE means its status is "okay",

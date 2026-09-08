@@ -59,7 +59,7 @@
   gSpacemitSiliconPinCtrlProtocolGuid
   gEmbeddedGpioProtocolGuid
   gEfiCpuArchProtocolGuid
-  gSpacemitTlvInfoProtocolGuid
+  gSpacemitPlatformInfoProtocolGuid
 
 [Guids]
   gSpacemitDwGmacNonDiscoverableDeviceGuid  ## PRODUCES
@@ -68,9 +68,11 @@
 [Pcd]
   gSpacemitK3TokenSpaceGuid.PcdDwEqosControllerConfigs
   gSpacemitK3TokenSpaceGuid.PcdGmacUseMask
+  gSpacemitK3TokenSpaceGuid.PcdDwGmacDefaultMacAddress
 
 [Depex]
   gEmbeddedGpioProtocolGuid AND
   gSpacemitSiliconClockCtrlProtocolGuid AND
   gEfiCpuArchProtocolGuid AND
-  gSpacemitSiliconPinCtrlProtocolGuid
+  gSpacemitSiliconPinCtrlProtocolGuid AND
+  gSpacemitPlatformInfoProtocolGuid

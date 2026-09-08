@@ -13,6 +13,7 @@ SPDX-License-Identifier: BSD-2-Clause-Patent
 #include <Protocol/HiiPackageList.h>
 #include <Library/UefiBootServicesTableLib.h>
 #include <Library/DebugLib.h>
+#include <Library/PcdLib.h>
 
 typedef struct {
   EFI_IMAGE_ID                          ImageId;
@@ -30,6 +31,15 @@ LOGO_ENTRY                mLogos[] = {
     0,
     0
   }
+};
+
+//
+// Logo image ID lookup table indexed by SKU ID
+//
+STATIC EFI_IMAGE_ID mLogoIds[] = {
+  IMAGE_TOKEN (IMG_LOGO),            // SKU 0: DEFAULT
+  IMAGE_TOKEN (IMG_LOGO),            // SKU 1: COM260
+  IMAGE_TOKEN (IMG_LOGO_FML13V05),   // SKU 2: FML13V05
 };
 
 /**
@@ -101,6 +111,15 @@ InitializeLogo (
   EFI_HII_PACKAGE_LIST_HEADER *PackageList;
   EFI_HII_DATABASE_PROTOCOL   *HiiDatabase;
   EFI_HANDLE                  Handle;
+  UINTN                       SkuId;
+
+  //
+  // Select logo based on current SKU
+  //
+  SkuId = LibPcdGetSku ();
+  if (SkuId < ARRAY_SIZE (mLogoIds)) {
+    mLogos[0].ImageId = mLogoIds[SkuId];
+  }
 
   Status = gBS->LocateProtocol (
                   &gEfiHiiDatabaseProtocolGuid,

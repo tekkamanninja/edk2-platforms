@@ -82,6 +82,7 @@ typedef struct {
 #define EDID_SIZE                  128
 #define EDID_EXT_SIZE              256
 #define EDID_CEA861_EXTENSION_TAG  0x02
+#define EDID_DETAILED_TIMING_COUNT 4
 
 /* EDID structures */
 typedef struct {
@@ -101,7 +102,7 @@ typedef struct {
   UINT8                   ColorCharacteristics[10];
   UINT8                   EstablishedTimings[3];
   UINT8                   StandardTimings[16];
-  EDID_DETAILED_TIMING    MonitorDetails;
+  EDID_DETAILED_TIMING    MonitorDetails[EDID_DETAILED_TIMING_COUNT];
   UINT8                   ExtensionFlag;
   UINT8                   Checksum;
 } EDID_BASE;
@@ -111,7 +112,7 @@ typedef struct {
   UINT8    Revision;
   UINT8    DtdOffset;
   UINT8    NativeFormats;
-  UINT8    Data[123];
+  UINT8    Data[124];
 } EDID_CEA861_EXTENSION;
 
 typedef union {
@@ -137,7 +138,7 @@ typedef struct {
   UINT8                   ColorCharacteristics[10];
   UINT8                   EstablishedTimings[3];
   UINT8                   StandardTimings[16];
-  EDID_DETAILED_TIMING    MonitorDetails;
+  EDID_DETAILED_TIMING    MonitorDetails[EDID_DETAILED_TIMING_COUNT];
   UINT8                   ExtensionFlag;
   UINT8                   Checksum;
 } EDID_MONITOR;
@@ -151,10 +152,10 @@ typedef struct {
   GET_BITS((x).Data[offset], 4, 0)
 
 /* CEA861 data block types */
-#define EDID_CEA861_DB_VIDEO        1
-#define EDID_CEA861_DB_AUDIO        2
-#define EDID_CEA861_DB_SPEAKER      3
+#define EDID_CEA861_DB_AUDIO        1
+#define EDID_CEA861_DB_VIDEO        2
 #define EDID_CEA861_DB_VENDOR       3
+#define EDID_CEA861_DB_SPEAKER      4
 #define EDID_CEA861_DB_COLORIMETRY  5
 
 /* Register base addresses */

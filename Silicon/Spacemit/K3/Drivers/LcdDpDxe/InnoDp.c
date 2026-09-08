@@ -347,7 +347,7 @@ SocDpAuxTransferRaw (
       return -EIO;
     case 2: /* DEFER */
       DevWarn (Dp->Dev, "AUX DEFER: addr 0x%x\n", Address);
-      return -EBUSY;
+      return EBUSY;
     default:
       SocDpRegReadRange (Dp, SOC_DPTX_AUX_REPLY_ERR_CODE, &Val);
       DevDbg (
@@ -359,7 +359,7 @@ SocDpAuxTransferRaw (
               Status,
               Val
               );
-      return -EIO;
+      return EIO;
   }
 
   /* 8. Read Data (if Read operation and ACK) */
@@ -637,26 +637,13 @@ SocDpHwDetectHpd (
   IN SOC_DP_DEV  *Dp
   )
 {
-  UINTN                    PlugEvent, UnplugEvent;
   UINTN                    HpdStatus;
   SOC_DP_CONNECTOR_STATUS  ConnectorStatus = Dp->ConnectorStatus;
-
-  SocDpRegReadRange (Dp, SOC_DPTX_HOT_PLUG_EVENT, &PlugEvent);
-  SocDpRegReadRange (Dp, SOC_DPTX_HOT_UNPLUG_EVENT, &UnplugEvent);
-
-  if (PlugEvent != 0) {
-    ConnectorStatus = ConnectorStatusConnected;
-  }
-
-  if (UnplugEvent != 0) {
-    ConnectorStatus = ConnectorStatusDisconnected;
-  }
 
   SocDpRegReadRange (Dp, SOC_DPTX_HPD_IN_STATUS, &HpdStatus);
 
   DEBUG (
-         (DEBUG_VERBOSE, "%s plug_event %d unplug_event %d hpd_status %d\n",
-          __FUNCTION__, PlugEvent, UnplugEvent, HpdStatus)
+         (DEBUG_VERBOSE, "%s hpd_status %d\n", __FUNCTION__, HpdStatus)
          );
 
   if (HpdStatus != 0) {

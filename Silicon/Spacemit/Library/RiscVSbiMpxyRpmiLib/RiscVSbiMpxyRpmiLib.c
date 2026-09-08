@@ -122,7 +122,7 @@ MpxyRpmiOpenChannel (
 
   Chan = AllocateMpxyRpmiChannel ();
   if (Chan == NULL) {
-    DEBUG ((DEBUG_ERROR, "%a: MPXY channel 0x%x: failed to allocate channel instance\n",
+    DEBUG ((DEBUG_WARN, "%a: MPXY channel 0x%x: failed to allocate channel instance\n",
             __func__, ChannelId));
     goto ErrOut;
   }
@@ -135,13 +135,13 @@ MpxyRpmiOpenChannel (
                                     sizeof (Chan->StdAttrs) / sizeof (UINT32),
                                     (UINT32 *) &Chan->StdAttrs);
   if (Status != EFI_SUCCESS) {
-    DEBUG ((DEBUG_ERROR, "%a: MPXY channel 0x%x: failed to read standard attributes\n",
+    DEBUG ((DEBUG_WARN, "%a: MPXY channel 0x%x: failed to read standard attributes\n",
             __func__, ChannelId));
     goto FreeMpxyRpmiChan;
   }
 
   if (Chan->StdAttrs.MsgProtId != SbiMpxyMsgProtIdRpmi) {
-    DEBUG ((DEBUG_ERROR, "%a: MPXY channel 0x%x uses protocol with ID 0x%x rather than RPMI\n",
+    DEBUG ((DEBUG_WARN, "%a: MPXY channel 0x%x uses protocol with ID 0x%x rather than RPMI\n",
             __func__, ChannelId, Chan->StdAttrs.MsgProtId));
     goto FreeMpxyRpmiChan;
   }
@@ -151,7 +151,7 @@ MpxyRpmiOpenChannel (
                                     sizeof (Chan->RpmiAttrs) / sizeof (UINT32),
                                     (UINT32 *) &Chan->RpmiAttrs);
   if (Status != EFI_SUCCESS) {
-    DEBUG ((DEBUG_ERROR, "%a: MPXY channel 0x%x: failed to read RPMI attributes\n",
+    DEBUG ((DEBUG_WARN, "%a: MPXY channel 0x%x: failed to read RPMI attributes\n",
             __func__, ChannelId));
     goto FreeMpxyRpmiChan;
   }

@@ -8,6 +8,7 @@
 #include <IndustryStandard/Pci.h>
 #include <Library/BaseLib.h>
 #include <Library/DebugLib.h>
+#include <Library/PrintLib.h>
 #include <Library/UefiLib.h>
 #include <Library/DevicePathLib.h>
 #include <Library/UefiBootManagerLib.h>
@@ -549,6 +550,26 @@ PlatformBootManagerAfterConsole (
   EfiEventGroupSignal (&gSpacemitBdsAfterConsoleEventGroupGuid);
 }
 
+STATIC
+VOID
+PrintAtBottomRow (
+  IN CHAR16  *Str
+  )
+{
+  UINTN  Columns;
+  UINTN  Rows;
+
+  if (gST->ConOut == NULL) {
+    return;
+  }
+
+  if (!EFI_ERROR (gST->ConOut->QueryMode (gST->ConOut, gST->ConOut->Mode->Mode, &Columns, &Rows))) {
+    gST->ConOut->SetCursorPosition (gST->ConOut, 0, Rows - 1);
+  }
+
+  Print (Str);
+}
+
 /**
   This function is called each second during the boot manager waits the timeout.
 
@@ -560,8 +581,10 @@ PlatformBootManagerWaitCallback (
   UINT16  TimeoutRemain
   )
 {
-  // TODO
-  return;
+  CHAR16  Buf[80];
+
+  UnicodeSPrint (Buf, sizeof (Buf), L"\r  Boot in %2d second(s), press F2 to enter Boot Menu ... ", TimeoutRemain);
+  PrintAtBottomRow (Buf);
 }
 
 /**

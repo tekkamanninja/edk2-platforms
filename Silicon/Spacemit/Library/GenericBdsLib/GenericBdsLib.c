@@ -179,28 +179,184 @@ GenericBdsLibValiateHddShortDevicePath (
   return TRUE;
 }
 
+/**
+  Normalize a file path string by ensuring it starts with a backslash,
+  removing consecutive duplicate backslashes, and stripping the trailing
+  backslash.
+
+  The caller is responsible for freeing the returned string with FreePool().
+
+  @param[in] PathName  The file path string to normalize.
+
+  @retval NULL    PathName is NULL, empty, or memory allocation failed.
+  @retval Other   A pointer to the newly allocated normalized path string.
+
+**/
+CHAR16 *
+EFIAPI
+GenericBdsLibRegularFilePathName (
+  IN CHAR16     *PathName
+  )
+{
+  CHAR16        *String;
+  UINTN         StringLen;
+  UINTN         Index, StringIndex;
+
+  if ((PathName == NULL) ||
+      (*PathName == L'\0')) {
+    return NULL;
+  }
+
+  String = AllocateZeroPool (StrSize (PathName) + StrLen (L"\\") * sizeof (CHAR16));
+  if (String == NULL) {
+    return NULL;
+  }
+
+  StringIndex           = 0;
+  String[StringIndex++] = L'\\';
+  StringLen             = StrLen (PathName);
+
+  for (Index = 0; Index < StringLen; Index++) {
+    if ((PathName[Index] == L'\\') &&
+        ((StringIndex > 0) && (String[StringIndex - 1] == L'\\'))) {
+      continue;
+    }
+
+    String[StringIndex++] = PathName[Index];
+  }
+
+  if ((StringIndex > 1) && (String[StringIndex - 1] == L'\\')) {
+    StringIndex--;
+  }
+
+  String[StringIndex] = L'\0';
+
+  return String;
+}
+
+/**
+  Extract and concatenate all file path names from consecutive
+  MEDIA_FILEPATH_DP device path nodes, then return the normalized
+  result.
+
+  This function locates the first MEDIA_FILEPATH_DP node in the given
+  device path, concatenates the PathName of all consecutive file path
+  nodes separated by backslashes, and normalizes the combined string
+  via GenericBdsLibRegularFilePathName().
+
+  The caller is responsible for freeing the returned string with FreePool().
+
+  @param[in] DevicePath  A pointer to the device path protocol instance.
+
+  @retval NULL    No MEDIA_FILEPATH_DP node found, or memory allocation failed.
+  @retval Other   A pointer to the newly allocated normalized file path string.
+
+**/
+CHAR16 *
+EFIAPI
+GenericBdsLibGetFilePathName (
+  IN EFI_DEVICE_PATH_PROTOCOL   *DevicePath
+  )
+{
+  EFI_DEVICE_PATH_PROTOCOL      *FilePathNode;
+  EFI_DEVICE_PATH_PROTOCOL      *Node;
+  UINTN                         StringLen;
+  CHAR16                        *String;
+  CHAR16                        *RegularPathName;
+
+  StringLen       = 0;
+  String          = NULL;
+  RegularPathName = NULL;
+
+  FilePathNode = GenericBdsLibGetNextDevicePathNode (DevicePath, MEDIA_DEVICE_PATH, MEDIA_FILEPATH_DP);
+  if (FilePathNode == NULL) {
+    return NULL;
+  }
+
+  Node = FilePathNode;
+  while (!IsDevicePathEnd (Node)) {
+    if (!((DevicePathType (Node) == MEDIA_DEVICE_PATH) &&
+          (DevicePathSubType (Node) == MEDIA_FILEPATH_DP))) {
+      break;
+    }
+
+    StringLen += StrLen (((FILEPATH_DEVICE_PATH *) Node)->PathName);
+    StringLen += StrLen (L"\\");
+
+    Node = NextDevicePathNode (Node);
+  }
+
+  if (StringLen == 0) {
+    return NULL;
+  }
+
+  String = AllocateZeroPool ((StringLen + 1) * sizeof (CHAR16));
+  if (String == NULL) {
+    return NULL;
+  }
+
+  Node = FilePathNode;
+  while (!IsDevicePathEnd (Node)) {
+    if (!((DevicePathType (Node) == MEDIA_DEVICE_PATH) &&
+          (DevicePathSubType (Node) == MEDIA_FILEPATH_DP))) {
+      break;
+    }
+
+    StrCatS (
+      String,
+      StringLen + 1,
+      ((FILEPATH_DEVICE_PATH *) Node)->PathName
+      );
+
+    StrCatS (
+      String,
+      StringLen + 1,
+      L"\\"
+      );
+
+    Node = NextDevicePathNode (Node);
+  }
+
+  RegularPathName = GenericBdsLibRegularFilePathName (String);
+
+  FreePool (String);
+
+  return RegularPathName;
+}
+
 /*
-  Validate the PE header of the file specified by the file handle.
+  Validate the PE image specified by the file handle.
 
   @param[in]  FileHandle        The file handle to be validated.
+  @param[out] FileBuffer        Optional a pointer to buffer to store file content.
+                                The buffer is allocated by this routine and it is the
+                                responsibility of the caller to free the memory allocated.
+  @param[out] FileBufferSize    Optional a pointer to buffer to store the file content.
+                                If FileBuffer is not NULL, FileBufferSize must be not NULL too.
 
-  @retval TRUE  The PE header of the OS loader is valid.
-  @retval FALSE The PE header of the OS loader is invalid.
+  @retval EFI_SUCCESS           The PE image is valid and read file successfully if FileBuffer
+                                is not NULL.
+  @retval EFI_INVALID_PARAMETER One of the input parameters is invalid.
+  @retval EFI_OUT_OF_RESOURCES  Allocate memory failed.
+  @retval EFI_DEVICE_ERROR      The file operations are failed.
+  @retval Others                Other failures.
 
 */
-BOOLEAN
+EFI_STATUS
 EFIAPI
-GenericBdsLibValidatePeHeader (
-  IN EFI_FILE_HANDLE            FileHandle
+GenericBdsLibValidatePeImage (
+  IN  EFI_FILE_HANDLE           FileHandle,
+  OUT VOID                      **FileBuffer    OPTIONAL,
+  OUT UINT64                    *FileBufferSize OPTIONAL
   )
 {
   EFI_STATUS                        Status;
   EFI_FILE_INFO                     *FileInfo;
-  UINTN                             FileSize;
+  UINT64                            FileSize;
   UINTN                             BufferSize;
   EFI_IMAGE_DOS_HEADER              DosHeader;
   EFI_IMAGE_OPTIONAL_HEADER_UNION   PeHeader;
-  EFI_IMAGE_OPTIONAL_HEADER32       *OptionalHeader;
+  UINT16                            Subsystem;
 
   FileInfo = NULL;
 
@@ -208,64 +364,107 @@ GenericBdsLibValidatePeHeader (
   ZeroMem (&PeHeader, sizeof (EFI_IMAGE_OPTIONAL_HEADER_UNION));
 
   if (FileHandle == NULL) {
-    return FALSE;
+    return EFI_INVALID_PARAMETER;
+  }
+
+  if (FileBuffer) {
+    *FileBuffer = NULL;
+  }
+
+  if (FileBufferSize) {
+    *FileBufferSize = 0;
   }
 
   FileInfo = FileHandleGetInfo (FileHandle);
   if (FileInfo == NULL) {
-    return FALSE;
+    Status = EFI_DEVICE_ERROR;
+    goto FreeExit;
   }
 
   if (FileInfo->Attribute & EFI_FILE_DIRECTORY) {
-    FreePool (FileInfo);
-    return FALSE;
+    Status = EFI_DEVICE_ERROR;
+    goto FreeExit;
   }
 
-  FileSize = (UINTN) FileInfo->FileSize;
-  FreePool (FileInfo);
+  FileSize = FileInfo->FileSize;
 
   BufferSize = sizeof (EFI_IMAGE_DOS_HEADER);
   Status = FileHandleRead (FileHandle, &BufferSize, &DosHeader);
   if (EFI_ERROR (Status)) {
-    return FALSE;
+    goto FreeExit;
   }
 
   if (!((FileSize >= sizeof (EFI_IMAGE_DOS_HEADER)) &&
         (FileSize > DosHeader.e_lfanew) &&
         (BufferSize >= sizeof (EFI_IMAGE_DOS_HEADER)) &&
         (DosHeader.e_magic == EFI_IMAGE_DOS_SIGNATURE))) {
-    return FALSE;
+    Status = EFI_DEVICE_ERROR;
+    goto FreeExit;
   }
 
   Status = FileHandleSetPosition (FileHandle, DosHeader.e_lfanew);
   if (EFI_ERROR (Status)) {
-    return FALSE;
+    goto FreeExit;
   }
 
   BufferSize = sizeof (EFI_IMAGE_OPTIONAL_HEADER_UNION);
   Status = FileHandleRead (FileHandle, &BufferSize, &PeHeader);
   if (EFI_ERROR (Status)) {
-    return FALSE;
+    goto FreeExit;
   }
 
   if (!((FileSize >= (DosHeader.e_lfanew + sizeof (EFI_IMAGE_OPTIONAL_HEADER_UNION))) &&
         (BufferSize >= sizeof (EFI_IMAGE_OPTIONAL_HEADER_UNION)) &&
         (PeHeader.Pe32.Signature == EFI_IMAGE_NT_SIGNATURE) &&
         (EFI_IMAGE_MACHINE_TYPE_SUPPORTED (PeHeader.Pe32.FileHeader.Machine)))) {
-    return FALSE;
+    Status = EFI_DEVICE_ERROR;
+    goto FreeExit;
   }
 
-  OptionalHeader = &PeHeader.Pe32.OptionalHeader;
-  if (!((OptionalHeader->Magic == EFI_IMAGE_NT_OPTIONAL_HDR32_MAGIC) ||
-        (OptionalHeader->Magic == EFI_IMAGE_NT_OPTIONAL_HDR64_MAGIC))) {
-    return FALSE;
+  if (PeHeader.Pe32.OptionalHeader.Magic == EFI_IMAGE_NT_OPTIONAL_HDR32_MAGIC) {
+    Subsystem = PeHeader.Pe32.OptionalHeader.Subsystem;
+  } else if (PeHeader.Pe32Plus.OptionalHeader.Magic == EFI_IMAGE_NT_OPTIONAL_HDR64_MAGIC) {
+    Subsystem = PeHeader.Pe32Plus.OptionalHeader.Subsystem;
+  } else {
+    Status = EFI_DEVICE_ERROR;
+    goto FreeExit;
   }
 
-  if (!(OptionalHeader->Subsystem == EFI_IMAGE_SUBSYSTEM_EFI_APPLICATION)) {
-    return FALSE;
+  if (!(Subsystem == EFI_IMAGE_SUBSYSTEM_EFI_APPLICATION)) {
+    Status = EFI_DEVICE_ERROR;
+    goto FreeExit;
   }
 
-  return TRUE;
+  if (FileBuffer) {
+    *FileBuffer = AllocateZeroPool (FileSize);
+    if (*FileBuffer == NULL) {
+      Status = EFI_OUT_OF_RESOURCES;
+      goto FreeExit;
+    }
+
+    Status = FileHandleSetPosition (FileHandle, 0);
+    if (!EFI_ERROR (Status)) {
+      Status = FileHandleRead (FileHandle, (UINTN *) &FileSize, *FileBuffer);
+      if (!EFI_ERROR (Status)) {
+        if (FileBufferSize) {
+          *FileBufferSize = FileSize;
+        }
+      }
+    }
+    if (EFI_ERROR (Status)) {
+      FreePool (*FileBuffer);
+      *FileBuffer = NULL;
+    }
+  }
+
+FreeExit:
+  FileHandleClose (FileHandle);
+
+  if (FileInfo) {
+    FreePool (FileInfo);
+  }
+
+  return Status;
 }
 
 /*
@@ -286,7 +485,7 @@ EFI_STATUS
 EFIAPI
 GenericBdsLibDuplicateBootOption (
   OUT EFI_BOOT_MANAGER_LOAD_OPTION  *DestinationBootOption,
-  IN EFI_BOOT_MANAGER_LOAD_OPTION   *SourceBootOption
+  IN  EFI_BOOT_MANAGER_LOAD_OPTION  *SourceBootOption
   )
 {
   EFI_STATUS        Status;
@@ -296,15 +495,15 @@ GenericBdsLibDuplicateBootOption (
   }
 
   Status = EfiBootManagerInitializeLoadOption (
-                   DestinationBootOption,
-                   SourceBootOption->OptionNumber,
-                   SourceBootOption->OptionType,
-                   SourceBootOption->Attributes,
-                   SourceBootOption->Description,
-                   SourceBootOption->FilePath,
-                   SourceBootOption->OptionalData,
-                   SourceBootOption->OptionalDataSize
-                   );
+                    DestinationBootOption,
+                    SourceBootOption->OptionNumber,
+                    SourceBootOption->OptionType,
+                    SourceBootOption->Attributes,
+                    SourceBootOption->Description,
+                    SourceBootOption->FilePath,
+                    SourceBootOption->OptionalData,
+                    SourceBootOption->OptionalDataSize
+                    );
   if (EFI_ERROR (Status)) {
     return Status;
   }

@@ -1,0 +1,14 @@
+#
+#  Copyright (c) 2026, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  DEC_SPECIFICATION              = 0x0001001b
+  PACKAGE_NAME                   = SpacemitK3Platform
+  PACKAGE_GUID                   = 1e81f5c6-b3a2-47d9-81a9-d6e8b2a1cf99
+  PACKAGE_VERSION                = 1.0
+
+[Includes]
+  Include

@@ -173,7 +173,20 @@ READ_LOCK_STATUS   = TRUE
 # SKU selection
 INF Silicon/Spacemit/K3/Drivers/SkuSelectDxe/SkuSelectDxe.inf
 
+#
+# ACPI support
+#
+!if $(ACPI_ENABLE) == TRUE
+#
+# ACPI
+#
+INF  MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
+INF  MdeModulePkg/Universal/Acpi/AcpiPlatformDxe/AcpiPlatformDxe.inf
+INF  RuleOverride = ACPITABLE Platform/Spacemit/K3/AcpiTables/K3AcpiTables.inf
+
+!else
 INF  Silicon/RISC-V/ProcessorPkg/Universal/FdtDxe/FdtDxe.inf
+!endif # ACPI_ENABLE
 
 # system hardware module
 INF Silicon/Spacemit/K3/Drivers/ClockDxe/ClockDxe.inf
@@ -250,7 +263,7 @@ INF  Silicon/Spacemit/K3/Drivers/DpuDxe/DpuDxe.inf
 INF  Silicon/Spacemit/K3/Drivers/LcdDpDxe/LcdDpDxe.inf
 
 # boot logo
-# INF Silicon/Spacemit/Drivers/LogoDxe/LogoDxe.inf
+INF Silicon/Spacemit/Drivers/LogoDxe/LogoDxe.inf
 
 #
 # NVMe support (for PCIe NVMe storage)
@@ -274,9 +287,16 @@ INF MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
 !endif
 
 INF  ShellPkg/DynamicCommand/TftpDynamicCommand/TftpDynamicCommand.inf
-#INF  ShellPkg/DynamicCommand/HttpDynamicCommand/HttpDynamicCommand.inf
+INF  ShellPkg/DynamicCommand/HttpDynamicCommand/HttpDynamicCommand.inf
 INF  OvmfPkg/LinuxInitrdDynamicShellCommand/LinuxInitrdDynamicShellCommand.inf
 INF  ShellPkg/Application/Shell/Shell.inf
+
+#
+# Performance Application
+#
+!if $(PERFORMANCE_ENABLE)
+INF  ShellPkg/DynamicCommand/DpDynamicCommand/DpDynamicCommand.inf
+!endif
 
 INF  MdeModulePkg/Application/UiApp/UiApp.inf
 

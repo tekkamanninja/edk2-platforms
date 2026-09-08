@@ -1,0 +1,21 @@
+## @file
+#  Null implementation of CpuInfoCustomizedDisplayLib.
+#
+#  Copyright (c) 2026, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = CpuInfoCustomizedDisplayLibNull
+  FILE_GUID                      = 76A5E4E3-9C1B-48B7-9D74-5D7B4290F671
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  LIBRARY_CLASS                  = CpuInfoCustomizedDisplayLib
+
+[Sources]
+  CpuInfoCustomizedDisplayLibNull.c
+
+[Packages]
+  MdePkg/MdePkg.dec

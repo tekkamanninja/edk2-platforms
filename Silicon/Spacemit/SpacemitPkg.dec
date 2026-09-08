@@ -282,6 +282,16 @@
   gSpacemitTokenSpaceGuid.PcdEmmcControllerName|"SDH2"|VOID*|0x10000301
   gSpacemitTokenSpaceGuid.PcdEmmcClockRate|0x0|UINT64|0x10000302
 
+  # PCDs for CpuInfo
+  gSpacemitTokenSpaceGuid.PcdCpuInfoCoreConfigs|{0x0}|CPU_INFO_CORE_CONFIG_ARRAY|0x10000400 {
+    <HeaderFiles>
+      Protocol/CpuInfoPcdConfigs.h
+    <Packages>
+      MdePkg/MdePkg.dec
+      Silicon/Spacemit/SpacemitPkg.dec
+  }
+  gSpacemitTokenSpaceGuid.PcdCpuInfoL3CacheSizeKB|0|UINT32|0x10000401
+
 [PcdsPatchableInModule]   # TokenNumber style is 0x2XXXXXXX, e.g. 0x20000001, 0x20000002, ...
 
 [PcdsDynamic]     # TokenNumber style is 0x3XXXXXXX, e.g. 0x30000001, 0x30000002, ...

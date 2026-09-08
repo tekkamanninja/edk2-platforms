@@ -538,8 +538,6 @@ PcieLinkUp (
   Val &= ~APP_HOLD_PHY_RST;
   K3PcieCtrlWrite32 (Port, PCIE_CLK_RESET_CTRL, Val);
 
-  gBS->Stall (1000000);
-
   /* Debug: Print register values */
   DEBUG (
          (DEBUG_INFO, "PCIE_CLK_RESET_CTRL after LTSSM_EN: 0x%x (prints 0x40000338)\n",

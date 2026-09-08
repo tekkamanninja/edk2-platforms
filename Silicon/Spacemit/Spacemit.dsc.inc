@@ -136,6 +136,8 @@
   CustomizedHiiLib|Silicon/Spacemit/Library/CustomizedHiiLib/CustomizedHiiLib.inf
   SmbiosLib|Silicon/Spacemit/Library/SmbiosLib/SmbiosLib.inf
   DiskInfoLib|Silicon/Spacemit/Library/DiskInfoLib/DiskInfoLib.inf
+  CpuInfoLib|Silicon/Spacemit/Library/CpuInfoLibNull/CpuInfoLibNull.inf
+  CpuInfoCustomizedDisplayLib|Silicon/Spacemit/Library/CpuInfoCustomizedDisplayLibNull/CpuInfoCustomizedDisplayLibNull.inf
   GenericBdsLib|Silicon/Spacemit/Library/GenericBdsLib/GenericBdsLib.inf
 
 [LibraryClasses.common.SEC]

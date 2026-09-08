@@ -688,11 +688,11 @@ LcdGraphicsOutputDestroy (
   FreePool (Instance);
 }
 
+STATIC
 EFI_STATUS
 EFIAPI
-LcdGraphicsOutputDxeInitialize (
-  IN EFI_HANDLE        ImageHandle,
-  IN EFI_SYSTEM_TABLE  *SystemTable
+LcdGraphicsOutputInit (
+  VOID
   )
 {
   EFI_STATUS     Status;
@@ -790,6 +790,41 @@ Exit:
   if (EFI_ERROR (Status)) {
     LcdGraphicsOutputDestroy (Instance);
   }
+
+  return Status;
+}
+
+VOID
+EFIAPI
+LcdGraphicsOutputEndOfDxeEventHandler (
+  IN EFI_EVENT  Event,
+  IN VOID       *Context
+  )
+{
+  gBS->CloseEvent (Event);
+
+  LcdGraphicsOutputInit ();
+}
+
+EFI_STATUS
+EFIAPI
+LcdGraphicsOutputDxeInitialize (
+  IN EFI_HANDLE        ImageHandle,
+  IN EFI_SYSTEM_TABLE  *SystemTable
+  )
+{
+  EFI_STATUS  Status;
+  EFI_EVENT   EndOfDxeEvent;
+
+  Status = gBS->CreateEventEx (
+                  EVT_NOTIFY_SIGNAL,
+                  TPL_CALLBACK,
+                  LcdGraphicsOutputEndOfDxeEventHandler,
+                  NULL,
+                  &gEfiEndOfDxeEventGroupGuid,
+                  &EndOfDxeEvent
+                  );
+  ASSERT_EFI_ERROR (Status);
 
   return Status;
 }

@@ -18,17 +18,21 @@
   SKUID_IDENTIFIER               = ALL
   FLASH_DEFINITION               = Platform/Spacemit/K3/MUSE-Pico/MUSE-Pico.fdf
 
-  DEFINE DEBUG_ON_SERIAL_PORT    = FALSE
+  DEFINE DEBUG_ON_SERIAL_PORT        = FALSE
+  DEFINE PERFORMANCE_ENABLE          = FALSE
   DEFINE EMU_VARIABLE_NV_MODE_ENABLE = FALSE
-  DEFINE CAPSULE_ENABLE          = TRUE
-  DEFINE NETWORK_PXE_BOOT_ENABLE = FALSE
-  DEFINE NETWORK_HTTP_BOOT_ENABLE = FALSE
+  DEFINE CAPSULE_ENABLE              = TRUE
+  DEFINE NETWORK_PXE_BOOT_ENABLE     = TRUE
+  DEFINE NETWORK_HTTP_BOOT_ENABLE    = TRUE
+  DEFINE ACPIVIEW_ENABLE             = FALSE
+  DEFINE ACPI_ENABLE                 = FALSE
 
   POSTBUILD                      = python3 Platform/Spacemit/PostBuild.py --post Platform/Spacemit/K3/MUSE-Pico/PostBuild.cfg
 
 [SkuIds]
   0|DEFAULT
   1|COM260
+  2|FML13V05
 
 !include MdePkg/MdeLibs.dsc.inc
 !include Silicon/Spacemit/Spacemit.dsc.inc
@@ -133,6 +137,31 @@
 
   gSpacemitK3TokenSpaceGuid.PcdCtf2301Enable|TRUE
 
+[PcdsDynamicDefault.common.FML13V05]
+  # FML13V05 (DeepComputing laptop) hardware configuration
+  # no wired ethernet port on this board
+  gSpacemitK3TokenSpaceGuid.PcdGmacUseMask|0x00
+  # 4x Type-C (PortA DRD + PortB + PortC + PortD) + USB2 internal hub (BT/FG/CAM)
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostEnableMask|0x1F
+  # USB2 host (controller 4) is HS-only hardware
+  gSpacemitK3TokenSpaceGuid.PcdUsbHostHsOnlyMask|0x10
+  # enable PCIe Port A (x4, WiFi) + Port E (pcie4_rc, phy5)
+  gSpacemitK3TokenSpaceGuid.PcdPcieHostEnableMask|0x11
+
+  # LCD configuration: eDP internal panel + DP1 via Type-C PortD (ANX7447)
+  gSpacemitTokenSpaceGuid.PcdDisplayConnectorsPriority.DisplayOrderCount|2
+  gSpacemitTokenSpaceGuid.PcdDisplayConnectorsPriority.DisplayOrder[0].Mode|DpuModeEdp
+  gSpacemitTokenSpaceGuid.PcdDisplayConnectorsPriority.DisplayOrder[0].DpuId|DPU0
+  gSpacemitTokenSpaceGuid.PcdDisplayConnectorsPriority.DisplayOrder[0].PinGroup|0
+  gSpacemitTokenSpaceGuid.PcdDisplayConnectorsPriority.DisplayOrder[1].Mode|DpuModeDp
+  gSpacemitTokenSpaceGuid.PcdDisplayConnectorsPriority.DisplayOrder[1].DpuId|DPU1
+  gSpacemitTokenSpaceGuid.PcdDisplayConnectorsPriority.DisplayOrder[1].PinGroup|1
+
+  # enable SD card support (DTS: cd-gpios = <&gpio 88 0>)
+  gSpacemitTokenSpaceGuid.PcdSdCardIsEnabled|TRUE
+  gSpacemitTokenSpaceGuid.PcdSdCardDetectGpioPin|88
+  gSpacemitTokenSpaceGuid.PcdSdCardDetectActive|TRUE
+
 [PcdsFeatureFlag.common]
   gSpacemitTokenSpaceGuid.PcdEscEnterBootMenu|FALSE
 
@@ -140,6 +169,10 @@
   # Definition of RISC-V Hart
   gUefiRiscVPlatformPkgTokenSpaceGuid.PcdHartCount|16
   gUefiRiscVPlatformPkgTokenSpaceGuid.PcdBootHartId|0
+
+!if $(PERFORMANCE_ENABLE)
+  gEfiMdePkgTokenSpaceGuid.PcdPerformanceLibraryPropertyMask|1
+!endif
 
   # This UEFI memory region is used in SEC phase to create HOBs, load DXE, etc.
   #     Base = PcdSecStackBase + PcdSecStackSize - PcdSecUefiMemorySize
@@ -594,6 +627,13 @@
   # EMMC configuration
   gSpacemitTokenSpaceGuid.PcdEmmcClockRate|208000000
 
+!if $(ACPI_ENABLE) == TRUE
+  gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiExposedTableVersions|0x20
+  # definition of X100
+  gSpacemitK3TokenSpaceGuid.PcdX100HartCount|0x8
+
+!endif # ACPI_ENABLE
+
 [Components]
   # SKU selection (must run before any SKU-sensitive driver)
   Silicon/Spacemit/K3/Drivers/SkuSelectDxe/SkuSelectDxe.inf
@@ -662,7 +702,7 @@
   Silicon/Spacemit/K3/Drivers/LcdDpDxe/LcdDpDxe.inf
 
   # boot logo
-  # Silicon/Spacemit/Drivers/LogoDxe/LogoDxe.inf
+  Silicon/Spacemit/Drivers/LogoDxe/LogoDxe.inf
 
   # PCIe support
   #
@@ -693,10 +733,10 @@
     <PcdsFixedAtBuild>
       gEfiShellPkgTokenSpaceGuid.PcdShellLibAutoInitialize|FALSE
   }
-#  ShellPkg/DynamicCommand/HttpDynamicCommand/HttpDynamicCommand.inf {
-#    <PcdsFixedAtBuild>
-#      gEfiShellPkgTokenSpaceGuid.PcdShellLibAutoInitialize|FALSE
-#  }
+  ShellPkg/DynamicCommand/HttpDynamicCommand/HttpDynamicCommand.inf {
+    <PcdsFixedAtBuild>
+      gEfiShellPkgTokenSpaceGuid.PcdShellLibAutoInitialize|FALSE
+  }
   OvmfPkg/LinuxInitrdDynamicShellCommand/LinuxInitrdDynamicShellCommand.inf {
     <PcdsFixedAtBuild>
       gEfiShellPkgTokenSpaceGuid.PcdShellLibAutoInitialize|FALSE
@@ -709,16 +749,16 @@
       NULL|ShellPkg/Library/UefiShellLevel3CommandsLib/UefiShellLevel3CommandsLib.inf
       NULL|ShellPkg/Library/UefiShellDriver1CommandsLib/UefiShellDriver1CommandsLib.inf
       NULL|ShellPkg/Library/UefiShellDebug1CommandsLib/UefiShellDebug1CommandsLib.inf
-#!if $(ACPIVIEW_ENABLE) == TRUE
-#      NULL|ShellPkg/Library/UefiShellAcpiViewCommandLib/UefiShellAcpiViewCommandLib.inf
-#!endif
+!if $(ACPIVIEW_ENABLE) == TRUE
+      NULL|ShellPkg/Library/UefiShellAcpiViewCommandLib/UefiShellAcpiViewCommandLib.inf
+!endif
       NULL|ShellPkg/Library/UefiShellInstall1CommandsLib/UefiShellInstall1CommandsLib.inf
       NULL|ShellPkg/Library/UefiShellNetwork1CommandsLib/UefiShellNetwork1CommandsLib.inf
       NULL|Silicon/Spacemit/Applications/I2cTool/I2cCmd.inf
       NULL|Silicon/Spacemit/Applications/EepromTool/EepromCmd.inf
       NULL|Silicon/Spacemit/Applications/TlvTool/TlvCmd.inf
 #!if $(NETWORK_IP6_ENABLE) == TRUE
-#      NULL|ShellPkg/Library/UefiShellNetwork2CommandsLib/UefiShellNetwork2CommandsLib.inf
+      NULL|ShellPkg/Library/UefiShellNetwork2CommandsLib/UefiShellNetwork2CommandsLib.inf
 #!endif
       HandleParsingLib|ShellPkg/Library/UefiHandleParsingLib/UefiHandleParsingLib.inf
       PrintLib|MdePkg/Library/BasePrintLib/BasePrintLib.inf
@@ -730,6 +770,16 @@
       gEfiMdePkgTokenSpaceGuid.PcdUefiLibMaxPrintBufferSize|8000
   }
 
+  #
+  # Performance Application
+  #
+!if $(PERFORMANCE_ENABLE)
+  ShellPkg/DynamicCommand/DpDynamicCommand/DpDynamicCommand.inf {
+    <PcdsFixedAtBuild>
+      gEfiShellPkgTokenSpaceGuid.PcdShellLibAutoInitialize|FALSE
+  }
+!endif
+
   # UiApp
   MdeModulePkg/Application/UiApp/UiApp.inf {
     <LibraryClasses>
@@ -739,6 +789,20 @@
       NULL|MdeModulePkg/Library/BootMaintenanceManagerUiLib/BootMaintenanceManagerUiLib.inf
   }
 
+  #
+  # ACPI support
+  #
+!if $(ACPI_ENABLE) == TRUE
+  #
+  # ACPI
+  #
+  # Produce gEfiAcpiTableProtocolGuid and gEfiAcpiSdtProtocolGuid
+  MdeModulePkg/Universal/Acpi/AcpiTableDxe/AcpiTableDxe.inf
+  # Find ACPI tables and intall to ACPI-memory
+  MdeModulePkg/Universal/Acpi/AcpiPlatformDxe/AcpiPlatformDxe.inf
+  # ACPI tables
+  Platform/Spacemit/K3/AcpiTables/K3AcpiTables.inf
+!else # ACPI_ENABLE
   Silicon/RISC-V/ProcessorPkg/Universal/FdtDxe/FdtDxe.inf {
     <LibraryClasses>
       RiscVCpuLib|Silicon/RISC-V/ProcessorPkg/Library/RiscVCpuLib/RiscVCpuLib.inf
@@ -751,6 +815,7 @@
       #
       FdtLib|EmbeddedPkg/Library/FdtLib/FdtLib.inf
   }
+!endif # ACPI_ENABLE
 
   # Device tree for K3
   Platform/Spacemit/K3/DeviceTree/K3DeviceTree.inf

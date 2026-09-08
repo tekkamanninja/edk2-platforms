@@ -1,0 +1,202 @@
+/** @file
+  RISC-V Hart Capabilities Table (RHCT)
+
+  Copyright (c) 2026, SpacemiT Co., Ltd. All rights reserved.<BR>
+
+  SPDX-License-Identifier: BSD-2-Clause-Patent
+**/
+
+#include <Library/AcpiLib.h>
+#include <IndustryStandard/Acpi.h>
+#include "K3PlatformAcpi.h"
+
+// TODO: Fix this file after ACPI 6.6 released
+#include <Acpi66Temp.h>
+
+#define ISA_STRING         "rv64imafdcvh_ssaia_smaia_sscofpmf_svpbmt_sstc_smstateen_zicbom_zicboz"
+#define ISA_STRING_LENGTH  (sizeof(ISA_STRING) / sizeof(CHAR8))
+
+#define HART_INFO_NODE_NUM_OFFSETS  3    // IsaStringNode + CmoNode + MmuNode
+
+EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE_TYPEDEF (X100, ISA_STRING_LENGTH);
+EFI_ACPI_6_6_RHCT_HART_INFO_NODE_STRUCTURE_TYPEDEF (X100, HART_INFO_NODE_NUM_OFFSETS);
+
+#pragma pack(1)
+typedef struct {
+  EFI_ACPI_6_6_RISCV_HART_CAPABILITIES_TABLE_HEADER     Header;
+  EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)    IsaStringNode;
+  EFI_ACPI_6_6_RHCT_CMO_NODE_STRUCTURE                  CmoNode;
+  EFI_ACPI_6_6_RHCT_MMU_NODE_STRUCTURE                  MmuNode;
+  EFI_ACPI_6_6_RHCT_HART_INFO_NODE_STRUCTURE (X100)     CpuHartInfoNode[FixedPcdGet32 (PcdX100HartCount)];
+} EFI_ACPI_RISCV_HART_CAPABILITIES_TABLE;
+#pragma pack()
+
+STATIC EFI_ACPI_RISCV_HART_CAPABILITIES_TABLE  Rhct = {
+  {
+    ACPI_HEADER (
+      EFI_ACPI_6_6_RISCV_HART_CAPABILITIES_TABLE_SIGNATURE,
+      EFI_ACPI_RISCV_HART_CAPABILITIES_TABLE,
+      EFI_ACPI_6_6_RISCV_HART_CAPABILITIES_TABLE_REVISION
+      ),
+    0x00000000,                                          // Flags
+    FixedPcdGet32  (PcdCpuCoreCrystalClockFrequency),    // TimeBaseFreq
+    3 + FixedPcdGet32 (PcdX100HartCount),                // NumNodes
+    EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY,              // OffsetToNodeArray
+  },
+
+  // ISA String Node Structure
+  EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE_INIT (X100, ISA_STRING),
+
+  // CMO Node Structure
+  EFI_ACPI_6_6_RHCT_CMO_NODE_STRUCTURE_INIT (
+    6,    // CbomBlockSize
+    6,    // CbopBlockSize
+    6     // CbozBlockSize
+    ),
+
+  // MMU Node Structure
+  EFI_ACPI_6_6_RHCT_MMU_NODE_STRUCTURE_INIT (EFI_ACPI_6_6_RHCT_MMU_TYPE_SV39),
+
+  {
+    // CPU0 Hart Info Node Structure
+    {
+      // Header
+      EFI_ACPI_6_6_RHCT_HART_INFO_NODE_STRUCTURE_HEADER_INIT (
+        X100,
+        0     // AcpiProcessorUid
+        ),
+      // Offsets
+      {
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY,                         // Offset to IsaStringNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)),    // Offset to CmoNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)) +
+        sizeof (EFI_ACPI_6_6_RHCT_CMO_NODE_STRUCTURE),                  // Offset to MmuNode
+      },
+    },
+    // CPU1 Hart Info Node Structure
+    {
+      // Header
+      EFI_ACPI_6_6_RHCT_HART_INFO_NODE_STRUCTURE_HEADER_INIT (
+        X100,
+        1     // AcpiProcessorUid
+        ),
+      // Offsets
+      {
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY,                         // Offset to IsaStringNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)),    // Offset to CmoNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)) +
+        sizeof (EFI_ACPI_6_6_RHCT_CMO_NODE_STRUCTURE),                  // Offset to MmuNode
+      },
+    },
+    // CPU2 Hart Info Node Structure
+    {
+      // Header
+      EFI_ACPI_6_6_RHCT_HART_INFO_NODE_STRUCTURE_HEADER_INIT (
+        X100,
+        2     // AcpiProcessorUid
+        ),
+      // Offsets
+      {
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY,                         // Offset to IsaStringNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)),    // Offset to CmoNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)) +
+        sizeof (EFI_ACPI_6_6_RHCT_CMO_NODE_STRUCTURE),                  // Offset to MmuNode
+      },
+    },
+    // CPU3 Hart Info Node Structure
+    {
+      // Header
+      EFI_ACPI_6_6_RHCT_HART_INFO_NODE_STRUCTURE_HEADER_INIT (
+        X100,
+        3     // AcpiProcessorUid
+        ),
+      // Offsets
+      {
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY,                         // Offset to IsaStringNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)),    // Offset to CmoNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)) +
+        sizeof (EFI_ACPI_6_6_RHCT_CMO_NODE_STRUCTURE),                  // Offset to MmuNode
+      },
+    },
+    // CPU4 Hart Info Node Structure
+    {
+      // Header
+      EFI_ACPI_6_6_RHCT_HART_INFO_NODE_STRUCTURE_HEADER_INIT (
+        X100,
+        4     // AcpiProcessorUid
+        ),
+      // Offsets
+      {
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY,                         // Offset to IsaStringNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)),    // Offset to CmoNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)) +
+        sizeof (EFI_ACPI_6_6_RHCT_CMO_NODE_STRUCTURE),                  // Offset to MmuNode
+      },
+    },
+    // CPU5 Hart Info Node Structure
+    {
+      // Header
+      EFI_ACPI_6_6_RHCT_HART_INFO_NODE_STRUCTURE_HEADER_INIT (
+        X100,
+        5     // AcpiProcessorUid
+        ),
+      // Offsets
+      {
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY,                         // Offset to IsaStringNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)),    // Offset to CmoNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)) +
+        sizeof (EFI_ACPI_6_6_RHCT_CMO_NODE_STRUCTURE),                  // Offset to MmuNode
+      },
+    },
+    // CPU6 Hart Info Node Structure
+    {
+      // Header
+      EFI_ACPI_6_6_RHCT_HART_INFO_NODE_STRUCTURE_HEADER_INIT (
+        X100,
+        6     // AcpiProcessorUid
+        ),
+      // Offsets
+      {
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY,                         // Offset to IsaStringNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)),    // Offset to CmoNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)) +
+        sizeof (EFI_ACPI_6_6_RHCT_CMO_NODE_STRUCTURE),                  // Offset to MmuNode
+      },
+    },
+    // CPU7 Hart Info Node Structure
+    {
+      // Header
+      EFI_ACPI_6_6_RHCT_HART_INFO_NODE_STRUCTURE_HEADER_INIT (
+        X100,
+        7     // AcpiProcessorUid
+        ),
+      // Offsets
+      {
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY,                         // Offset to IsaStringNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)),    // Offset to CmoNode
+        EFI_ACPI_6_6_RHCT_OFFSET_TO_NODE_ARRAY +
+        sizeof (EFI_ACPI_6_6_RHCT_ISA_STRING_NODE_STRUCTURE (X100)) +
+        sizeof (EFI_ACPI_6_6_RHCT_CMO_NODE_STRUCTURE),                  // Offset to MmuNode
+      },
+    },
+  }
+};
+
+// Reference the table being generated to prevent the optimizer
+// from removing the data structure from the executable
+VOID *CONST  ReferenceAcpiTable = &Rhct;

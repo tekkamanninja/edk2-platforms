@@ -32,6 +32,8 @@
   gSpacemitK3TokenSpaceGuid.PcdGpioControllerCount|0|UINT32|0x00001002
   gSpacemitK3TokenSpaceGuid.PcdGpioPinCount|0|UINT32|0x00001003
 
+  gSpacemitK3TokenSpaceGuid.PcdDwGmacDefaultMacAddress|{0xFE, 0xFE, 0xFE, 0x12, 0x34, 0x56}|VOID*|0x00001004
+
   # GMAC Controller Configuration
   gSpacemitK3TokenSpaceGuid.PcdDwEqosControllerConfigs|{0x0}|DW_EQOS_CONTROLLER_CONFIGS|0x00002001 {
     <HeaderFiles>
@@ -99,6 +101,9 @@
   gSpacemitK3TokenSpaceGuid.PcdSpacemitDpu1RegBase|0x0|UINT64|0x00007002
   gSpacemitK3TokenSpaceGuid.PcdSpacemitDp0RegBase|0x0|UINT64|0x00007003
   gSpacemitK3TokenSpaceGuid.PcdSpacemitDp1RegBase|0x0|UINT64|0x00007004
+
+  # PCDs for ACPI Tables
+  gSpacemitK3TokenSpaceGuid.PcdX100HartCount|0x0|UINT32|0x00008001
 
 [PcdsDynamic]
   # Per-board GMAC activation bitmask (bit N = controller index N active).

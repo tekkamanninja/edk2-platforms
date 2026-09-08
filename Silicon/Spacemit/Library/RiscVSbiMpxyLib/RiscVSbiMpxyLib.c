@@ -672,7 +672,7 @@ RiscVSbiMpxyLibConstructor (
   VOID            *Shmem;
 
   if (!SbiMpxyExtAvailable()) {
-    DEBUG ((DEBUG_ERROR, "%a: SBI MPXY Extension not available\n", __func__));
+    DEBUG ((DEBUG_INFO, "%a: SBI MPXY Extension not available\n", __func__));
     //
     // To be compatible with the SBI implementation that MPXY is not available,
     // we should return EFI_SUCCESS here, otherwise the whole EDK2 will hang due
@@ -684,13 +684,13 @@ RiscVSbiMpxyLibConstructor (
 
   Status = SbiMpxyGetShmemSize (&ShmemSize);
   if (Status != EFI_SUCCESS) {
-    DEBUG ((DEBUG_ERROR, "%a: Failed to get SBI MPXY shared memory size\n", __func__));
+    DEBUG ((DEBUG_WARN, "%a: Failed to get SBI MPXY shared memory size\n", __func__));
     goto Out;
   }
 
   Shmem = AllocateMpxyShmem (ShmemSize);
   if (Shmem == NULL) {
-    DEBUG ((DEBUG_ERROR, "%a: Failed to allocate SBI MPXY shared memory\n", __func__));
+    DEBUG ((DEBUG_WARN, "%a: Failed to allocate SBI MPXY shared memory\n", __func__));
     Status = EFI_OUT_OF_RESOURCES;
     goto Out;
   }

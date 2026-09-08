@@ -21,6 +21,7 @@ EFI_STATUS
 CreateCpuMapInfo (
   IN    UINTN                         Id,
   IN    FDT_CPU_MAP_HIERARCHY_TYPE    HierarchyType,
+  IN    UINTN                         HierarchyLevel,
   OUT   FDT_CPU_MAP_INFO              **CpuMapInfo
   )
 {
@@ -33,6 +34,7 @@ CreateCpuMapInfo (
 
   Info->Id = Id;
   Info->HierarchyType = HierarchyType;
+  Info->HierarchyLevel = HierarchyLevel;
   InitializeListHead (&Info->ChildList);
 
   *CpuMapInfo = Info;
@@ -125,6 +127,7 @@ FdtParseCpuMapChildNodes (
   IN CONST  VOID                          *Fdt,
   IN        INTN                          NodeOffset,
   IN        FDT_CPU_MAP_HIERARCHY_TYPE    ExpectedHierarchyType,
+  IN        UINTN                         HierarchyLevel,
   IN OUT    LIST_ENTRY                    *CpuMapInfoList
   )
 {
@@ -257,7 +260,7 @@ FdtParseCpuMapChildNodes (
       // Leaf node
       //
 
-      Status = CreateCpuMapInfo (CpuId, HierarchyType, &Info);
+      Status = CreateCpuMapInfo (CpuId, HierarchyType, HierarchyLevel, &Info);
       if (Status != EFI_SUCCESS) {
         goto FreeCpuMapInfoListEntries;
       }
@@ -269,7 +272,10 @@ FdtParseCpuMapChildNodes (
       // Non-leaf node
       //
 
-      Status = CreateCpuMapInfo (AsciiStrDecimalToUintn (IdStr), HierarchyType, &Info);
+      Status = CreateCpuMapInfo (AsciiStrDecimalToUintn (IdStr),
+                                 HierarchyType,
+                                 HierarchyLevel,
+                                 &Info);
       if (Status != EFI_SUCCESS) {
         goto FreeCpuMapInfoListEntries;
       }
@@ -277,7 +283,11 @@ FdtParseCpuMapChildNodes (
       //
       // Recursively parse its child nodes.
       //
-      Status = FdtParseCpuMapChildNodes (Fdt, ChildOffset, ChildHierarchyType, &Info->ChildList);
+      Status = FdtParseCpuMapChildNodes (Fdt,
+                                         ChildOffset,
+                                         ChildHierarchyType,
+                                         HierarchyLevel + 1,
+                                         &Info->ChildList);
       if (Status != EFI_SUCCESS) {
         FreePool (Info);
         goto FreeCpuMapInfoListEntries;
@@ -338,7 +348,11 @@ FdtGetCpuMapInfo (
   }
   InitializeListHead (InfoList);
 
-  Status = FdtParseCpuMapChildNodes (Fdt, CpuMapNodeOffset, FdtCpuMapHierarchyTypeSocket, InfoList);
+  Status = FdtParseCpuMapChildNodes (Fdt,
+                                     CpuMapNodeOffset,
+                                     FdtCpuMapHierarchyTypeSocket,
+                                     1,
+                                     InfoList);
   if (Status != EFI_SUCCESS) {
     goto FreeInfoList;
   }

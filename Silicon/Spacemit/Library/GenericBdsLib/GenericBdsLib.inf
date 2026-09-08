@@ -35,6 +35,3 @@
   UefiBootManagerLib
   UefiBootServicesTableLib
   UefiRuntimeServicesTableLib
-
-[Pcd]
-  gSpacemitTokenSpaceGuid.PcdDefaultBootPriority

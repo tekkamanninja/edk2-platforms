@@ -85,6 +85,7 @@ DpuDeviceInit (
   IN SPACEMIT_MODE_INFO    *ModeInfo,
   IN EFI_PHYSICAL_ADDRESS  FbBase,
   IN UINTN                 DpuBaseAddr,
+  IN INTN                  DpuId,
   IN INTN                  DpuType
   )
 {
@@ -102,12 +103,20 @@ DpuDeviceInit (
   DEBUG ((DEBUG_INFO, "DpuDeviceInit: Hbp %d, Hfp %d Hsync %d Vsp %d\n", Hbp, Hfp, Hsync, Vsp));
   DEBUG ((DEBUG_INFO, "DpuDeviceInit: Vbp %d, Vfp %d Vsync %d Hsp %d\n", Vbp, Vfp, Vsync, Hsp));
 
-  if ((DpuType == DpuModeDp) || (DpuType == DpuModeEdp)) {
+  if ((DpuId == 0) && ((DpuType == DpuModeDp) || (DpuType == DpuModeEdp))) {
     CiuAddr = K3_CIU_BASE;
     MapRegToGcdMmioSpace (CiuAddr, SIZE_4KB);
 
     Value  = MmioRead32 (CiuAddr + 0x12C);
     Value |= BIT8;
+    MmioWrite32 (CiuAddr + 0x12C, Value);
+    Value = MmioRead32 (CiuAddr + 0x12C);
+  } else if ((DpuId == 0) && (DpuType == DpuModeMipi)) {
+    CiuAddr = K3_CIU_BASE;
+    MapRegToGcdMmioSpace (CiuAddr, SIZE_4KB);
+
+    Value  = MmioRead32 (CiuAddr + 0x12C);
+    Value &= ~BIT8;
     MmioWrite32 (CiuAddr + 0x12C, Value);
     Value = MmioRead32 (CiuAddr + 0x12C);
   }
@@ -214,7 +223,7 @@ SpacemitDisplayInit (
 
   ModeInfo = ConnectorState->SpacemitModeInfo;
 
-  DpuDeviceInit (ModeInfo, (UINTN)*FbBase, DpuBaseAddr, DpuType);
+  DpuDeviceInit (ModeInfo, (UINTN)*FbBase, DpuBaseAddr, DpuId, DpuType);
 
   return EFI_SUCCESS;
 }
@@ -225,7 +234,7 @@ IsHotPlugDevices (
   )
 {
   switch (DpuMode) {
-    case DpuModeEdp:
+    case DpuModeDp:
       return TRUE;
     default:
       return FALSE;

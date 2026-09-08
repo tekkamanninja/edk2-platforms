@@ -1,0 +1,35 @@
+## @file
+#  ACPI table data and ASL sources required to boot the platform.
+#
+#  Copyright (c) 2026, SpacemiT Co., Ltd. All rights reserved.
+#
+#  SPDX-License-Identifier: BSD-2-Clause-Patent
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x0001001B
+  BASE_NAME                      = K3AcpiTables
+  FILE_GUID                      = 7E374E25-8E01-4FEE-87F2-390C23C606CD  # gEfiMdeModulePkgTokenSpaceGuid.PcdAcpiTableStorageFile
+  MODULE_TYPE                    = USER_DEFINED
+  VERSION_STRING                 = 1.0
+
+[Sources]
+  Fadt.aslc
+  Madt.aslc
+  Rhct.aslc
+  Spcr.aslc
+  Dsdt/Dsdt.asl
+
+[Packages]
+  MdePkg/MdePkg.dec
+  EmbeddedPkg/EmbeddedPkg.dec
+  Platform/RISC-V/PlatformPkg/RiscVPlatformPkg.dec
+  Platform/Spacemit/K3/K3Platform.dec
+  UefiCpuPkg/UefiCpuPkg.dec
+  Silicon/Spacemit/K3/K3.dec
+
+[Pcd]
+  gUefiRiscVPlatformPkgTokenSpaceGuid.PcdHartCount             ## CONSUMES
+  gUefiCpuPkgTokenSpaceGuid.PcdCpuCoreCrystalClockFrequency    ## CONSUMES
+  gSpacemitK3TokenSpaceGuid.PcdX100HartCount                   ## CONSUMES
